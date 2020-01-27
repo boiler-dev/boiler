@@ -15,6 +15,28 @@ import spawnTerminal from "./spawnTerminal"
 export const REPO_REGEX = /((git|ssh|http(s)?)|(git@[\w.]+))(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?/
 export const JSON_REGEX = /\s*{/
 
+export type BoilerJsDefaults = (
+  boiler: BoilerDev
+) => Promise<Record<string, any>>
+
+export type BoilerJsIgnore = (
+  boiler: BoilerDev
+) => Promise<string[]>
+
+export type BoilerJsOnly = (
+  boiler: BoilerDev
+) => Promise<string[]>
+
+export type BoilerJsProcessFile = (
+  boiler: BoilerDev,
+  path: string,
+  src: string
+) => Promise<{ path: string; src: string }[]>
+
+export type BoilerJsPrompts = (
+  boiler: BoilerDev
+) => Promise<{ type: string; name: string }[]>
+
 export class BoilerDev {
   data = {}
   dir: string = process.cwd()
@@ -53,17 +75,25 @@ export class BoilerDev {
         promises.push(async () => {
           const { path } = await dir()
 
-          const [boilerJsPath] = await Promise.all([
-            this.transpileBoilerJs(path),
-            this.gitCloneToTmp(branch, path, repo),
-          ])
+          await this.gitCloneToTmp(branch, path, repo)
+
+          const boilerJsPath = await this.transpileBoilerJs(
+            path
+          )
 
           const {
             defaults,
-            ignore,
-            process,
-            prompts,
+            processFile,
+          }: {
+            defaults: BoilerJsDefaults
+            processFile: BoilerJsProcessFile
           } = await import(boilerJsPath)
+
+          this.data = Object.assign(
+            {},
+            await defaults(this),
+            this.data
+          )
         })
       }
 

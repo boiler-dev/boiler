@@ -34,7 +34,7 @@ describe("boilerDev", () => {
   it("should transpileBoilerJs", async () => {
     const boiler = new BoilerDev([dir])
     const boilerJsPath = await boiler.transpileBoilerJs(dir)
-    const { process } = await import(boilerJsPath)
-    expect(process).toEqual(expect.any(Function))
+    const { processFile } = await import(boilerJsPath)
+    expect(processFile).toEqual(expect.any(Function))
   })
 })
