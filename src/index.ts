@@ -22,25 +22,25 @@ export const REPO_REGEX = /((git|ssh|http(s)?)|(git@[\w.]+))(:(\/\/)?)([\w.@:/\-
 export const JSON_REGEX = /\s*{/
 
 ////
-export type BoilerJsDefaults = (
+export type BoilerDefaults = (
   boiler: BoilerDev
 ) => Promise<Record<string, any>>
 
-export type BoilerJsIgnore = (
+export type BoilerIgnore = (
   boiler: BoilerDev
 ) => Promise<(string | RegExp)[]>
 
-export type BoilerJsOnly = (
+export type BoilerOnly = (
   boiler: BoilerDev
 ) => Promise<(string | RegExp)[]>
 
-export type BoilerJsProcessFile = (
+export type BoilerProcessFile = (
   boiler: BoilerDev,
   path: string,
   src: string
 ) => Promise<{ path: string; src: string }[]>
 
-export type BoilerJsPrompts = (
+export type BoilerPrompts = (
   boiler: BoilerDev
 ) => Promise<{ type: string; name: string }[]>
 
@@ -96,11 +96,11 @@ export class BoilerDev {
             processFile,
             prompts,
           }: {
-            defaults: BoilerJsDefaults
-            ignore: BoilerJsIgnore
-            only: BoilerJsOnly
-            prompts: BoilerJsPrompts
-            processFile: BoilerJsProcessFile
+            defaults: BoilerDefaults
+            ignore: BoilerIgnore
+            only: BoilerOnly
+            prompts: BoilerPrompts
+            processFile: BoilerProcessFile
           } = await import(boilerJsPath)
 
           this.data = Object.assign(
@@ -180,16 +180,16 @@ export class BoilerDev {
   }
 
   async prompts(
-    prompts: BoilerJsPrompts
+    prompts: BoilerPrompts
   ): Promise<Record<string, any>> {
     return await inquirer.prompt(await prompts(this))
   }
 
   async processFiles(
     path: string,
-    ignore: BoilerJsIgnore,
-    only: BoilerJsOnly,
-    processFile: BoilerJsProcessFile
+    ignore: BoilerIgnore,
+    only: BoilerOnly,
+    processFile: BoilerProcessFile
   ): Promise<void> {
     const trackedFiles = await this.getTrackedFiles(path)
     const files = await this.filterFiles(
@@ -219,8 +219,8 @@ export class BoilerDev {
 
   async filterFiles(
     files: string[],
-    ignore: BoilerJsIgnore,
-    only: BoilerJsOnly
+    ignore: BoilerIgnore,
+    only: BoilerOnly
   ): Promise<string[]> {
     const ignorePaths = await ignore(this)
     const onlyPaths = await only(this)

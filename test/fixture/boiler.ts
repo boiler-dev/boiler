@@ -1,24 +1,24 @@
 import {
-  BoilerJsDefaults,
-  BoilerJsProcessFile,
-  BoilerJsIgnore,
-  BoilerJsOnly,
-  BoilerJsPrompts,
+  BoilerDefaults,
+  BoilerProcessFile,
+  BoilerIgnore,
+  BoilerOnly,
+  BoilerPrompts,
 } from "../../src"
 
-export const defaults: BoilerJsDefaults = async boiler => {
+export const defaults: BoilerDefaults = async boiler => {
   return {}
 }
 
-export const ignore: BoilerJsIgnore = async boiler => {
+export const ignore: BoilerIgnore = async boiler => {
   return []
 }
 
-export const only: BoilerJsOnly = async boiler => {
+export const only: BoilerOnly = async boiler => {
   return []
 }
 
-export const processFile: BoilerJsProcessFile = async (
+export const processFile: BoilerProcessFile = async (
   boiler,
   path,
   src
@@ -26,6 +26,6 @@ export const processFile: BoilerJsProcessFile = async (
   return [{ path, src }]
 }
 
-export const prompts: BoilerJsPrompts = async boiler => {
+export const prompts: BoilerPrompts = async boiler => {
   return []
 }
