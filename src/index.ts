@@ -9,6 +9,7 @@ import {
   readJson,
   writeFile,
 } from "fs-extra"
+import inquirer from "inquirer"
 import pino from "pino"
 import { dir } from "tmp-promise"
 import { transpileModule } from "typescript"
@@ -27,11 +28,11 @@ export type BoilerJsDefaults = (
 
 export type BoilerJsIgnore = (
   boiler: BoilerDev
-) => Promise<string[]>
+) => Promise<(string | RegExp)[]>
 
 export type BoilerJsOnly = (
   boiler: BoilerDev
-) => Promise<string[]>
+) => Promise<(string | RegExp)[]>
 
 export type BoilerJsProcessFile = (
   boiler: BoilerDev,
@@ -90,16 +91,30 @@ export class BoilerDev {
 
           const {
             defaults,
+            ignore,
+            only,
             processFile,
+            prompts,
           }: {
             defaults: BoilerJsDefaults
+            ignore: BoilerJsIgnore
+            only: BoilerJsOnly
+            prompts: BoilerJsPrompts
             processFile: BoilerJsProcessFile
           } = await import(boilerJsPath)
 
           this.data = Object.assign(
             {},
             await defaults(this),
+            await this.prompts(prompts),
             this.data
+          )
+
+          await this.processFiles(
+            path,
+            ignore,
+            only,
+            processFile
           )
         })
       }
@@ -148,5 +163,92 @@ export class BoilerDev {
     }
 
     return boilerJsPath
+  }
+
+  async getTrackedFiles(path: string): Promise<string[]> {
+    const { out } = await spawnTerminal("git", {
+      args: [
+        "ls-tree",
+        "--full-tree",
+        "-r",
+        "--name-only",
+        "HEAD",
+      ],
+    })
+
+    return out.split("\r\n").slice(0, -1)
+  }
+
+  async prompts(
+    prompts: BoilerJsPrompts
+  ): Promise<Record<string, any>> {
+    return await inquirer.prompt(await prompts(this))
+  }
+
+  async processFiles(
+    path: string,
+    ignore: BoilerJsIgnore,
+    only: BoilerJsOnly,
+    processFile: BoilerJsProcessFile
+  ): Promise<void> {
+    const trackedFiles = await this.getTrackedFiles(path)
+    const files = await this.filterFiles(
+      trackedFiles,
+      ignore,
+      only
+    )
+    const promises = []
+
+    for (const file of files) {
+      promises.push(async () => {
+        const filePath = join(path, file)
+        const src = await readFile(filePath)
+        const files = await processFile(
+          this,
+          filePath,
+          src.toString()
+        )
+        for (const { path, src } of files) {
+          await writeFile(path, src)
+        }
+      })
+    }
+
+    await Promise.all(promises)
+  }
+
+  async filterFiles(
+    files: string[],
+    ignore: BoilerJsIgnore,
+    only: BoilerJsOnly
+  ): Promise<string[]> {
+    const ignorePaths = await ignore(this)
+    const onlyPaths = await only(this)
+    return files.filter(file => {
+      return (
+        !this.matchPath(file, ignorePaths) &&
+        this.matchPath(file, onlyPaths)
+      )
+    })
+  }
+
+  matchPath(
+    path: string,
+    paths: (string | RegExp)[]
+  ): boolean {
+    for (const matcher of paths) {
+      if (
+        typeof matcher === "string" &&
+        path.startsWith(matcher)
+      ) {
+        return true
+      }
+      if (
+        matcher instanceof RegExp &&
+        path.match(matcher)
+      ) {
+        return true
+      }
+    }
   }
 }

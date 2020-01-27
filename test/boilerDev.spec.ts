@@ -37,4 +37,10 @@ describe("boilerDev", () => {
     const { processFile } = await import(boilerJsPath)
     expect(processFile).toEqual(expect.any(Function))
   })
+
+  it("should getTrackedFiles", async () => {
+    const boiler = new BoilerDev([dir])
+    const files = await boiler.getTrackedFiles(dir)
+    expect(files[0]).toEqual(expect.any(String))
+  })
 })
