@@ -1,3 +1,7 @@
+////
+import { join } from "path"
+
+////
 import {
   pathExists,
   pathExistsSync,
@@ -5,16 +9,18 @@ import {
   readJson,
   writeFile,
 } from "fs-extra"
-import { join } from "path"
 import pino from "pino"
 import { dir } from "tmp-promise"
 import { transpileModule } from "typescript"
 
-import spawnTerminal from "./spawnTerminal"
+////
+import { spawnTerminal } from "./spawnTerminal"
 
+////
 export const REPO_REGEX = /((git|ssh|http(s)?)|(git@[\w.]+))(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?/
 export const JSON_REGEX = /\s*{/
 
+////
 export type BoilerJsDefaults = (
   boiler: BoilerDev
 ) => Promise<Record<string, any>>
@@ -37,6 +43,7 @@ export type BoilerJsPrompts = (
   boiler: BoilerDev
 ) => Promise<{ type: string; name: string }[]>
 
+////
 export class BoilerDev {
   data = {}
   dir: string = process.cwd()
@@ -121,8 +128,7 @@ export class BoilerDev {
     path: string,
     repo: string
   ): Promise<void> {
-    await spawnTerminal({
-      command: "git",
+    await spawnTerminal("git", {
       args: ["clone", "--depth", "1", repo, "-b", branch],
       cwd: path,
     })

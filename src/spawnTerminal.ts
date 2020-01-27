@@ -1,28 +1,26 @@
 import { spawn } from "node-pty"
 
-export interface SpawnTerminalArg {
-  args?: string[]
-  command: string
-  cwd?: string
-  env?: Record<string, string>
-}
-
-export interface SpawnTerminalReturn {
+export type SpawnTerminal = (
+  command: string,
+  options?: {
+    args?: string[]
+    cwd?: string
+    env?: Record<string, string>
+  }
+) => Promise<{
   code: number
   out: string
   signal: number
-}
+}>
 
-export default async function(
-  arg: SpawnTerminalArg
-): Promise<SpawnTerminalReturn> {
+export const spawnTerminal: SpawnTerminal = async function(
+  command,
+  options = {}
+) {
   const cols = process.stdout.columns
   const rows = process.stdout.rows
 
-  const { args = [] } = arg
-  arg.args = Array.isArray(args) ? args : [args]
-
-  const { command, cwd, env } = arg
+  const { args = [], cwd, env } = options
 
   const pty = spawn(command, args, {
     cols,
