@@ -1,0 +1,6 @@
+.DS_Store
+.serverless
+dist
+node_modules
+test/fixture/boiler.js
+worker

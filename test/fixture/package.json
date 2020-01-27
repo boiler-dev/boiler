@@ -1,0 +1,10 @@
+{
+  "boiler": {
+    "data": {
+      "myData": true
+    },
+    "repos": [
+      "git@github.com:boiler-dev/boiler.git"
+    ]
+  }
+}

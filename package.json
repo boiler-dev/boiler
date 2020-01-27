@@ -1,0 +1,68 @@
+{
+  "name": "boiler-dev",
+  "version": "0.0.1",
+  "description": "Boilerplate code ecosystem",
+  "main": "dist/index.js",
+  "bin": {
+    "boiler": "./bin/boiler"
+  },
+  "scripts": {
+    "build": "./bin/build",
+    "release": "./bin/release",
+    "test": "mocha",
+    "update": "ncu -u",
+    "watch": "tsc -b -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/winton/boiler-dev.git"
+  },
+  "author": "Winton Welsh <mail@wintoni.us>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/winton/boiler-dev/issues"
+  },
+  "homepage": "https://github.com/winton/boiler-dev#readme",
+  "devDependencies": {
+    "@types/fs-extra": "8.0.1",
+    "@types/mocha": "5.2.7",
+    "@types/node": "13.5.0",
+    "@types/pino": "5.15.3",
+    "@typescript-eslint/eslint-plugin": "2.17.0",
+    "@typescript-eslint/parser": "2.17.0",
+    "eslint": "6.8.0",
+    "eslint-config-prettier": "6.9.0",
+    "eslint-plugin-prettier": "3.1.2",
+    "expect": "25.1.0",
+    "husky": "4.2.1",
+    "lint-staged": "10.0.2",
+    "mocha": "7.0.0",
+    "npm-check-updates": "4.0.1",
+    "pino": "5.16.0",
+    "prettier": "1.19.1",
+    "release-it": "12.4.3",
+    "semver": "7.1.1",
+    "ts-node": "8.6.2"
+  },
+  "dependencies": {
+    "fs-extra": "8.1.0",
+    "node-pty": "0.9.0",
+    "tmp-promise": "2.0.2",
+    "typescript": "3.7.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm test"
+    }
+  },
+  "lint-staged": {
+    "*.{css,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{js,jsx,ts}": [
+      "eslint --ignore-path .gitignore --fix",
+      "git add"
+    ]
+  }
+}

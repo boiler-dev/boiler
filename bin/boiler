@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const Boiler = require("../dist")
+new Boiler(process.argv.slice(2)).boiler()
