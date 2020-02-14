@@ -1,6 +1,6 @@
 import { join } from "path"
-import boilerFromArg from "./boilerFromArg"
-import { spawnTerminal } from "../spawnTerminal"
+import boilerFromArg from "../boilerFromArg"
+import git from "../git"
 
 export class AddBoiler {
   async run(
@@ -11,11 +11,10 @@ export class AddBoiler {
       repos.map(
         async (repo): Promise<void> => {
           const name = await boilerFromArg(destDir, repo)
+          const boilerDir = join(destDir, "boiler")
+
           if (name && repo.match(/\.git$/)) {
-            await this.gitClone(
-              join(destDir, "boiler"),
-              repo
-            )
+            await git.clone(boilerDir, repo)
           } else {
             console.error(`Can't understand ${repo} 😔`)
             process.exit(1)
@@ -23,16 +22,6 @@ export class AddBoiler {
         }
       )
     )
-  }
-
-  async gitClone(
-    path: string,
-    repo: string
-  ): Promise<void> {
-    await spawnTerminal("git", {
-      args: ["clone", repo],
-      cwd: path,
-    })
   }
 }
 

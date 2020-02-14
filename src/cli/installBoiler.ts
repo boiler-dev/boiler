@@ -1,8 +1,7 @@
 import { join } from "path"
 import boiler from "../"
-import boilerFromArg from "./boilerFromArg"
+import boilerFromArg from "../boilerFromArg"
 import addBoiler from "./addBoiler"
-import { spawnTerminal } from "../spawnTerminal"
 
 export class InstallBoiler {
   async run(
@@ -22,16 +21,6 @@ export class InstallBoiler {
         }
       )
     )
-  }
-
-  async gitClone(
-    path: string,
-    repo: string
-  ): Promise<void> {
-    await spawnTerminal("git", {
-      args: ["clone", repo],
-      cwd: path,
-    })
   }
 }
 

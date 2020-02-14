@@ -1,3 +1,6 @@
+import git from "./git"
+import listBoilers from "./listBoilers"
+
 export interface BoilerFilesInput {
   destDir: string
   files: {
@@ -28,3 +31,4 @@ export class Boiler {
 }
 
 export default new Boiler()
+export { git, listBoilers }

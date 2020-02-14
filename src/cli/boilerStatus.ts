@@ -1,6 +1,6 @@
 import { join } from "path"
-import listBoilers from "./listBoilers"
-import { spawnTerminal } from "../spawnTerminal"
+import listBoilers from "../listBoilers"
+import git from "../git"
 
 export class BoilerStatus {
   async run(destDir: string): Promise<void> {
@@ -8,24 +8,11 @@ export class BoilerStatus {
 
     for (const boiler of boilers) {
       const boilerDir = join(destDir, boiler)
-      const { out } = await this.gitStatus(boilerDir)
+      const { out } = await git.status(boilerDir)
 
       // eslint-disable-next-line no-console
       console.log(`\n⚙️  ${boiler} status:\n\n` + out)
     }
-  }
-
-  async gitStatus(
-    path: string
-  ): Promise<{
-    code: number
-    out: string
-    signal: number
-  }> {
-    return await spawnTerminal("git", {
-      args: ["status"],
-      cwd: path,
-    })
   }
 }
 
