@@ -1,8 +1,4 @@
-import { join } from "path"
-import { pathExists } from "fs-extra"
-
 export default async function boilerFromArg(
-  destDir: string,
   repo: string
 ): Promise<string> {
   const nameMatch = repo.match(/([^\/.]+)\.*[git]*$/)
@@ -14,7 +10,5 @@ export default async function boilerFromArg(
   }
   const [, name] = nameMatch
 
-  if (await pathExists(join(destDir, "boiler", name))) {
-    return name
-  }
+  return name
 }

@@ -23,10 +23,11 @@ export class InitBoiler {
 
   async createTsConfig(destDir: string): Promise<void> {
     const tsConfigPath = join(destDir, "tsconfig.json")
+    const relBoilerTsConfigPath =
+      "./boiler/tsconfig.cjs.json"
     const boilerTsConfigPath = join(
       destDir,
-      "boiler",
-      "tsconfig.cjs.json"
+      relBoilerTsConfigPath
     )
 
     const tsConfigExists = await pathExists(tsConfigPath)
@@ -38,12 +39,18 @@ export class InitBoiler {
       const tsConfig = await readJson(tsConfigPath)
 
       if (tsConfig.references) {
-        tsConfig.references.push({
-          path: "./boiler/tsconfig.cjs.json",
-        })
-        await writeJson(tsConfigPath, tsConfig, {
-          spaces: 2,
-        })
+        const found = tsConfig.references.find(
+          ref => ref.path === relBoilerTsConfigPath
+        )
+
+        if (!found) {
+          tsConfig.references.push({
+            path: relBoilerTsConfigPath,
+          })
+          await writeJson(tsConfigPath, tsConfig, {
+            spaces: 2,
+          })
+        }
       }
     }
 

@@ -11,11 +11,8 @@ export class InstallBoiler {
     for (const repo of repos) {
       await addBoiler.run(destDir, ...repos)
 
-      const name = await boilerFromArg(destDir, repo)
-      await boiler.run(
-        join(destDir, "boiler", name),
-        destDir
-      )
+      const name = await boilerFromArg(repo)
+      await boiler.run(name, destDir)
     }
   }
 }
