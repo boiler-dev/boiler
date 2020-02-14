@@ -7,21 +7,17 @@ export class AddBoiler {
     destDir: string,
     ...repos: string[]
   ): Promise<void> {
-    await Promise.all(
-      repos.map(
-        async (repo): Promise<void> => {
-          const name = await boilerFromArg(destDir, repo)
-          const boilerDir = join(destDir, "boiler")
+    for (const repo in repos) {
+      const name = await boilerFromArg(destDir, repo)
+      const boilerDir = join(destDir, "boiler")
 
-          if (name && repo.match(/\.git$/)) {
-            await git.clone(boilerDir, repo)
-          } else {
-            console.error(`Can't understand ${repo} 😔`)
-            process.exit(1)
-          }
-        }
-      )
-    )
+      if (name && repo.match(/\.git$/)) {
+        await git.clone(boilerDir, repo)
+      } else {
+        console.error(`Can't understand ${repo} 😔`)
+        process.exit(1)
+      }
+    }
   }
 }
 

@@ -8,19 +8,15 @@ export class InstallBoiler {
     destDir: string,
     ...repos: string[]
   ): Promise<void> {
-    await Promise.all(
-      repos.map(
-        async (repo): Promise<void> => {
-          await addBoiler.run(destDir, ...repos)
+    for (const repo of repos) {
+      await addBoiler.run(destDir, ...repos)
 
-          const name = await boilerFromArg(destDir, repo)
-          await boiler.run(
-            join(destDir, "boiler", name),
-            destDir
-          )
-        }
+      const name = await boilerFromArg(destDir, repo)
+      await boiler.run(
+        join(destDir, "boiler", name),
+        destDir
       )
-    )
+    }
   }
 }
 
