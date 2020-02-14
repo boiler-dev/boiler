@@ -4,3 +4,4 @@ dist
 node_modules
 test/fixture/boiler.js
 worker
+/boiler/*
