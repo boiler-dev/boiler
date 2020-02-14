@@ -5,6 +5,12 @@
   "references": [
     {
       "path": "./src/tsconfig.cjs.json"
+    },
+    {
+      "path": "./boiler/tsconfig.cjs.json"
+    },
+    {
+      "path": "./boiler/tsconfig.cjs.json"
     }
   ]
 }
