@@ -1,7 +1,7 @@
 import { join } from "path"
 import { pathExists } from "fs-extra"
 import initBoiler from "./initBoiler"
-import listBoilers from "../listBoilers"
+import fs from "../fs"
 import git from "../git"
 
 export class CommitBoiler {
@@ -13,7 +13,9 @@ export class CommitBoiler {
     await initBoiler.run(destDir)
 
     if (!boilers.length) {
-      boilers = await listBoilers(destDir)
+      boilers = (
+        await fs.ls(join(destDir, "boiler"))
+      )[0].map(name => join("boiler", name))
     }
 
     await Promise.all(

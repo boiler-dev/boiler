@@ -1,7 +1,8 @@
 import { join } from "path"
+import { pathExists, readFile } from "fs-extra"
+
+import fs from "./fs"
 import git from "./git"
-import listBoilers from "./listBoilers"
-import { pathExists } from "fs-extra"
 
 export interface BoilerInput {
   destDir: string
@@ -37,24 +38,48 @@ export type InstallBoiler = (
   { path: string; source: string; action: string }[]
 >
 
+export interface BoilerInstance {
+  setupBoiler: SetupBoiler
+  teardownBoiler: TeardownBoiler
+  promptBoiler: PromptBoiler
+  installBoiler: InstallBoiler
+}
+
 export class Boiler {
   async run(
     boilerName: string,
-    destDir: string
+    destDir: string,
+    setup?: boolean
   ): Promise<void> {
-    const boilerJs = join(
+    const boilerDir = join(
       destDir,
       "dist/boiler",
-      boilerName,
-      "boiler.js"
+      boilerName
     )
+    const boilerJs = join(boilerDir, "boiler.js")
     const boilerJsExists = await pathExists(boilerJs)
 
     if (boilerJsExists) {
-      const boiler = await import(boilerJs)
+      const boiler = (await import(
+        boilerJs
+      )) as BoilerInstance
+      const files = await Promise.all(
+        (await fs.nestedFiles(boilerDir)).map(
+          async path => {
+            return {
+              path,
+              source: (await readFile(path)).toString(),
+            }
+          }
+        )
+      )
+
+      if (setup && boiler.setupBoiler) {
+        await boiler.setupBoiler({ destDir, files })
+      }
     }
   }
 }
 
 export default new Boiler()
-export { git, listBoilers }
+export { fs, git }

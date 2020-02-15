@@ -1,5 +1,11 @@
 import { spawn } from "node-pty"
 
+export interface SpawnTerminalOutput {
+  code: number
+  out: string
+  signal: number
+}
+
 export type SpawnTerminal = (
   command: string,
   options?: {
@@ -7,11 +13,7 @@ export type SpawnTerminal = (
     cwd?: string
     env?: Record<string, string>
   }
-) => Promise<{
-  code: number
-  out: string
-  signal: number
-}>
+) => Promise<SpawnTerminalOutput>
 
 export const spawnTerminal: SpawnTerminal = async function(
   command,

@@ -1,10 +1,10 @@
 import { join } from "path"
-import listBoilers from "../listBoilers"
+import fs from "../fs"
 import git from "../git"
 
 export class BoilerStatus {
   async run(destDir: string): Promise<void> {
-    const boilers = await listBoilers(destDir)
+    const [boilers] = await fs.ls(destDir)
 
     for (const boiler of boilers) {
       const boilerDir = join(destDir, boiler)
