@@ -45,16 +45,18 @@ class Git {
     })
   }
 
-  async userEmail(): Promise<SpawnTerminalOutput> {
-    return await spawnTerminal("git", {
+  async userEmail(): Promise<string> {
+    const { out } = await spawnTerminal("git", {
       args: ["config", "user.email"],
     })
+    return out.trim()
   }
 
-  async userName(): Promise<SpawnTerminalOutput> {
-    return await spawnTerminal("git", {
+  async userName(): Promise<string> {
+    const { out } = await spawnTerminal("git", {
       args: ["config", "user.name"],
     })
+    return out.trim()
   }
 }
 
