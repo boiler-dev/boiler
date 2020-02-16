@@ -32,6 +32,7 @@ export type PromptBoiler = (
     name: string
     default: any
     message: string
+    choices?: Record<string, any>[]
   }[]
 >
 
