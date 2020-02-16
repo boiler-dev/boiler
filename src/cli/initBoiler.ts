@@ -8,10 +8,10 @@ export class InitBoiler {
     await ensureFile(gitignorePath)
     const gitignore = await readFile(gitignorePath)
 
-    if (!gitignore.toString().match(/^\/boiler\/\*/gm)) {
+    if (!gitignore.toString().match(/^\/boiler/gm)) {
       await writeFile(
         gitignorePath,
-        gitignore + "/boiler/*\n"
+        gitignore + "/boiler\n"
       )
     }
   }
