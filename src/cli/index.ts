@@ -1,15 +1,21 @@
 import addBoiler from "./addBoiler"
 import boilerStatus from "./boilerStatus"
 import commitBoiler from "./commitBoiler"
-import initBoiler from "./initBoiler"
 import installBoiler from "./installBoiler"
+import setupBoiler from "./setupBoiler"
 
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const destDir = process.cwd()
+    const setupCommands = [
+      "add",
+      "commit",
+      "install",
+      "setup",
+    ]
 
-    if (["add", "init", "install"].includes(cmd)) {
-      await initBoiler.run(destDir)
+    if (setupCommands.includes(cmd)) {
+      await setupBoiler.run(destDir)
     }
 
     if (cmd === "add") {
