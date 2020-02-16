@@ -32,10 +32,10 @@ export class Cli {
     } else {
       // eslint-disable-next-line no-console
       console.log(`
-add\t[repo|path]...\tAdd boilers (no install)
+add\trepo|path...\tAdd boilers without install
 commit\t[repo|path]...\tCommit and push boilers
 init\t[path]...\tInitialize new projects
-install\t[repo|path]...\tInstall boilers
+install\trepo|path...\tInstall boilers
 status\t[repo|path]...\tGit status of boilers
 `)
     }
