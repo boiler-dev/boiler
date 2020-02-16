@@ -1,3 +1,4 @@
+import npm from "../npm"
 import installBoiler from "./installBoiler"
 
 export class InitBoiler {
@@ -7,6 +8,9 @@ export class InitBoiler {
       "git@github.com:boiler-dev/package-json-boiler.git",
       "git@github.com:boiler-dev/ts-boiler.git"
     )
+    await npm.install(destDir, ["boiler-dev"], {
+      saveDev: true,
+    })
   }
 }
 
