@@ -1,6 +1,5 @@
 import { join } from "path"
 import { pathExists } from "fs-extra"
-import initBoiler from "./initBoiler"
 import fs from "../fs"
 import git from "../git"
 
@@ -10,7 +9,6 @@ export class CommitBoiler {
     ...boilers: string[]
   ): Promise<void> {
     const message = boilers.pop()
-    await initBoiler.run(destDir)
 
     if (!boilers.length) {
       boilers = (
