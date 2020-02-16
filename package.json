@@ -1,7 +1,7 @@
 {
   "name": "boiler-dev",
   "version": "0.2.0",
-  "description": "Boilerplate code ecosystem",
+  "description": "Boilerplate framework 🥘",
   "main": "dist/index.js",
   "bin": {
     "boiler": "./bin/boiler"
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/winton/boiler-dev.git"
+    "url": "git+ssh://git@github.com/boiler-dev/boiler.git"
   },
   "author": "Winton Welsh <mail@wintoni.us>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/winton/boiler-dev/issues"
+    "url": "https://github.com/boiler-dev/boiler/issues"
   },
-  "homepage": "https://github.com/winton/boiler-dev#readme",
+  "homepage": "https://github.com/boiler-dev/boiler#readme",
   "devDependencies": {
     "@types/fs-extra": "8.0.1",
     "@types/inquirer": "6.5.0",
