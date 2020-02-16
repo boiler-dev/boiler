@@ -51,18 +51,26 @@ export class Boiler {
     destDir: string,
     setup?: boolean
   ): Promise<void> {
-    const boilerDir = join(
+    const boilerDir = join(destDir, "boiler", boilerName)
+    const boilerDistDir = join(
       destDir,
       "dist/boiler",
       boilerName
     )
+
     const boilerJs = join(boilerDir, "boiler.js")
     const boilerJsExists = await pathExists(boilerJs)
 
-    if (boilerJsExists) {
+    const boilerDistJs = join(boilerDistDir, "boiler.js")
+    const boilerDistJsExists = await pathExists(
+      boilerDistJs
+    )
+
+    if (boilerJsExists || boilerDistJsExists) {
       const boiler = (await import(
-        boilerJs
+        boilerJsExists ? boilerJs : boilerDistJs
       )) as BoilerInstance
+
       const files = await Promise.all(
         (await fs.nestedFiles(boilerDir)).map(
           async path => {
