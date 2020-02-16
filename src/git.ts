@@ -44,6 +44,18 @@ class Git {
       cwd: path,
     })
   }
+
+  async userEmail(): Promise<SpawnTerminalOutput> {
+    return await spawnTerminal("git", {
+      args: ["config", "user.email"],
+    })
+  }
+
+  async userName(): Promise<SpawnTerminalOutput> {
+    return await spawnTerminal("git", {
+      args: ["config", "user.name"],
+    })
+  }
 }
 
 export default new Git()
