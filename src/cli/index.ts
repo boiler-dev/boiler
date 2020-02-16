@@ -1,9 +1,9 @@
 import addBoiler from "./addBoiler"
-import boilerStatus from "./boilerStatus"
 import commitBoiler from "./commitBoiler"
 import initBoiler from "./initBoiler"
 import installBoiler from "./installBoiler"
 import setupBoiler from "./setupBoiler"
+import statusBoiler from "./statusBoiler"
 
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
@@ -24,19 +24,19 @@ export class Cli {
     } else if (cmd === "commit") {
       await commitBoiler.run(destDir, ...args)
     } else if (cmd === "init") {
-      await initBoiler.run(destDir)
+      await initBoiler.run(destDir, ...args)
     } else if (cmd === "install") {
       await installBoiler.run(destDir, ...args)
     } else if (cmd === "status") {
-      await boilerStatus.run(destDir)
+      await statusBoiler.run(destDir, ...args)
     } else {
       // eslint-disable-next-line no-console
       console.log(`
-add\t[repo|path]...\tAdd a boiler (no install)
-commit\t[repo|path]...\tCommit and push a boiler
-init\t[path]...\tInitialize a new project
-install\t[repo|path]...\tInstall a boiler
-status\t[repo|path]...\tGit status of boiler
+add\t[repo|path]...\tAdd boilers (no install)
+commit\t[repo|path]...\tCommit and push boilers
+init\t[path]...\tInitialize new projects
+install\t[repo|path]...\tInstall boilers
+status\t[repo|path]...\tGit status of boilers
 `)
     }
   }

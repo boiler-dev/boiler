@@ -9,7 +9,7 @@ export class AddBoiler {
     ...repos: string[]
   ): Promise<boolean> {
     for (const repo of repos) {
-      const name = await boilerFromArg(repo)
+      const name = boilerFromArg(repo)
       const boilerDir = join(destDir, "boiler")
 
       if (await pathExists(join(boilerDir, name))) {

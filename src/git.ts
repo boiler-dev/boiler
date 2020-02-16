@@ -40,7 +40,7 @@ class Git {
 
   async status(path: string): Promise<SpawnTerminalOutput> {
     return await spawnTerminal("git", {
-      args: ["status"],
+      args: ["status", "-s"],
       cwd: path,
     })
   }

@@ -9,7 +9,7 @@ export class InstallBoiler {
   ): Promise<void> {
     for (const repo of repos) {
       const setup = await addBoiler.run(destDir, ...repos)
-      const name = await boilerFromArg(repo)
+      const name = boilerFromArg(repo)
 
       await boiler.run(name, destDir, setup)
     }

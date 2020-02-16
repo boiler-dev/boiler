@@ -1,31 +1,33 @@
 import { join } from "path"
 import { pathExists } from "fs-extra"
+
+import boilerFromArg from "../boilerFromArg"
 import fs from "../fs"
 import git from "../git"
 
 export class CommitBoiler {
   async run(
     destDir: string,
-    ...boilers: string[]
+    ...repos: string[]
   ): Promise<void> {
-    const message = boilers.pop()
+    const message = repos.pop()
 
-    if (!boilers.length) {
-      boilers = (
-        await fs.ls(join(destDir, "boiler"))
-      )[0].map(name => join("boiler", name))
+    if (!repos.length) {
+      ;[repos] = await fs.ls(join(destDir, "boiler"))
     }
 
     await Promise.all(
-      boilers.map(
-        async (boiler): Promise<void> => {
-          const boilerDir = join(destDir, boiler)
+      repos.map(
+        async (repo): Promise<void> => {
+          const name = boilerFromArg(repo)
+          const boilerDir = join(destDir, "boiler", name)
+
           if (await pathExists(join(boilerDir, ".git"))) {
             await git.add(boilerDir)
             await git.commit(boilerDir, message)
             await git.push(boilerDir)
           } else {
-            console.error(`Couldn't find ${boilerDir}`)
+            console.error(`⚠️ Can't find ${boilerDir}`)
           }
         }
       )
