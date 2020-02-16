@@ -1,6 +1,11 @@
 import { basename, join } from "path"
 import inquirer from "inquirer"
-import { pathExists, readFile, writeFile } from "fs-extra"
+import {
+  pathExists,
+  readFile,
+  writeFile,
+  ensureFile,
+} from "fs-extra"
 
 import fs from "./fs"
 import git from "./git"
@@ -116,6 +121,7 @@ export class Boiler {
           const { action, path, source } = record
 
           if (action === "write") {
+            await ensureFile(path)
             await writeFile(path, source)
           }
         }
