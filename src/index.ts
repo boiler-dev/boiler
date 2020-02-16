@@ -1,16 +1,19 @@
-import { join } from "path"
-import { pathExists, readFile } from "fs-extra"
+import { basename, join } from "path"
+import inquirer from "inquirer"
+import { pathExists, readFile, writeFile } from "fs-extra"
 
 import fs from "./fs"
 import git from "./git"
+import npm from "./npm"
 
 export interface BoilerInput {
+  answers?: Record<string, any>
   destDir: string
   files: {
+    name: string
     path: string
     source: string
   }[]
-  prompts?: Record<string, any>
 }
 
 export type SetupBoiler = (
@@ -75,6 +78,7 @@ export class Boiler {
         (await fs.nestedFiles(boilerDir)).map(
           async path => {
             return {
+              name: basename(path),
               path,
               source: (await readFile(path)).toString(),
             }
@@ -85,9 +89,39 @@ export class Boiler {
       if (setup && boiler.setupBoiler) {
         await boiler.setupBoiler({ destDir, files })
       }
+
+      let answers = {}
+
+      if (boiler.promptBoiler) {
+        const prompts = await boiler.promptBoiler({
+          destDir,
+          files,
+        })
+        answers = await inquirer.prompt(prompts)
+      }
+
+      if (boiler.installBoiler) {
+        const actions = await boiler.installBoiler({
+          answers,
+          destDir,
+          files,
+        })
+
+        for (const record of actions) {
+          if (!record) {
+            continue
+          }
+
+          const { action, path, source } = record
+
+          if (action === "write") {
+            await writeFile(path, source)
+          }
+        }
+      }
     }
   }
 }
 
 export default new Boiler()
-export { fs, git }
+export { fs, git, npm }

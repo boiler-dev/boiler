@@ -13,6 +13,8 @@ export class InstallBoiler {
       const setup = await addBoiler.run(destDir, ...repos)
 
       const name = await boilerFromArg(repo)
+
+      await this.addTsConfigRef(destDir, name)
       await boiler.run(name, destDir, setup)
     }
   }

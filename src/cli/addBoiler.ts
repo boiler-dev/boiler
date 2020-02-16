@@ -1,7 +1,7 @@
 import { join } from "path"
 import boilerFromArg from "../boilerFromArg"
 import git from "../git"
-import { pathExists } from "fs-extra"
+import { pathExists, ensureDir } from "fs-extra"
 
 export class AddBoiler {
   async run(
@@ -17,6 +17,8 @@ export class AddBoiler {
       }
 
       if (name && repo.match(/\.git$/)) {
+        await ensureDir(boilerDir)
+
         const { code, out } = await git.clone(
           boilerDir,
           repo
@@ -24,7 +26,7 @@ export class AddBoiler {
         if (code === 0) {
           return true
         } else {
-          console.error("⚠️ Git clone failed:\n\n", out)
+          console.error("⚠️  Git clone failed:\n\n", out)
           process.exit(1)
         }
       } else {
