@@ -29,6 +29,15 @@ export class Cli {
       await installBoiler.run(destDir, ...args)
     } else if (cmd === "status") {
       await boilerStatus.run(destDir)
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(`
+add\t[repo|path]...\tAdd a boiler (no install)
+commit\t[repo|path]...\tCommit and push a boiler
+init\t[path]...\tInitialize a new project
+install\t[repo|path]...\tInstall a boiler
+status\t[repo|path]...\tGit status of boiler
+`)
     }
   }
 }
