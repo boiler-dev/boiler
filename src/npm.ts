@@ -6,10 +6,17 @@ import {
 export class Npm {
   async install(
     destDir: string,
-    pkgNames: string[]
+    pkgNames: string[],
+    { saveDev }: { saveDev?: boolean } = {}
   ): Promise<SpawnTerminalOutput> {
+    const extra = saveDev ? ["--save-dev"] : []
     const response = await spawnTerminal("npm", {
-      args: ["install", "--save-exact", ...pkgNames],
+      args: [
+        "install",
+        "--save-exact",
+        ...extra,
+        ...pkgNames,
+      ],
       cwd: destDir,
     })
 
