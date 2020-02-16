@@ -4,7 +4,7 @@
   "description": "Boilerplate code ecosystem",
   "main": "dist/index.js",
   "bin": {
-    "boiler-dev": "./bin/boiler"
+    "boiler": "./bin/boiler"
   },
   "scripts": {
     "build": "./bin/build",
