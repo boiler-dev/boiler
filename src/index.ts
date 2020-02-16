@@ -1,4 +1,4 @@
-import { basename, join } from "path"
+import { basename, extname, join } from "path"
 import inquirer from "inquirer"
 import {
   pathExists,
@@ -118,10 +118,19 @@ export class Boiler {
             continue
           }
 
-          const { action, path, source } = record
+          const { action, path } = record
+          let { source } = record
 
           if (action === "write") {
             await ensureFile(path)
+
+            if (
+              extname(path) === ".json" &&
+              typeof source !== "string"
+            ) {
+              source = JSON.stringify(source, null, 2)
+            }
+
             await writeFile(path, source)
           }
         }
