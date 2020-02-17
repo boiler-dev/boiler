@@ -31,6 +31,13 @@ class Git {
     })
   }
 
+  async init(path: string): Promise<SpawnTerminalOutput> {
+    return await spawnTerminal("git", {
+      args: ["init", "."],
+      cwd: path,
+    })
+  }
+
   async push(path: string): Promise<SpawnTerminalOutput> {
     return await spawnTerminal("git", {
       args: ["push", "origin", "HEAD"],

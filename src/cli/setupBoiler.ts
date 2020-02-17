@@ -34,19 +34,23 @@ export class SetupBoiler {
       relTsConfigPath
     )
 
-    if (!tsConfigExists || !relTsConfigExists) {
+    if (!tsConfigExists) {
       return
     }
 
     if (!relTsConfigExists) {
-      await writeJson(relTsConfigPath, {
-        compilerOptions: {
-          composite: true,
-          outDir: "../dist/boiler",
-          target: "es5",
+      await writeJson(
+        relTsConfigPath,
+        {
+          compilerOptions: {
+            composite: true,
+            outDir: "../dist/boiler",
+            target: "es5",
+          },
+          extends: "../tsconfig.base.json",
         },
-        extends: "../tsconfig.base.json",
-      })
+        { spaces: 2 }
+      )
     }
 
     const tsConfig = await readJson(tsConfigPath)

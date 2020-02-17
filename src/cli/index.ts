@@ -8,12 +8,7 @@ import statusBoiler from "./statusBoiler"
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const destDir = process.cwd()
-    const setupCommands = [
-      "add",
-      "commit",
-      "install",
-      "setup",
-    ]
+    const setupCommands = ["add", "commit", "install"]
 
     if (setupCommands.includes(cmd)) {
       await setupBoiler.run(destDir)

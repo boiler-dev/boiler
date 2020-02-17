@@ -5,6 +5,8 @@ import {
   readFile,
   writeFile,
   ensureFile,
+  readJson,
+  writeJson,
 } from "fs-extra"
 
 import fs from "./fs"
@@ -132,6 +134,19 @@ export class Boiler {
             }
 
             await writeFile(path, source)
+          }
+
+          if (action === "merge") {
+            let json = {}
+
+            if (await pathExists(path)) {
+              json = await readJson(path)
+            }
+
+            await writeJson(
+              path,
+              Object.assign(json, source)
+            )
           }
         }
       }
