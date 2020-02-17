@@ -15,9 +15,6 @@ export class StatusBoiler {
       ;[repos] = await fs.ls(join(destDir, "boiler"))
     }
 
-    // eslint-disable-next-line no-console
-    console.log("")
-
     for (const repo of repos) {
       const name = boilerFromArg(repo)
       const boilerDir = join(destDir, "boiler", name)
@@ -27,7 +24,7 @@ export class StatusBoiler {
 
       // eslint-disable-next-line no-console
       console.log(
-        (out ? "🚨 dirty:" : "✨ clean:") +
+        (out ? "🚨 dirty\t" : "✨ clean\t") +
           ` ${name}` +
           (out ? `\n${out}` : "")
       )
