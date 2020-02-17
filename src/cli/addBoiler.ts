@@ -8,6 +8,8 @@ export class AddBoiler {
     destDir: string,
     ...repos: string[]
   ): Promise<boolean> {
+    let setup: boolean
+
     for (const repo of repos) {
       const name = boilerFromArg(repo)
       const boilerDir = join(destDir, "boiler")
@@ -24,7 +26,7 @@ export class AddBoiler {
           repo
         )
         if (code === 0) {
-          return true
+          setup = true
         } else {
           console.error("⚠️  Git clone failed:\n\n", out)
           process.exit(1)
@@ -34,6 +36,8 @@ export class AddBoiler {
         process.exit(1)
       }
     }
+
+    return setup
   }
 }
 
