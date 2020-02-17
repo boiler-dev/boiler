@@ -39,6 +39,7 @@ export class SetupBoiler {
     }
 
     if (!relTsConfigExists) {
+      await ensureFile(relTsConfigPath)
       await writeJson(
         relTsConfigPath,
         {
