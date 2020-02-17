@@ -23,6 +23,7 @@ export interface BoilerInput {
     path: string
     source: string
   }[]
+  setup: boolean
 }
 
 export type SetupBoiler = (
@@ -113,25 +114,19 @@ export class Boiler {
       )
 
       if (setup && boiler.setupBoiler) {
-        await boiler.setupBoiler({ destDir, files })
+        await boiler.setupBoiler({ destDir, files, setup })
       }
 
-      const answers = {}
+      let answers = existingAnswers
 
       if (boiler.promptBoiler) {
-        let prompts = await boiler.promptBoiler({
+        const prompts = await boiler.promptBoiler({
+          answers,
           destDir,
           files,
+          setup,
         })
-        prompts = prompts.filter(
-          prompt =>
-            existingAnswers[prompt.name] === undefined
-        )
-        Object.assign(
-          answers,
-          existingAnswers,
-          await inquirer.prompt(prompts)
-        )
+        answers = await inquirer.prompt(prompts)
       }
 
       if (boiler.installBoiler) {
@@ -139,6 +134,7 @@ export class Boiler {
           answers,
           destDir,
           files,
+          setup,
         })
 
         if (setup) {
