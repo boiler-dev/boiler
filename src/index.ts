@@ -1,4 +1,5 @@
 import { basename, extname, join } from "path"
+import deepmerge from "deepmerge"
 import inquirer from "inquirer"
 import {
   pathExists,
@@ -8,6 +9,7 @@ import {
   readJson,
   writeJson,
 } from "fs-extra"
+import { transpileModule } from "typescript"
 
 import fs from "./fs"
 import git from "./git"
@@ -46,7 +48,7 @@ export type PromptBoiler = (
 export type InstallBoiler = (
   input: BoilerInput
 ) => Promise<
-  { path: string; source: string; action: string }[]
+  { path: string; source: any; action: string }[]
 >
 
 export interface BoilerInstance {
@@ -60,6 +62,7 @@ export class Boiler {
   async run(
     boilerName: string,
     destDir: string,
+    repo: string,
     setup?: boolean
   ): Promise<void> {
     const boilerDir = join(destDir, "boiler", boilerName)
@@ -70,14 +73,28 @@ export class Boiler {
     )
 
     const boilerJs = join(boilerDir, "boiler.js")
-    const boilerJsExists = await pathExists(boilerJs)
-
+    const boilerTs = join(boilerDir, "boiler.ts")
     const boilerDistJs = join(boilerDistDir, "boiler.js")
-    const boilerDistJsExists = await pathExists(
-      boilerDistJs
-    )
 
-    if (boilerJsExists || boilerDistJsExists) {
+    const [
+      boilerJsExists,
+      boilerTsExists,
+      boilerDistJsExists,
+    ] = await Promise.all([
+      pathExists(boilerJs),
+      pathExists(boilerTs),
+      pathExists(boilerDistJs),
+    ])
+
+    if (
+      !boilerJsExists &&
+      !boilerDistJsExists &&
+      boilerTsExists
+    ) {
+      await this.transpileBoilerTs(boilerTs, boilerDistJs)
+    }
+
+    if (boilerJsExists || boilerTsExists) {
       const boiler = (await import(
         boilerJsExists ? boilerJs : boilerDistJs
       )) as BoilerInstance
@@ -115,6 +132,14 @@ export class Boiler {
           files,
         })
 
+        if (setup) {
+          actions.push({
+            action: "merge",
+            path: join(destDir, ".boiler.json"),
+            source: [{ answers, repo }],
+          })
+        }
+
         for (const record of actions) {
           if (!record) {
             continue
@@ -143,15 +168,24 @@ export class Boiler {
               json = await readJson(path)
             }
 
-            await writeJson(
-              path,
-              Object.assign(json, source),
-              { spaces: 2 }
-            )
+            await writeJson(path, deepmerge(json, source), {
+              spaces: 2,
+            })
           }
         }
       }
     }
+  }
+
+  async transpileBoilerTs(
+    boilerTs: string,
+    boilerDistJs: string
+  ): Promise<void> {
+    const ts = await readFile(boilerTs)
+    const code = transpileModule(ts.toString(), {})
+
+    await ensureFile(boilerDistJs)
+    await writeFile(boilerDistJs, code.outputText)
   }
 }
 
