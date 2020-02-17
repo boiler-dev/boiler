@@ -145,7 +145,8 @@ export class Boiler {
 
             await writeJson(
               path,
-              Object.assign(json, source)
+              Object.assign(json, source),
+              { spaces: 2 }
             )
           }
         }
