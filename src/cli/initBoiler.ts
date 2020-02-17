@@ -72,7 +72,8 @@ export const teardownBoiler: TeardownBoiler = async ({ answers, destDir, files }
     await installBoiler.run(
       path,
       "git@github.com:boiler-dev/package-json-boiler.git",
-      "git@github.com:boiler-dev/ts-boiler.git"
+      "git@github.com:boiler-dev/ts-boiler.git",
+      "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git"
     )
     await npm.install(destDir, ["boiler-dev"], {
       saveDev: true,
