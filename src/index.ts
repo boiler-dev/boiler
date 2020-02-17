@@ -62,6 +62,7 @@ export class Boiler {
   async run(
     boilerName: string,
     destDir: string,
+    existingAnswers: Record<string, any>,
     repo: string,
     setup?: boolean
   ): Promise<void> {
@@ -115,14 +116,22 @@ export class Boiler {
         await boiler.setupBoiler({ destDir, files })
       }
 
-      let answers = {}
+      const answers = {}
 
       if (boiler.promptBoiler) {
-        const prompts = await boiler.promptBoiler({
+        let prompts = await boiler.promptBoiler({
           destDir,
           files,
         })
-        answers = await inquirer.prompt(prompts)
+        prompts = prompts.filter(
+          prompt =>
+            existingAnswers[prompt.name] === undefined
+        )
+        Object.assign(
+          answers,
+          existingAnswers,
+          await inquirer.prompt(prompts)
+        )
       }
 
       if (boiler.installBoiler) {
