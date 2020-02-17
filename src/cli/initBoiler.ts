@@ -48,19 +48,40 @@ export class InitBoiler {
     await writeFile(
       join(path, "boiler.ts"),
       `
-import { SetupBoiler, PromptBoiler, InstallBoiler, TeardownBoiler } from "boiler-dev"
+import {
+  SetupBoiler,
+  PromptBoiler,
+  InstallBoiler,
+  TeardownBoiler,
+} from "boiler-dev"
 
-export const setupBoiler: SetupBoiler = async ({ destDir, files }) => {}
+export const setupBoiler: SetupBoiler = async ({
+  destDir,
+  files,
+}) => {}
 
-export const promptBoiler: PromptBoiler = async ({ destDir, files }) => {
-  return []
+export const promptBoiler: PromptBoiler = async ({
+  destDir,
+  files,
+}) => {
+  const actions = []
+  return actions
 }
 
-export const installBoiler: InstallBoiler = async ({ answers, destDir, files }) => {
-  return []
+export const installBoiler: InstallBoiler = async ({
+  answers,
+  destDir,
+  files,
+}) => {
+  const actions = []
+  return actions
 }
 
-export const teardownBoiler: TeardownBoiler = async ({ answers, destDir, files }) => {}
+export const teardownBoiler: TeardownBoiler = async ({
+  answers,
+  destDir,
+  files,
+}) => {}
 `
     )
   }
