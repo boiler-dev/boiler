@@ -10,7 +10,12 @@ import ts from "../ts"
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const destDir = process.cwd()
-    const setup = ["add", "commit", "install"].includes(cmd)
+    const setup = [
+      "add",
+      "commit",
+      "init",
+      "install",
+    ].includes(cmd)
 
     if (setup) {
       await git.appendGitignore(destDir, "/boiler")

@@ -10,29 +10,29 @@ import {
 import { transpileModule } from "typescript"
 
 export interface TsPaths {
-  tsConfigPath: string
-  relTsConfigPath: string
-
+  boilerTsConfigExists: boolean
+  boilerTsConfigPath: string
+  boilerTsConfigRelPath: string
   tsConfigExists: boolean
-  relTsConfigExists: boolean
+  tsConfigPath: string
 }
 
 export class Ts {
   async addBoilerTsConfig(destDir: string): Promise<void> {
     const {
-      relTsConfigPath,
+      boilerTsConfigPath,
+      boilerTsConfigExists,
       tsConfigExists,
-      relTsConfigExists,
     } = await this.paths(destDir)
 
     if (!tsConfigExists) {
       return
     }
 
-    if (!relTsConfigExists) {
-      await ensureFile(relTsConfigPath)
+    if (!boilerTsConfigExists) {
+      await ensureFile(boilerTsConfigPath)
       await writeJson(
-        relTsConfigPath,
+        boilerTsConfigPath,
         {
           compilerOptions: {
             composite: true,
@@ -48,9 +48,9 @@ export class Ts {
 
   async addTsConfigRef(destDir: string): Promise<void> {
     const {
-      tsConfigPath,
-      relTsConfigPath,
+      boilerTsConfigRelPath,
       tsConfigExists,
+      tsConfigPath,
     } = await this.paths(destDir)
 
     if (!tsConfigExists) {
@@ -61,12 +61,12 @@ export class Ts {
 
     if (tsConfig.references) {
       const found = tsConfig.references.find(
-        ref => ref.path === relTsConfigPath
+        ref => ref.path === boilerTsConfigRelPath
       )
 
       if (!found) {
         tsConfig.references.push({
-          path: relTsConfigPath,
+          path: boilerTsConfigRelPath,
         })
         await writeJson(tsConfigPath, tsConfig, {
           spaces: 2,
@@ -77,21 +77,23 @@ export class Ts {
 
   async paths(destDir: string): Promise<TsPaths> {
     const tsConfigPath = join(destDir, "tsconfig.json")
-    const relTsConfigPath = join(
+    const boilerTsConfigRelPath = "./boiler/tsconfig.json"
+    const boilerTsConfigPath = join(
       destDir,
-      "boiler/tsconfig.json"
+      boilerTsConfigRelPath
     )
 
     const tsConfigExists = await pathExists(tsConfigPath)
-    const relTsConfigExists = await pathExists(
-      relTsConfigPath
+    const boilerTsConfigExists = await pathExists(
+      boilerTsConfigPath
     )
 
     return {
-      tsConfigPath,
       tsConfigExists,
-      relTsConfigPath,
-      relTsConfigExists,
+      tsConfigPath,
+      boilerTsConfigExists,
+      boilerTsConfigPath,
+      boilerTsConfigRelPath,
     }
   }
 
