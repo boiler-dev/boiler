@@ -71,13 +71,16 @@ export class Boiler {
     destDir: string,
     setup?: boolean
   ): Promise<void> {
+    const nullPrompts = {}
     const { answers } = boilerRecord
+
     const boilerDir = join(destDir, "boiler", boilerName)
     const boilerDistDir = join(
       destDir,
       "dist/boiler",
       boilerName
     )
+
     const boilerJs = join(boilerDir, "boiler.js")
     const boilerTs = join(boilerDir, "boiler.ts")
     const boilerDistJs = join(boilerDistDir, "boiler.js")
@@ -122,16 +125,28 @@ export class Boiler {
       }
 
       if (boiler.promptBoiler) {
-        const prompts = await boiler.promptBoiler({
+        let prompts = await boiler.promptBoiler({
           answers,
           destDir,
           files,
           setup,
         })
-        Object.assign(
-          answers,
-          await inquirer.prompt(prompts)
+
+        for (const prompt of prompts) {
+          if (answers[prompt.name] === null) {
+            nullPrompts[prompt.name] = null
+          }
+        }
+
+        prompts = prompts.filter(
+          prompt =>
+            answers[prompt.name] === undefined ||
+            answers[prompt.name] === null
         )
+
+        const newAnswers = await inquirer.prompt(prompts)
+
+        Object.assign(answers, newAnswers)
       }
 
       if (boiler.installBoiler) {
@@ -176,6 +191,8 @@ export class Boiler {
           }
         }
       }
+
+      Object.assign(answers, nullPrompts)
     }
   }
 

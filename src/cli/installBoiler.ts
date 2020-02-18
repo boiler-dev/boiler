@@ -51,7 +51,7 @@ export class InstallBoiler {
       }
     }
 
-    await writeJson(boilerJson, boilers)
+    await writeJson(boilerJson, boilers, { spaces: 2 })
   }
 
   async install(
