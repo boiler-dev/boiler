@@ -10,6 +10,7 @@ import {
   writeJson,
 } from "fs-extra"
 
+import chmod from "./chmod"
 import fs from "./fs"
 import git from "./git"
 import npm from "./npm"
@@ -54,7 +55,13 @@ export type PromptBoiler = (
 export type InstallBoiler = (
   input: BoilerInput
 ) => Promise<
-  { path: string; source: any; action: string }[]
+  {
+    action: string
+    bin?: boolean
+    dev?: boolean
+    path: string
+    source: any
+  }[]
 >
 
 export interface BoilerInstance {
@@ -88,18 +95,12 @@ export class Boiler {
     const [
       boilerJsExists,
       boilerTsExists,
-      boilerDistJsExists,
     ] = await Promise.all([
       pathExists(boilerJs),
       pathExists(boilerTs),
-      pathExists(boilerDistJs),
     ])
 
-    if (
-      !boilerJsExists &&
-      !boilerDistJsExists &&
-      boilerTsExists
-    ) {
+    if (!boilerJsExists && boilerTsExists) {
       await ts.transpile(boilerTs, boilerDistJs)
     }
 
@@ -162,7 +163,7 @@ export class Boiler {
             continue
           }
 
-          const { action, path } = record
+          const { action, bin, dev, path } = record
           let { source } = record
 
           if (action === "write") {
@@ -176,6 +177,10 @@ export class Boiler {
             }
 
             await writeFile(path, source)
+
+            if (bin) {
+              await chmod.makeExecutable(path)
+            }
           }
 
           if (action === "merge") {
@@ -189,6 +194,12 @@ export class Boiler {
               spaces: 2,
             })
           }
+
+          if (action === "npmInstall") {
+            await npm.install(destDir, source, {
+              saveDev: dev,
+            })
+          }
         }
       }
 
@@ -198,4 +209,4 @@ export class Boiler {
 }
 
 export default new Boiler()
-export { fs, git, npm, ts }
+export { chmod, fs, git, npm, ts }

@@ -32,7 +32,7 @@ export class InitBoiler {
       }
 
       if (await pathExists(path)) {
-        await this.initProject(destDir, path)
+        await this.initProject(path)
       } else {
         console.error(`⚠️ Path not found: ${path}`)
         process.exit(1)
@@ -84,19 +84,13 @@ export const teardownBoiler: TeardownBoiler = async ({
     )
   }
 
-  async initProject(
-    destDir: string,
-    path: string
-  ): Promise<void> {
+  async initProject(path: string): Promise<void> {
     await installBoiler.run(
       path,
       "git@github.com:boiler-dev/package-json-boiler.git",
       "git@github.com:boiler-dev/ts-boiler.git",
       "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git"
     )
-    await npm.install(destDir, ["boiler-dev"], {
-      saveDev: true,
-    })
   }
 }
 
