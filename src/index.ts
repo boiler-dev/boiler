@@ -26,6 +26,11 @@ export interface BoilerInput {
   setup: boolean
 }
 
+export interface BoilerRecord {
+  answers: Record<string, any>
+  repo: string
+}
+
 export type SetupBoiler = (
   input: BoilerInput
 ) => Promise<void>
@@ -61,19 +66,18 @@ export interface BoilerInstance {
 
 export class Boiler {
   async run(
+    boilerRecord: BoilerRecord,
     boilerName: string,
     destDir: string,
-    existingAnswers: Record<string, any>,
-    repo: string,
     setup?: boolean
   ): Promise<void> {
+    const { answers } = boilerRecord
     const boilerDir = join(destDir, "boiler", boilerName)
     const boilerDistDir = join(
       destDir,
       "dist/boiler",
       boilerName
     )
-
     const boilerJs = join(boilerDir, "boiler.js")
     const boilerTs = join(boilerDir, "boiler.ts")
     const boilerDistJs = join(boilerDistDir, "boiler.js")
@@ -117,8 +121,6 @@ export class Boiler {
         await boiler.setupBoiler({ destDir, files, setup })
       }
 
-      let answers = existingAnswers
-
       if (boiler.promptBoiler) {
         const prompts = await boiler.promptBoiler({
           answers,
@@ -126,7 +128,10 @@ export class Boiler {
           files,
           setup,
         })
-        answers = await inquirer.prompt(prompts)
+        Object.assign(
+          answers,
+          await inquirer.prompt(prompts)
+        )
       }
 
       if (boiler.installBoiler) {
@@ -136,14 +141,6 @@ export class Boiler {
           files,
           setup,
         })
-
-        if (setup) {
-          actions.push({
-            action: "merge",
-            path: join(destDir, ".boiler.json"),
-            source: [{ answers, repo }],
-          })
-        }
 
         for (const record of actions) {
           if (!record) {

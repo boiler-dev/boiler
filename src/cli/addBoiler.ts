@@ -7,9 +7,7 @@ export class AddBoiler {
   async run(
     destDir: string,
     ...repos: string[]
-  ): Promise<boolean> {
-    let setup: boolean
-
+  ): Promise<void> {
     for (const repo of repos) {
       const name = boilerFromArg(repo)
       const boilerDir = join(destDir, "boiler")
@@ -25,9 +23,8 @@ export class AddBoiler {
           boilerDir,
           repo
         )
-        if (code === 0) {
-          setup = true
-        } else {
+
+        if (code !== 0) {
           console.error("⚠️  Git clone failed:\n\n", out)
           process.exit(1)
         }
@@ -36,8 +33,6 @@ export class AddBoiler {
         process.exit(1)
       }
     }
-
-    return setup
   }
 }
 
