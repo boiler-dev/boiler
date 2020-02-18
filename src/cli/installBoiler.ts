@@ -1,7 +1,11 @@
 import { join } from "path"
 import { pathExists, readJson, writeJson } from "fs-extra"
 
-import boiler, { BoilerRecord } from "../"
+import boiler, {
+  BoilerRecord,
+  BoilerInstance,
+  BoilerFile,
+} from "../"
 import boilerFromArg from "../boilerFromArg"
 import addBoiler from "./addBoiler"
 
@@ -18,37 +22,27 @@ export class InstallBoiler {
     }
 
     if (repos.length) {
-      for (const repo of repos) {
-        const boilerMatches = boilers.filter(
-          boiler =>
-            boilerFromArg(boiler.repo) ===
-            boilerFromArg(repo)
+      const boilerNames = repos.map(repo =>
+        boilerFromArg(repo)
+      )
+
+      const boilerMatches = boilers.filter(boiler =>
+        boilerNames.includes(boiler.repo)
+      )
+
+      if (boilerMatches.length) {
+        await this.install(destDir, boilerMatches)
+      } else {
+        await this.install(
+          destDir,
+          repos.map(repo => {
+            return { answers: {}, repo }
+          }),
+          true
         )
-
-        for (const boiler of boilerMatches) {
-          await this.install(destDir, boiler)
-        }
-
-        if (!boilerMatches.length) {
-          const answers = {}
-
-          await addBoiler.run(destDir, repo)
-          await this.install(
-            destDir,
-            {
-              answers,
-              repo,
-            },
-            true
-          )
-
-          boilers.push({ answers, repo })
-        }
       }
     } else {
-      for (const boiler of boilers) {
-        await this.install(destDir, boiler)
-      }
+      await this.install(destDir, boilers)
     }
 
     await writeJson(boilerJson, boilers, { spaces: 2 })
@@ -56,13 +50,72 @@ export class InstallBoiler {
 
   async install(
     destDir: string,
-    boilerRecord: BoilerRecord,
+    boilers: BoilerRecord[],
     setup?: boolean
   ): Promise<void> {
-    const { repo } = boilerRecord
-    const name = boilerFromArg(repo)
+    const boilerInputs: Record<
+      string,
+      {
+        boiler: BoilerInstance
+        boilerName: string
+        files: BoilerFile[]
+      }
+    > = {}
 
-    await boiler.run(boilerRecord, name, destDir, setup)
+    if (setup) {
+      for (const { repo } of boilers) {
+        await addBoiler.run(destDir, repo)
+      }
+    }
+
+    for (const record of boilers) {
+      const { repo } = record
+      const name = boilerFromArg(repo)
+
+      boilerInputs[repo] = await boiler.setup(
+        name,
+        destDir,
+        setup
+      )
+    }
+
+    for (const record of boilers) {
+      const { repo } = record
+      const input = boilerInputs[repo]
+
+      await boiler.prompt(
+        input.boiler,
+        record,
+        input.boilerName,
+        destDir,
+        input.files,
+        setup
+      )
+    }
+
+    for (const record of boilers) {
+      const { repo } = record
+      const input = boilerInputs[repo]
+
+      await boiler.install(
+        input.boiler,
+        record,
+        input.boilerName,
+        destDir,
+        input.files,
+        setup
+      )
+    }
+
+    for (const record of boilers) {
+      boiler.cleanup(record)
+    }
+
+    if (setup) {
+      for (const record of boilers) {
+        boilers.push(record)
+      }
+    }
   }
 }
 
