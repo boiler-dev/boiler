@@ -4,7 +4,6 @@ import { pathExists, ensureDir, writeFile } from "fs-extra"
 import git from "../git"
 import npm from "../npm"
 import installBoiler from "./installBoiler"
-import setupBoiler from "./setupBoiler"
 
 export class InitBoiler {
   async run(
@@ -24,7 +23,6 @@ export class InitBoiler {
         (await pathExists(parentDir))
 
       if (isBoiler) {
-        await setupBoiler.run(destDir)
         await this.initBoiler(path)
         return
       }
