@@ -89,7 +89,8 @@ export const teardownBoiler: TeardownBoiler = async ({
       path,
       "git@github.com:boiler-dev/package-json-boiler.git",
       "git@github.com:boiler-dev/ts-boiler.git",
-      "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git"
+      "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git",
+      "git@github.com:boiler-dev/release-boiler.git"
     )
   }
 }
