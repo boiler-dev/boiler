@@ -1,3 +1,6 @@
+import { join } from "path"
+import { ensureFile, readFile, writeFile } from "fs-extra"
+
 import {
   spawnTerminal,
   SpawnTerminalOutput,
@@ -9,6 +12,27 @@ class Git {
       args: ["add", "."],
       cwd: path,
     })
+  }
+
+  async appendGitignore(
+    destDir: string,
+    line: string
+  ): Promise<void> {
+    const gitignorePath = join(destDir, ".gitignore")
+
+    await ensureFile(gitignorePath)
+    const gitignore = await readFile(gitignorePath)
+
+    if (
+      !gitignore
+        .toString()
+        .match(new RegExp("^" + line, "gm"))
+    ) {
+      await writeFile(
+        gitignorePath,
+        gitignore + line + "\n"
+      )
+    }
   }
 
   async clone(

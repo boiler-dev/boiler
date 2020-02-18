@@ -2,16 +2,18 @@ import addBoiler from "./addBoiler"
 import commitBoiler from "./commitBoiler"
 import initBoiler from "./initBoiler"
 import installBoiler from "./installBoiler"
-import setupBoiler from "./setupBoiler"
 import statusBoiler from "./statusBoiler"
+
+import git from "../git"
+import ts from "../ts"
 
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const destDir = process.cwd()
-    const setupCommands = ["add", "commit", "install"]
+    const setup = ["add", "commit", "install"].includes(cmd)
 
-    if (setupCommands.includes(cmd)) {
-      await setupBoiler.run(destDir)
+    if (setup) {
+      await git.appendGitignore(destDir, "/boiler")
     }
 
     if (cmd === "add") {
@@ -33,6 +35,11 @@ init\t[path]...\tInitialize new projects
 install\trepo|path...\tInstall boilers
 status\t[repo|path]...\tGit status of boilers
 `)
+    }
+
+    if (setup) {
+      await ts.addBoilerTsConfig(destDir)
+      await ts.addTsConfigRef(destDir)
     }
   }
 }

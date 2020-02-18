@@ -9,11 +9,11 @@ import {
   readJson,
   writeJson,
 } from "fs-extra"
-import { transpileModule } from "typescript"
 
 import fs from "./fs"
 import git from "./git"
 import npm from "./npm"
+import ts from "./ts"
 
 export interface BoilerInput {
   answers?: Record<string, any>
@@ -100,7 +100,7 @@ export class Boiler {
       !boilerDistJsExists &&
       boilerTsExists
     ) {
-      await this.transpileBoilerTs(boilerTs, boilerDistJs)
+      await ts.transpile(boilerTs, boilerDistJs)
     }
 
     if (boilerJsExists || boilerTsExists) {
@@ -195,18 +195,7 @@ export class Boiler {
       Object.assign(answers, nullPrompts)
     }
   }
-
-  async transpileBoilerTs(
-    boilerTs: string,
-    boilerDistJs: string
-  ): Promise<void> {
-    const ts = await readFile(boilerTs)
-    const code = transpileModule(ts.toString(), {})
-
-    await ensureFile(boilerDistJs)
-    await writeFile(boilerDistJs, code.outputText)
-  }
 }
 
 export default new Boiler()
-export { fs, git, npm }
+export { fs, git, npm, ts }
