@@ -95,12 +95,18 @@ export class Boiler {
     const [
       boilerJsExists,
       boilerTsExists,
+      boilerDistJsExists,
     ] = await Promise.all([
       pathExists(boilerJs),
       pathExists(boilerTs),
+      pathExists(boilerDistJs),
     ])
 
-    if (!boilerJsExists && boilerTsExists) {
+    if (
+      !boilerJsExists &&
+      !boilerDistJsExists &&
+      boilerTsExists
+    ) {
       await ts.transpile(boilerTs, boilerDistJs)
     }
 
