@@ -6,13 +6,11 @@ Boilerplate framework 🥘
 npm install -g boiler-dev
 ```
 
-# Features
-
 - Standardize & localize boilerplate development
 - Save input prompt data for quick repeat installs
 - Compile Typescript under same watch task as project (using [Project References](typescriptlang.org/docs/handbook/project-references.html))
 
-# Boilerplate install flow
+## Boilerplate install flow
 
 ⓪ `cd` to your project  
 ① `boiler install [git repo]`  
@@ -20,13 +18,13 @@ npm install -g boiler-dev
 ③ Boiler prompts for input and installs boilerplate (using `boiler.ts`)  
 ④ Boiler saves repo and input to `boiler.json`
 
-# Boilerplate update flow
+## Boilerplate update flow
 
 ⓪ `cd` to your project  
 ① `boiler update [boiler/my-boiler]`  
 ② `boiler install [boiler/my-boiler]`
 
-# Create boilerplate flow
+## Create boilerplate flow
 
 ⓪ `cd` to your project  
 ① `boiler init boiler/my-boiler`  
@@ -34,9 +32,9 @@ npm install -g boiler-dev
 ③ `boiler install boiler/my-boiler`  
 ④ `boiler commit boiler/my-boiler "First commit"`
 
-# Start a new project
+## Initialize a TypeScript project
 
-In addition to creating boilerplate projects, the `boiler init` command creates a new TypeScript project:
+When not used within a `boiler/` directory, the `boiler init` command creates a new TypeScript project with great defaults:
 
 ```bash
 mkdir new-project
@@ -45,7 +43,7 @@ cd new-project
 boiler init
 ```
 
-New projects use the following boilerplate:
+New projects include the following boilerplate:
 
 - [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
 - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
