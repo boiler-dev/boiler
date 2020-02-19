@@ -1,6 +1,6 @@
 # boiler
 
-Boilerplate framework 🥘
+Boilerplate framework for the low code revolution 🥘
 
 ```bash
 npm install -g boiler-dev

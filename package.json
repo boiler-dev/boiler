@@ -1,7 +1,7 @@
 {
   "name": "boiler-dev",
   "version": "0.5.0",
-  "description": "Boilerplate framework 🥘",
+  "description": "Boilerplate framework for the low code revolution 🥘",
   "main": "dist/index.js",
   "bin": {
     "boiler": "./bin/boiler"
