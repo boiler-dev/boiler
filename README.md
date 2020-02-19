@@ -12,25 +12,25 @@ npm install -g boiler-dev
 
 ## Boilerplate install flow
 
-➊ — `cd` to your project  
-➋ — `boiler install [git repo]`  
-➌ — Boiler clones repo to `boilers/` and appends to `.gitignore`  
-➍ — Boiler prompts for input and installs boilerplate (using `boiler.ts`)  
-➎ — Boiler saves repo and input to `boiler.json`
+➊ - `cd` to your project  
+➋ - `boiler install [git repo]`  
+➌ - Boiler clones repo to `boilers/` and appends to `.gitignore`  
+➍ - Boiler prompts for input and installs boilerplate (using `boiler.ts`)  
+➎ - Boiler saves repo and input to `boiler.json`
 
 ## Boilerplate update flow
 
-➊ — `cd` to your project  
-➋ — `boiler update [boiler/my-boiler]`  
-➌ — `boiler install [boiler/my-boiler]`
+➊ - `cd` to your project  
+➋ - `boiler update [boiler/my-boiler]`  
+➌ - `boiler install [boiler/my-boiler]`
 
 ## Create boilerplate flow
 
-➊ — `cd` to your project  
-➋ — `boiler init boiler/my-boiler`  
-➌ — Hack on `boiler/my-boiler/boiler.ts`  
-➍ — `boiler install boiler/my-boiler`  
-➎ — `boiler commit boiler/my-boiler "First commit"`
+➊ - `cd` to your project  
+➋ - `boiler init boiler/my-boiler`  
+➌ - Hack on `boiler/my-boiler/boiler.ts`  
+➍ - `boiler install boiler/my-boiler`  
+➎ - `boiler commit boiler/my-boiler "First commit"`
 
 ## Initialize a TypeScript project
 
