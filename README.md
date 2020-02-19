@@ -83,7 +83,7 @@ export const teardownBoiler: TeardownBoiler = async ({
 
 ### Prompts
 
-The `promptBoiler` function returns an array of "prompts" to collect input for.
+The `promptBoiler` function returns an array of "prompts" that define user input to retrieve.
 
 Prompts are just an array of [Inquirer.js Questions](https://github.com/SBoudrias/Inquirer.js/#objects).
 
@@ -103,7 +103,7 @@ actions.push({
 })
 ```
 
-### Write binary
+#### Write binary
 
 ```ts
 actions.push({
@@ -116,7 +116,7 @@ actions.push({
 
 The `bin` option sets `chmod +x` on the file.
 
-### Merge JSON
+#### Merge JSON
 
 ```ts
 actions.push({
@@ -126,7 +126,7 @@ actions.push({
 })
 ```
 
-### Install NPM packages
+#### Install NPM packages
 
 ```ts
 actions.push({
@@ -147,7 +147,7 @@ cd new-project
 boiler init
 ```
 
-This is a shortcut for manually installing the following boilerplate projects:
+This is a shortcut for manually installing these boilerplate projects:
 
 - [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
 - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
