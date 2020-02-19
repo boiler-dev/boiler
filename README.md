@@ -21,6 +21,8 @@ npm install -g boiler-dev
 
 Even though `boilers/` is gitignored, each directory inside is a functioning git repo that you may commit and push to.
 
+The [boiler-dev on GitHub](https://github.com/boiler-dev) has boilerplate repos you can install.
+
 ## Update boilerplate from repo
 
 1. `cd` to your project
