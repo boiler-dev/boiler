@@ -34,7 +34,7 @@ Even though `boilers/` is gitignored, each boilerplate project inside is a funct
 1. `cd` to your project
 2. `boiler init boiler/my-boiler`
 
-## Modify boilerplate
+## Modify and commit boilerplate
 
 1. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boilerts))
 2. `boiler install boiler/my-boiler`
