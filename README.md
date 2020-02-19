@@ -126,6 +126,8 @@ actions.push({
 })
 ```
 
+> ℹ️ This action uses [deepmerge](https://github.com/TehShrike/deepmerge).
+
 #### Install NPM packages
 
 ```ts
