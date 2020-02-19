@@ -9,6 +9,17 @@ export class Npm {
     pkgNames: string[],
     { saveDev }: { saveDev?: boolean } = {}
   ): Promise<SpawnTerminalOutput> {
+    if (!pkgNames.length) {
+      return
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `⚙️ Installing ${
+        saveDev ? "dev" : "prod"
+      } npm modules:\n  ` + pkgNames.sort().join("\n  ")
+    )
+
     const extra = saveDev ? ["--save-dev"] : []
     const response = await spawnTerminal("npm", {
       args: [
@@ -24,7 +35,7 @@ export class Npm {
 
     if (code === 0) {
       // eslint-disable-next-line no-console
-      console.log("✅ Installed npm modules:", pkgNames)
+      console.log("✅ Npm modules installed.")
     } else {
       console.error(
         "🚨 Failed to install npm modules:",

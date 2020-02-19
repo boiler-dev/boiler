@@ -1,4 +1,5 @@
 import { join } from "path"
+import deepmerge from "deepmerge"
 import { pathExists, readJson, writeJson } from "fs-extra"
 
 import boiler, {
@@ -7,6 +8,8 @@ import boiler, {
   BoilerFile,
 } from "../"
 import boilerFromArg from "../boilerFromArg"
+import npm from "../npm"
+
 import addBoiler from "./addBoiler"
 
 export class InstallBoiler {
@@ -33,13 +36,15 @@ export class InstallBoiler {
       if (boilerMatches.length) {
         await this.install(destDir, boilerMatches)
       } else {
-        await this.install(
-          destDir,
-          repos.map(repo => {
-            return { answers: {}, repo }
-          }),
-          true
-        )
+        const fakeBoilers = repos.map(repo => {
+          return { answers: {}, repo }
+        })
+
+        await this.install(destDir, fakeBoilers, true)
+
+        for (const record of fakeBoilers) {
+          boilers.push(record)
+        }
       }
     } else {
       await this.install(destDir, boilers)
@@ -93,11 +98,13 @@ export class InstallBoiler {
       )
     }
 
+    let npmModules = { dev: [], prod: [] }
+
     for (const record of boilers) {
       const { repo } = record
       const input = boilerInputs[repo]
 
-      await boiler.install(
+      const newNpmModules = await boiler.install(
         input.boiler,
         record,
         input.boilerName,
@@ -105,16 +112,18 @@ export class InstallBoiler {
         input.files,
         setup
       )
+
+      npmModules = deepmerge(npmModules, newNpmModules)
     }
+
+    await npm.install(destDir, npmModules.dev, {
+      saveDev: true,
+    })
+
+    await npm.install(destDir, npmModules.prod)
 
     for (const record of boilers) {
       boiler.cleanup(record)
-    }
-
-    if (setup) {
-      for (const record of boilers) {
-        boilers.push(record)
-      }
     }
   }
 }

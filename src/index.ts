@@ -175,8 +175,9 @@ export class Boiler {
     destDir: string,
     files: BoilerFile[],
     setup?: boolean
-  ): Promise<void> {
+  ): Promise<{ dev: string[]; prod: string[] }> {
     const { answers } = boilerRecord
+    const npmModules = { dev: [], prod: [] }
 
     const {
       boilerJsExists,
@@ -211,11 +212,12 @@ export class Boiler {
         }
 
         if (action === "npmInstall") {
-          await npm.install(destDir, source, {
-            saveDev: dev,
-          })
+          const key = dev ? "dev" : "prod"
+          npmModules[key] = npmModules[key].concat(source)
         }
       }
+
+      return npmModules
     }
   }
 
