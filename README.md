@@ -8,7 +8,7 @@ npm install -g boiler-dev
 
 - Boilerplate generators live in their own repos (see an [example boilerplate repo](https://github.com/boiler-dev/package-json-boiler))
 - Each boilerplate repo has a [`boiler.ts` or `boiler.js` file](#boilerts)
-- Hack on installed boilerplate repos from within your project (from a gitignored `boiler/` directory)
+- Hack on a boilerplate repo from any project it is installed on (within a gitignored `boiler/` directory)
 - Save user input to quickly update and reinstall boilerplate (`boiler.json`)
 
 ## Install boilerplate from repo
