@@ -93,7 +93,7 @@ The `installBoiler` function returns an array of "actions" necessary to install 
 
 Actions are merely a convenience; feel free to run your own async code within `installBoiler` and return nothing.
 
-#### Write file action
+#### Write file
 
 ```ts
 actions.push({
@@ -103,7 +103,7 @@ actions.push({
 })
 ```
 
-#### Write binary
+#### Write executable file
 
 ```ts
 actions.push({
@@ -126,7 +126,7 @@ actions.push({
 })
 ```
 
-> ℹ️ This action uses [deepmerge](https://github.com/TehShrike/deepmerge).
+> ℹ️ The merge functionality comes from [deepmerge](https://github.com/TehShrike/deepmerge).
 
 #### Install NPM packages
 
@@ -148,9 +148,9 @@ cd new-project
 boiler init
 ```
 
-This is a shortcut for manually installing these boilerplate projects:
-
-- [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
-- [ts-boiler](https://github.com/boiler-dev/ts-boiler)
-- [eslint-prettier-ts-boiler](https://github.com/boiler-dev/eslint-prettier-ts-boiler)
-- [release-boiler](https://github.com/boiler-dev/release-boiler)
+> ℹ️ This is a shortcut for manually installing these boilerplate projects:
+>
+> - [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
+> - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
+> - [eslint-prettier-ts-boiler](https://github.com/boiler-dev/eslint-prettier-ts-boiler)
+> - [release-boiler](https://github.com/boiler-dev/release-boiler)
