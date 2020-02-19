@@ -15,7 +15,7 @@ npm install -g boiler-dev
 1. `cd` to your project
 2. `boiler install [git repo]`
 3. Boiler clones repo to `boilers/` and appends to `.gitignore`
-4. Boiler prompts for input and installs boilerplate (using `boiler.ts`)
+4. Boiler prompts for input and installs boilerplate (using `boilers/*/boiler.ts`)
 5. Boiler saves repo and input to `boiler.json`
 
 ## Boilerplate update flow
