@@ -18,7 +18,7 @@ npm install -g boiler-dev
 4. Boiler prompts for input and installs boilerplate (using `boilers/*/boiler.ts`)
 5. Boiler saves repo and input to `boiler.json`
 
-## Update installed boilerplate
+## Update boilerplate from repo
 
 1. `cd` to your project
 2. `boiler update [boiler/my-boiler]`
@@ -28,9 +28,12 @@ npm install -g boiler-dev
 
 1. `cd` to your project
 2. `boiler init boiler/my-boiler`
-3. Hack on `boiler/my-boiler/boiler.ts`
-4. `boiler install boiler/my-boiler`
-5. `boiler commit boiler/my-boiler "First commit"`
+
+## Modify boilerplate
+
+1. Hack on `boiler/my-boiler/boiler.ts`
+2. `boiler install boiler/my-boiler`
+3. `boiler commit boiler/my-boiler "First commit"`
 
 ## Initialize a TypeScript project
 
