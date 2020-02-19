@@ -19,7 +19,7 @@ npm install -g boiler-dev
 4. Boiler prompts for input and installs boilerplate (using [`boilers/*/boiler.ts`](#boilerts))
 5. Boiler saves repo and input to `boiler.json`
 
-Even though `boilers/` is gitignored, each boilerplate project inside is a functioning git repo that you may commit and push to.
+Even though `boilers/` is gitignored, each boilerplate project inside is a functioning git repo that you may modify, commit, and push to.
 
 > ℹ️ For boilerplate repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
@@ -114,7 +114,7 @@ actions.push({
 })
 ```
 
-The `bin` option sets `chmod +x` on the file.
+> ℹ️ The `bin` option sets `chmod +x` on the file.
 
 #### Merge JSON
 
@@ -143,7 +143,6 @@ When not used within a `boiler/` directory, the `boiler init` command creates a 
 ```bash
 mkdir new-project
 cd new-project
-
 boiler init
 ```
 
