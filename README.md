@@ -16,7 +16,7 @@ npm install -g boiler-dev
 1. `cd` to your project
 2. `boiler install [git repo]`
 3. Boiler clones repo to `boilers/` and gitignores it
-4. Boiler prompts for input and installs boilerplate (using [`boilers/*/boiler.ts`](#boiler-ts))
+4. Boiler prompts for input and installs boilerplate (using [`boilers/*/boiler.ts`](#boilerts))
 5. Boiler saves repo and input to `boiler.json`
 
 Even though `boilers/` is gitignored, each boilerplate project inside is a functioning git repo that you may commit and push to.
@@ -36,7 +36,7 @@ Even though `boilers/` is gitignored, each boilerplate project inside is a funct
 
 ## Modify boilerplate
 
-1. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boiler-ts))
+1. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boilerts))
 2. `boiler install boiler/my-boiler`
 3. `boiler commit boiler/my-boiler "First commit"`
 
