@@ -62,8 +62,8 @@ export const promptBoiler: PromptBoiler = async ({
   destDir,
   files,
 }) => {
-  const actions = []
-  return actions
+  const prompts = []
+  return prompts
 }
 
 export const installBoiler: InstallBoiler = async ({

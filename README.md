@@ -15,9 +15,11 @@ npm install -g boiler-dev
 
 1. `cd` to your project
 2. `boiler install [git repo]`
-3. Boiler clones repo to `boilers/` and appends to `.gitignore`
-4. Boiler prompts for input and installs boilerplate (using `boilers/*/boiler.ts`)
+3. Boiler clones repo to `boilers/` and gitignores it
+4. Boiler prompts for input and installs boilerplate (using [`boilers/*/boiler.ts`](#boiler-ts))
 5. Boiler saves repo and input to `boiler.json`
+
+Even though `boilers/` is gitignored, each directory inside is a functioning git repo that you may commit and push to.
 
 ## Update boilerplate from repo
 
@@ -32,13 +34,109 @@ npm install -g boiler-dev
 
 ## Modify boilerplate
 
-1. Hack on `boiler/my-boiler/boiler.ts`
+1. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boiler-ts))
 2. `boiler install boiler/my-boiler`
 3. `boiler commit boiler/my-boiler "First commit"`
 
-## Initialize a TypeScript project
+## `boiler.ts`
 
-When not used within a `boiler/` directory, the `boiler init` command creates a new TypeScript project:
+Each boilerplate repo must have a `boiler.ts` or `boiler.js` file:
+
+```ts
+import {
+  SetupBoiler,
+  PromptBoiler,
+  InstallBoiler,
+  TeardownBoiler,
+} from "boiler-dev"
+
+export const setupBoiler: SetupBoiler = async ({
+  destDir,
+  files,
+}) => {}
+
+export const promptBoiler: PromptBoiler = async ({
+  destDir,
+  files,
+}) => {
+  const prompts = []
+  return prompts
+}
+
+export const installBoiler: InstallBoiler = async ({
+  answers,
+  destDir,
+  files,
+}) => {
+  const actions = []
+  return actions
+}
+
+export const teardownBoiler: TeardownBoiler = async ({
+  answers,
+  destDir,
+  files,
+}) => {}
+```
+
+### Prompts
+
+The `promptBoiler` function returns an array of "prompts" to collect input for.
+
+Prompts are just an array of [Inquirer.js Questions](https://github.com/SBoudrias/Inquirer.js/#objects).
+
+### Actions
+
+The `installBoiler` function returns an array of "actions" necessary to install the boilerplate.
+
+Actions are merely a convenience; feel free to run your own async code within `installBoiler` and return nothing.
+
+#### Write file action
+
+```ts
+actions.push({
+  action: "write",
+  path: "hi.txt",
+  source: "hi!",
+})
+```
+
+### Write binary
+
+```ts
+actions.push({
+  action: "write",
+  path: "bin/hi",
+  source: "#!/usr/bin/env node",
+  bin: true,
+})
+```
+
+The `bin` option sets `chmod +x` on the file.
+
+### Merge JSON
+
+```ts
+actions.push({
+  action: "merge",
+  path: "package.json",
+  source: { hi: true },
+})
+```
+
+### Install NPM packages
+
+```ts
+actions.push({
+  action: "npmInstall",
+  source: ["typescript"],
+  dev: true,
+})
+```
+
+## Start a fresh project
+
+When not used within a `boiler/` directory, the `boiler init` command creates a new TypeScript project to kick things off:
 
 ```bash
 mkdir new-project
@@ -47,7 +145,7 @@ cd new-project
 boiler init
 ```
 
-New projects include the following boilerplate:
+This is a shortcut for manually installing the following boilerplate projects:
 
 - [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
 - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
