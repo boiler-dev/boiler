@@ -22,7 +22,7 @@ npm install -g boiler-dev
 
 Even though `boilers/` is gitignored, each boilerplate project inside is a functioning git repo that you may modify, commit, and push to.
 
-> ℹ️ For boilerplate repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
+> ℹ️ For more example boilerplate repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
 ## Update boilerplate from repo
 
