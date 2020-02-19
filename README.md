@@ -6,9 +6,10 @@ Boilerplate framework 🥘
 npm install -g boiler-dev
 ```
 
-- Standardize & localize boilerplate development
+- Easy to hack on, clones boilerplate repos to gitignored `boiler/` directory within your project
+- Shares single build/watch task with project using [TypeScript Project References](https://github.com/boiler-dev/boiler/blob/master/typescriptlang.org/docs/handbook/project-references.html)
+- Doesn't leave a mark on the final code output other than `boiler.json`
 - Save prompt inputs for quick repeat installs
-- Project watch task compiles boilerplate TypeScript (using [Project References](typescriptlang.org/docs/handbook/project-references.html))
 
 ## Install boilerplate from repo
 
