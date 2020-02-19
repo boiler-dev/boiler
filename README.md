@@ -6,8 +6,7 @@ Boilerplate framework 🥘
 npm install -g boiler-dev
 ```
 
-— Standardize & localize boilerplate development
-
+- Standardize & localize boilerplate development
 - Save prompt inputs for quick repeat installs
 - Project watch task compiles boilerplate TypeScript (using [Project References](typescriptlang.org/docs/handbook/project-references.html))
 
