@@ -6,10 +6,11 @@ Boilerplate framework for the low code revolution 🥘
 npm install -g boiler-dev
 ```
 
-- Easy to hack on, clones boilerplate repos to gitignored `boiler/` directory within your project
-- Shares single build/watch task with project using [TypeScript Project References](https://github.com/boiler-dev/boiler/blob/master/typescriptlang.org/docs/handbook/project-references.html)
-- Doesn't leave a mark on final committed project code other than `boiler.json`
-- Saves user inputs for quick updates
+- Boilerplate generators live in their own repos (see an [example boilerplate repo](https://github.com/boiler-dev/package-json-boiler))
+- Each boilerplate repo has a [`boiler.ts` file](#boilerts)
+- Installed boilerplate repos are accessible from within your project (from a gitignored `boiler/` directory)
+- Share a single build/watch task with your project using [TypeScript Project References](https://github.com/boiler-dev/boiler/blob/master/typescriptlang.org/docs/handbook/project-references.html)
+- Saves user input to quickly update and reinstall boilerplate (`boiler.json`)
 
 ## Install boilerplate from repo
 
