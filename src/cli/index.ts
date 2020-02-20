@@ -3,6 +3,7 @@ import commitBoiler from "./commitBoiler"
 import initBoiler from "./initBoiler"
 import installBoiler from "./installBoiler"
 import statusBoiler from "./statusBoiler"
+import updateBoiler from "./updateBoiler"
 
 import git from "../git"
 import ts from "../ts"
@@ -10,16 +11,7 @@ import ts from "../ts"
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const destDir = process.cwd()
-    const setup = [
-      "add",
-      "commit",
-      "init",
-      "install",
-    ].includes(cmd)
-
-    if (setup) {
-      await git.appendGitignore(destDir, "/boiler")
-    }
+    await git.appendGitignore(destDir, "/boiler")
 
     if (cmd === "add") {
       await addBoiler.run(destDir, ...args)
@@ -31,21 +23,22 @@ export class Cli {
       await installBoiler.run(destDir, ...args)
     } else if (cmd === "status") {
       await statusBoiler.run(destDir, ...args)
+    } else if (cmd === "update") {
+      await updateBoiler.run(destDir, ...args)
     } else {
       // eslint-disable-next-line no-console
       console.log(`
-add\trepo|path...\tAdd boilers without install
-commit\t[repo|path]...\tCommit and push boilers
-init\t[path]...\tInitialize new projects
-install\trepo|path...\tInstall boilers
-status\t[repo|path]...\tGit status of boilers
+add\t repo|path...\t Add boilerplate without install
+commit\t [repo|path]...\t Commit and push boilerplate
+init\t [path]...\t Initialize new projects
+install\t repo|path...\t Add and install boilerplate
+status\t [repo|path]...\t Git status of boilerplate
+update\t [repo|path]...\t Git pull boilerplate repos
 `)
     }
 
-    if (setup) {
-      await ts.addBoilerTsConfig(destDir)
-      await ts.addTsConfigRef(destDir)
-    }
+    await ts.addBoilerTsConfig(destDir)
+    await ts.addTsConfigRef(destDir)
   }
 }
 
