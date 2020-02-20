@@ -15,7 +15,7 @@ export class Npm {
 
     // eslint-disable-next-line no-console
     console.log(
-      `⚙️ Installing ${
+      `⚙️  Installing ${
         saveDev ? "dev" : "prod"
       } npm modules:\n  ` + pkgNames.sort().join("\n  ")
     )

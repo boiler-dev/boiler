@@ -55,6 +55,20 @@ class Git {
     })
   }
 
+  async commitHash(path: string): Promise<string> {
+    const { out } = await spawnTerminal("git", {
+      args: [
+        "log",
+        "--pretty=format:'%h'",
+        "--no-color",
+        "-n",
+        "1",
+      ],
+      cwd: path,
+    })
+    return out.match(/[a-z0-9]{7}/)[0]
+  }
+
   async init(path: string): Promise<SpawnTerminalOutput> {
     return await spawnTerminal("git", {
       args: ["init", "."],

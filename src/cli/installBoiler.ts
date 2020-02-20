@@ -8,6 +8,7 @@ import boiler, {
   BoilerFile,
 } from "../"
 import boilerFromArg from "../boilerFromArg"
+import git from "../git"
 import npm from "../npm"
 
 import addBoiler from "./addBoiler"
@@ -41,6 +42,16 @@ export class InstallBoiler {
         })
 
         await this.install(destDir, fakeBoilers, true)
+
+        await Promise.all(
+          boilerNames.map(async (name, i) => {
+            fakeBoilers[i][
+              "version"
+            ] = await git.commitHash(
+              join(destDir, "boiler", name)
+            )
+          })
+        )
 
         for (const record of fakeBoilers) {
           boilers.push(record)
