@@ -9,29 +9,38 @@ export class AddBoiler {
     ...repos: string[]
   ): Promise<void> {
     for (const repo of repos) {
-      const name = boilerFromArg(repo)
-      const boilerDir = join(destDir, "boiler")
+      await this.repo(destDir, repo)
+    }
+  }
 
-      if (await pathExists(join(boilerDir, name))) {
-        continue
-      }
+  async repo(
+    destDir: string,
+    repo: string,
+    sha?: string
+  ): Promise<void> {
+    const name = boilerFromArg(repo)
+    const boilerDir = join(destDir, "boiler")
 
-      if (name && repo.match(/\.git$/)) {
-        await ensureDir(boilerDir)
+    if (await pathExists(join(boilerDir, name))) {
+      return
+    }
 
-        const { code, out } = await git.clone(
-          boilerDir,
-          repo
-        )
+    if (name && repo.match(/\.git$/)) {
+      await ensureDir(boilerDir)
 
-        if (code !== 0) {
-          console.error("⚠️  Git clone failed:\n\n", out)
-          process.exit(1)
-        }
-      } else {
-        console.error(`Can't understand ${repo} 😔`)
+      const { code, out } = await git.clone(boilerDir, repo)
+
+      if (code !== 0) {
+        console.error("⚠️  Git clone failed:\n\n", out)
         process.exit(1)
       }
+    } else {
+      console.error(`Can't understand ${repo} 😔`)
+      process.exit(1)
+    }
+
+    if (sha) {
+      await git.checkout(destDir, sha)
     }
   }
 }

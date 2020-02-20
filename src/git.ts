@@ -35,6 +35,16 @@ class Git {
     }
   }
 
+  async checkout(
+    path: string,
+    sha: string
+  ): Promise<SpawnTerminalOutput> {
+    return await spawnTerminal("git", {
+      args: ["checkout", sha],
+      cwd: path,
+    })
+  }
+
   async clone(
     path: string,
     repo: string
@@ -67,6 +77,13 @@ class Git {
       cwd: path,
     })
     return out.match(/[a-z0-9]{7}/)[0]
+  }
+
+  async fetch(path: string): Promise<SpawnTerminalOutput> {
+    return await spawnTerminal("git", {
+      args: ["fetch"],
+      cwd: path,
+    })
   }
 
   async init(path: string): Promise<SpawnTerminalOutput> {

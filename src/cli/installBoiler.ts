@@ -78,10 +78,8 @@ export class InstallBoiler {
       }
     > = {}
 
-    if (setup) {
-      for (const { repo } of boilers) {
-        await addBoiler.run(destDir, repo)
-      }
+    for (const { repo, version } of boilers) {
+      await addBoiler.repo(destDir, repo, version)
     }
 
     for (const record of boilers) {

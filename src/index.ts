@@ -44,6 +44,7 @@ export interface BoilerPaths {
 export interface BoilerRecord {
   answers: Record<string, any>
   repo: string
+  version?: string
 }
 
 export type SetupBoiler = (
