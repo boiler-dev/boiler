@@ -44,18 +44,15 @@ export class InstallBoiler {
         await this.install(destDir, fakeBoilers, true)
 
         await Promise.all(
-          boilerNames.map(async (name, i) => {
-            fakeBoilers[i][
-              "version"
-            ] = await git.commitHash(
-              join(destDir, "boiler", name)
-            )
+          fakeBoilers.map(async (boiler, i) => {
+            if (boiler.repo.match(/\.git$/)) {
+              const version = await git.commitHash(
+                join(destDir, "boiler", name)
+              )
+              boilers.push({ ...boiler, version })
+            }
           })
         )
-
-        for (const record of fakeBoilers) {
-          boilers.push(record)
-        }
       }
     } else {
       await this.install(destDir, boilers)
