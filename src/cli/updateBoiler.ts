@@ -1,6 +1,6 @@
 import { join } from "path"
 
-import boilerFromArg from "../boilerFromArg"
+import boiler from "../"
 import fs from "../fs"
 import git from "../git"
 
@@ -14,7 +14,7 @@ export class UpdateBoiler {
     }
 
     for (const repo of repos) {
-      const name = boilerFromArg(repo)
+      const name = boiler.boilerName(repo)
       const boilerDir = join(destDir, "boiler", name)
 
       await git.pull(boilerDir)
