@@ -10,7 +10,10 @@ import ts from "../ts"
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const destDir = process.cwd()
-    await git.appendGitignore(destDir, "/boiler")
+
+    if (cmd === "generate") {
+      await git.appendGitignore(destDir, "/boiler")
+    }
 
     if (cmd === "commit") {
       await commitBoiler.run(destDir, ...args)
@@ -25,16 +28,18 @@ export class Cli {
     } else {
       // eslint-disable-next-line no-console
       console.log(`
-commit\t [repo|path]...\t Commit and push boilerplate
-generate\t repo|path...\t Generate boilerplate
-init\t [path]...\t Initialize new project or boiler
-status\t [repo|path]...\t Git status of boilerplate
-update\t [repo|path]...\t Git pull boilerplate repos
+boiler commit    [repo|path]...  Commit and push boilerplate
+boiler generate  repo|path...    Generate boilerplate
+boiler init      [path]...       Initialize new project or boiler
+boiler status    [repo|path]...  Git status of boilerplate
+boiler update    [repo|path]...  Git pull boilerplate repos
 `)
     }
 
-    await ts.addBoilerTsConfig(destDir)
-    await ts.addTsConfigRef(destDir)
+    if (cmd === "generate") {
+      await ts.addBoilerTsConfig(destDir)
+      await ts.addTsConfigRef(destDir)
+    }
   }
 }
 
