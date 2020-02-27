@@ -31,8 +31,16 @@ export class GenerateBoiler {
     rootDirPath: string,
     boilers: BoilerRecord[]
   ): Promise<void> {
-    for (const { repo, version } of boilers) {
+    for (const record of boilers) {
+      const { repo, version } = record
+      const boilerName = boiler.boilerName(repo)
+
       await addBoiler.repo(rootDirPath, repo, version)
+      await boiler.addRecord(
+        rootDirPath,
+        boilerName,
+        record
+      )
     }
 
     for (const record of boilers) {
@@ -44,12 +52,6 @@ export class GenerateBoiler {
       const boilerName = boiler.boilerName(repo)
 
       await boiler.generate(rootDirPath, boilerName)
-
-      await boiler.addRecord(
-        rootDirPath,
-        boilerName,
-        record
-      )
     }
   }
 }
