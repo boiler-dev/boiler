@@ -2,7 +2,7 @@ import { basename, join } from "path"
 import { pathExists, ensureDir, writeFile } from "fs-extra"
 
 import git from "../git"
-import installBoiler from "./installBoiler"
+import generateBoiler from "./generateBoiler"
 
 export class InitBoiler {
   async run(
@@ -84,7 +84,7 @@ export const teardownBoiler: TeardownBoiler = async ({
   }
 
   async initProject(path: string): Promise<void> {
-    await installBoiler.run(
+    await generateBoiler.run(
       path,
       "git@github.com:boiler-dev/package-json-boiler.git",
       "git@github.com:boiler-dev/ts-boiler.git",
