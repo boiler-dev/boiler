@@ -1,5 +1,6 @@
 import addBoiler from "./addBoiler"
 import commitBoiler from "./commitBoiler"
+import generateBoiler from "./generateBoiler"
 import initBoiler from "./initBoiler"
 import installBoiler from "./installBoiler"
 import statusBoiler from "./statusBoiler"
@@ -17,6 +18,8 @@ export class Cli {
       await addBoiler.run(destDir, ...args)
     } else if (cmd === "commit") {
       await commitBoiler.run(destDir, ...args)
+    } else if (cmd === "generate") {
+      await generateBoiler.run(destDir, ...args)
     } else if (cmd === "init") {
       await initBoiler.run(destDir, ...args)
     } else if (cmd === "install") {

@@ -8,7 +8,7 @@ import {
   writeJson,
 } from "fs-extra"
 
-import { BoilerAction } from "."
+import { BoilerAction, BoilerNpmModules } from "."
 import chmod from "./chmod"
 
 export class Actions {
@@ -23,6 +23,23 @@ export class Actions {
     await writeJson(path, deepmerge(json, source), {
       spaces: 2,
     })
+  }
+
+  npmInstall(
+    rootDirPath: string,
+    npmModules: Record<string, BoilerNpmModules>,
+    { dev, source }: BoilerAction
+  ): void {
+    const key = dev ? "dev" : "prod"
+
+    npmModules[rootDirPath] = npmModules[rootDirPath] || {
+      dev: [],
+      prod: [],
+    }
+
+    npmModules[rootDirPath][key] = npmModules[rootDirPath][
+      key
+    ].concat(source)
   }
 
   async write(action: BoilerAction): Promise<void> {

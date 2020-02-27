@@ -34,13 +34,10 @@ export class AddBoiler {
         console.error("⚠️  Git clone failed:\n\n", out)
         process.exit(1)
       }
-    } else {
-      console.error(`Can't understand ${repo} 😔`)
-      process.exit(1)
-    }
 
-    if (sha) {
-      await git.checkout(destDir, sha)
+      if (sha) {
+        await git.checkout(destDir, sha)
+      }
     }
   }
 }

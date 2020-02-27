@@ -1,6 +1,11 @@
 import { basename, join } from "path"
+import {
+  readJson,
+  pathExists,
+  readFile,
+  writeJson,
+} from "fs-extra"
 import inquirer from "inquirer"
-import { pathExists, readFile } from "fs-extra"
 
 import actions from "./actions"
 import chmod from "./chmod"
@@ -8,6 +13,26 @@ import fs from "./fs"
 import git from "./git"
 import npm from "./npm"
 import ts from "./ts"
+
+export interface BoilerRecord {
+  answers: Record<string, any>
+  repo: string
+  version?: string
+}
+
+export interface BoilerPaths {
+  rootDirPath: string
+  distDirPath: string
+
+  boilerJsExists: boolean
+  boilerJsPath: string
+
+  boilerTsExists: boolean
+  boilerTsPath: string
+
+  distJsExists: boolean
+  distJsPath: string
+}
 
 export interface BoilerAction {
   action: string
@@ -25,33 +50,15 @@ export interface BoilerFile {
 
 export interface BoilerInput {
   answers?: Record<string, any>
-  destDir: string
   files: BoilerFile[]
-  setup: boolean
+  rootDirPath: string
 }
 
-export interface BoilerPaths {
-  boilerDir: string
-  boilerDistDir: string
-  boilerDistJs: string
-  boilerDistJsExists: boolean
-  boilerJs: string
-  boilerJsExists: boolean
-  boilerTsExists: boolean
-  boilerTs: string
-}
-
-export interface BoilerRecord {
-  answers: Record<string, any>
-  repo: string
-  version?: string
-}
-
-export type SetupBoiler = (
+export type InstallBoiler = (
   input: BoilerInput
 ) => Promise<void>
 
-export type TeardownBoiler = (
+export type UninstallBoiler = (
   input: BoilerInput
 ) => Promise<void>
 
@@ -67,94 +74,145 @@ export type PromptBoiler = (
   }[]
 >
 
-export type InstallBoiler = (
+export type GenerateBoiler = (
   input: BoilerInput
 ) => Promise<BoilerAction[]>
 
 export interface BoilerInstance {
-  setupBoiler: SetupBoiler
-  teardownBoiler: TeardownBoiler
-  promptBoiler: PromptBoiler
-  installBoiler: InstallBoiler
+  regenerate: boolean
+  install: InstallBoiler
+  prompt: PromptBoiler
+  generate: GenerateBoiler
+  uninstall: UninstallBoiler
+}
+
+export interface BoilerNpmModules {
+  dev: string[]
+  prod: string[]
 }
 
 export class Boiler {
-  async setup(
-    boilerName: string,
-    destDir: string,
-    setup?: boolean
-  ): Promise<{
-    boiler: BoilerInstance
+  files: Record<string, BoilerFile[]> = {}
+  instances: Record<string, BoilerInstance> = {}
+  npmModules: Record<string, BoilerNpmModules> = {}
+  paths: Record<string, BoilerPaths> = {}
+  records: Record<string, BoilerRecord[]> = {}
+
+  async generate(
+    rootDirPath: string,
     boilerName: string
-    files: BoilerFile[]
-  }> {
+  ): Promise<void> {
+    const { answers } = this.records[rootDirPath].find(
+      ({ repo }) => {
+        return this.boilerName(repo) === boilerName
+      }
+    )
+
     const {
-      boilerDir,
-      boilerDistJs,
-      boilerDistJsExists,
-      boilerJs,
       boilerJsExists,
       boilerTsExists,
-      boilerTs,
-    } = await this.paths(destDir, boilerName)
+    } = await this.loadPaths(rootDirPath, boilerName)
+
+    const boiler = await this.loadInstance(
+      rootDirPath,
+      boilerName
+    )
+
+    const files = await this.loadFiles(
+      rootDirPath,
+      boilerName
+    )
 
     if (
-      !boilerJsExists &&
-      !boilerDistJsExists &&
-      boilerTsExists
+      boiler.generate &&
+      (boilerJsExists || boilerTsExists)
     ) {
-      await ts.transpile(boilerTs, boilerDistJs)
+      const boilerActions = await boiler.generate({
+        answers,
+        rootDirPath,
+        files,
+      })
+
+      for (const record of boilerActions) {
+        if (!record) {
+          continue
+        }
+
+        const { action } = record
+
+        if (action === "write") {
+          await actions.write(record)
+        }
+
+        if (action === "merge") {
+          await actions.merge(record)
+        }
+
+        if (action === "npmInstall") {
+          actions.npmInstall(
+            rootDirPath,
+            this.npmModules,
+            record
+          )
+        }
+      }
     }
+  }
 
-    if (boilerJsExists || boilerTsExists) {
-      const boiler = (await import(
-        boilerJsExists ? boilerJs : boilerDistJs
-      )) as BoilerInstance
+  async install(
+    rootDirPath: string,
+    boilerName: string
+  ): Promise<void> {
+    const boiler = await this.loadInstance(
+      rootDirPath,
+      boilerName
+    )
 
-      const files = await Promise.all(
-        (await fs.nestedFiles(boilerDir)).map(
-          async path => {
-            return {
-              name: basename(path),
-              path,
-              source: (await readFile(path)).toString(),
-            }
-          }
-        )
+    if (boiler) {
+      const files = await this.loadFiles(
+        rootDirPath,
+        boilerName
       )
 
-      if (setup && boiler.setupBoiler) {
-        await boiler.setupBoiler({ destDir, files, setup })
+      if (boiler.install) {
+        await boiler.install({
+          rootDirPath,
+          files,
+        })
       }
-
-      return { boiler, boilerName, files }
     }
   }
 
   async prompt(
-    boiler: BoilerInstance,
-    boilerRecord: BoilerRecord,
-    boilerName: string,
-    destDir: string,
-    files: BoilerFile[],
-    setup?: boolean
+    rootDirPath: string,
+    boilerRecord: BoilerRecord
   ): Promise<void> {
-    const { answers } = boilerRecord
+    const { answers, repo } = boilerRecord
+    const boilerName = this.boilerName(repo)
 
     const {
       boilerJsExists,
       boilerTsExists,
-    } = await this.paths(destDir, boilerName)
+    } = await this.loadPaths(rootDirPath, boilerName)
+
+    const boiler = await this.loadInstance(
+      rootDirPath,
+      boilerName
+    )
+
+    const files = await this.loadFiles(
+      rootDirPath,
+      boilerName
+    )
 
     if (
-      boiler.promptBoiler &&
+      boiler.prompt &&
       (boilerJsExists || boilerTsExists)
     ) {
-      let prompts = await boiler.promptBoiler({
+      let prompts = await boiler.prompt({
         answers,
-        destDir,
         files,
-        setup,
+        rootDirPath,
       })
 
       prompts = prompts.filter(
@@ -169,109 +227,215 @@ export class Boiler {
     }
   }
 
-  async install(
-    boiler: BoilerInstance,
-    boilerRecord: BoilerRecord,
-    boilerName: string,
-    destDir: string,
-    files: BoilerFile[],
-    setup?: boolean
-  ): Promise<{ dev: string[]; prod: string[] }> {
-    const { answers } = boilerRecord
-    const npmModules = { dev: [], prod: [] }
+  async load(rootDirPath: string): Promise<BoilerRecord[]> {
+    const jsonPath = join(rootDirPath, ".boiler.json")
+
+    if (await pathExists(jsonPath)) {
+      this.records[rootDirPath] = await readJson(jsonPath)
+      return this.records[rootDirPath]
+    }
+  }
+
+  async loadInstance(
+    rootDirPath: string,
+    boilerName: string
+  ): Promise<BoilerInstance> {
+    if (this.instances[boilerName]) {
+      return this.instances[boilerName]
+    }
 
     const {
+      distJsExists,
+      distJsPath,
       boilerJsExists,
+      boilerJsPath,
       boilerTsExists,
-    } = await this.paths(destDir, boilerName)
+      boilerTsPath,
+    } = await this.loadPaths(rootDirPath, boilerName)
 
     if (
-      boiler.installBoiler &&
-      (boilerJsExists || boilerTsExists)
+      !boilerJsExists &&
+      !distJsExists &&
+      boilerTsExists
     ) {
-      const installActions = await boiler.installBoiler({
-        answers,
-        destDir,
-        files,
-        setup,
-      })
-
-      for (const record of installActions) {
-        if (!record) {
-          continue
-        }
-
-        const { action, dev } = record
-        const { source } = record
-
-        if (action === "write") {
-          await actions.write(record)
-        }
-
-        if (action === "merge") {
-          await actions.merge(record)
-        }
-
-        if (action === "npmInstall") {
-          const key = dev ? "dev" : "prod"
-          npmModules[key] = npmModules[key].concat(source)
-        }
-      }
-
-      return npmModules
-    }
-  }
-
-  cleanup(boilerRecord: BoilerRecord): void {
-    const { answers } = boilerRecord
-    const nullPrompts = {}
-
-    for (const answer in answers) {
-      if (answers[answer] === null) {
-        nullPrompts[prompt.name] = null
-      }
+      await ts.transpile(boilerTsPath, distJsPath)
     }
 
-    Object.assign(answers, nullPrompts)
+    if (boilerJsExists || boilerTsExists) {
+      this.instances[boilerName] = (await import(
+        boilerJsExists ? boilerJsPath : distJsPath
+      )) as BoilerInstance
+    }
+
+    return this.instances[boilerName]
   }
 
-  async paths(
-    destDir: string,
+  async loadFiles(
+    rootDirPath: string,
     boilerName: string
-  ): Promise<BoilerPaths> {
-    const boilerDir = join(destDir, "boiler", boilerName)
-    const boilerDistDir = join(
-      destDir,
-      "dist/boiler",
+  ): Promise<BoilerFile[]> {
+    if (this.files[boilerName]) {
+      return this.files[boilerName]
+    }
+
+    const boilerPath = join(
+      rootDirPath,
+      "boiler",
       boilerName
     )
 
-    const boilerJs = join(boilerDir, "boiler.js")
-    const boilerTs = join(boilerDir, "boiler.ts")
-    const boilerDistJs = join(boilerDistDir, "boiler.js")
+    this.files[boilerName] = await Promise.all(
+      (await fs.nestedFiles(boilerPath)).map(async path => {
+        return {
+          name: basename(path),
+          path,
+          source: (await readFile(path)).toString(),
+        }
+      })
+    )
+
+    return this.files[boilerName]
+  }
+
+  async loadPaths(
+    rootDirPath: string,
+    boilerName: string
+  ): Promise<BoilerPaths> {
+    if (this.paths[boilerName]) {
+      return this.paths[boilerName]
+    }
+
+    const [dirPath, distDirPath] = [
+      join(rootDirPath, "boiler", boilerName),
+      join(rootDirPath, "dist/boiler", boilerName),
+    ]
+
+    const [boilerJsPath, boilerTsPath, distJsPath] = [
+      join(dirPath, "boiler.js"),
+      join(dirPath, "boiler.ts"),
+      join(distDirPath, "boiler.js"),
+    ]
 
     const [
       boilerJsExists,
       boilerTsExists,
-      boilerDistJsExists,
+      distJsExists,
     ] = await Promise.all([
-      pathExists(boilerJs),
-      pathExists(boilerTs),
-      pathExists(boilerDistJs),
+      pathExists(boilerJsPath),
+      pathExists(boilerTsPath),
+      pathExists(distJsPath),
     ])
 
-    return {
-      boilerDir,
-      boilerDistDir,
-      boilerDistJs,
-      boilerDistJsExists,
-      boilerJs,
+    this.paths[boilerName] = {
+      rootDirPath,
+      distDirPath,
+      distJsPath,
+      distJsExists,
+      boilerJsPath,
       boilerJsExists,
       boilerTsExists,
-      boilerTs,
+      boilerTsPath,
     }
+
+    return this.paths[boilerName]
+  }
+
+  async addRecord(
+    rootDirPath: string,
+    boilerName: string,
+    record: BoilerRecord
+  ): Promise<void> {
+    const { version } = record
+
+    if (!version) {
+      const version = await git.commitHash(
+        join(rootDirPath, "boiler", boilerName)
+      )
+
+      this.records[rootDirPath].push({ ...record, version })
+    }
+  }
+
+  boilerName(repo: string): string {
+    const nameMatch = repo.match(/([^\/.]+)\.*[git/]*$/)
+
+    if (!nameMatch) {
+      console.error(
+        "Argument should be a git repository or `boiler/[name]`."
+      )
+      process.exit(1)
+    }
+
+    const [, name] = nameMatch
+
+    return name
+  }
+
+  async argsToRecords(
+    rootDirPath: string,
+    args: string[],
+    regenerate?: boolean
+  ): Promise<BoilerRecord[]> {
+    const repos = this.records[rootDirPath].map(
+      ({ repo }) => repo
+    )
+
+    const boilerNames = repos.map(this.boilerName)
+
+    return Promise.all(
+      args.map(async arg => {
+        let index = repos.indexOf(arg)
+
+        if (index === -1) {
+          index = boilerNames.indexOf(this.boilerName(arg))
+        }
+
+        if (index > -1 && regenerate) {
+          const instance = await this.loadInstance(
+            rootDirPath,
+            arg
+          )
+
+          if (instance && instance.regenerate) {
+            return { answers: {}, repo: repos[index] }
+          } else {
+            return this.records[rootDirPath][index]
+          }
+        } else if (index > -1) {
+          return this.records[rootDirPath][index]
+        } else if (arg.match(/\.git$/)) {
+          return { answers: {}, repo: arg }
+        } else {
+          console.error(`Can't understand ${arg} 😔`)
+          process.exit(1)
+        }
+      })
+    )
+  }
+
+  async npmInstall(rootDirPath: string): Promise<void> {
+    await npm.install(
+      rootDirPath,
+      this.npmModules[rootDirPath].dev,
+      {
+        saveDev: true,
+      }
+    )
+
+    await npm.install(
+      rootDirPath,
+      this.npmModules[rootDirPath].prod
+    )
+  }
+
+  async writeRecords(rootDirPath: string): Promise<void> {
+    const jsonPath = join(rootDirPath, ".boiler.json")
+
+    await writeJson(jsonPath, this.records[rootDirPath], {
+      spaces: 2,
+    })
   }
 }
 
 export default new Boiler()
-export { chmod, fs, git, npm, ts }
+export { actions, chmod, fs, git, npm, ts }
