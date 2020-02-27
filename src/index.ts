@@ -102,11 +102,17 @@ export class Boiler {
     rootDirPath: string,
     boilerName: string
   ): Promise<void> {
-    const { answers } = this.records[rootDirPath].find(
+    let answers = {}
+
+    const record = this.records[rootDirPath].find(
       ({ repo }) => {
         return this.boilerName(repo) === boilerName
       }
     )
+
+    if (record) {
+      answers = record.answers
+    }
 
     const {
       boilerJsExists,
@@ -232,8 +238,11 @@ export class Boiler {
 
     if (await pathExists(jsonPath)) {
       this.records[rootDirPath] = await readJson(jsonPath)
-      return this.records[rootDirPath]
+    } else {
+      this.records[rootDirPath] = []
     }
+
+    return this.records[rootDirPath]
   }
 
   async loadInstance(
@@ -414,18 +423,20 @@ export class Boiler {
   }
 
   async npmInstall(rootDirPath: string): Promise<void> {
-    await npm.install(
-      rootDirPath,
-      this.npmModules[rootDirPath].dev,
-      {
-        saveDev: true,
-      }
-    )
+    if (this.npmModules[rootDirPath]) {
+      await npm.install(
+        rootDirPath,
+        this.npmModules[rootDirPath].dev,
+        {
+          saveDev: true,
+        }
+      )
 
-    await npm.install(
-      rootDirPath,
-      this.npmModules[rootDirPath].prod
-    )
+      await npm.install(
+        rootDirPath,
+        this.npmModules[rootDirPath].prod
+      )
+    }
   }
 
   async writeRecords(rootDirPath: string): Promise<void> {
