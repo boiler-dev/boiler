@@ -1,7 +1,8 @@
 import { join } from "path"
-import boilerFromArg from "../boilerFromArg"
-import git from "../git"
 import { pathExists, ensureDir } from "fs-extra"
+
+import boiler from "../"
+import git from "../git"
 
 export class AddBoiler {
   async run(
@@ -18,7 +19,7 @@ export class AddBoiler {
     repo: string,
     sha?: string
   ): Promise<void> {
-    const name = boilerFromArg(repo)
+    const name = boiler.boilerName(repo)
     const boilerDir = join(destDir, "boiler")
 
     if (await pathExists(join(boilerDir, name))) {

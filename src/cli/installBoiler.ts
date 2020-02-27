@@ -2,8 +2,6 @@ import { join } from "path"
 import { pathExists, readJson } from "fs-extra"
 
 import boiler, { BoilerRecord } from "../"
-import boilerFromArg from "../boilerFromArg"
-
 import addBoiler from "./addBoiler"
 
 export class InstallBoiler {
@@ -46,7 +44,7 @@ export class InstallBoiler {
 
     for (const record of boilers) {
       const { repo } = record
-      const name = boilerFromArg(repo)
+      const name = boiler.boilerName(repo)
 
       await boiler.install(destDir, name)
       await boiler.generate(destDir, name)
