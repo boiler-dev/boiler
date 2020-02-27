@@ -7,19 +7,15 @@ npm install -g boiler-dev
 ```
 
 - Boilerplate generators live in their own repos (see an [example boilerplate repo](https://github.com/boiler-dev/package-json-boiler))
-- Each boilerplate repo has a [`boiler.ts` or `boiler.js` file](#boilerts)
-- Hack on a boilerplate repo from any project it is installed on (within a gitignored `boiler/` directory)
-- Save user input to quickly update and reinstall boilerplate (`boiler.json`)
+- Quickly commit to boilerplate repos from any project it is installed on
+- Save user input to quickly regenerate boilerplate
 
 ## Install boilerplate from repo
 
 1. `cd` to your project
-2. `boiler install [git repo]`
-3. Boiler clones repo to `boilers/` and gitignores it
-4. Boiler prompts for input and installs boilerplate (using [`boilers/*/boiler.ts`](#boilerts))
-5. Boiler saves repo and input to `boiler.json`
+2. `boiler generate [git repo]`
 
-Even though `boilers/` is gitignored, each boilerplate project inside is a functioning git repo that you may modify, commit, and push to.
+Boilerplate repos are cloned to a gitignored `boiler/` directory. Each boilerplate project inside `boiler/` is a functioning git repo that you may commit to.
 
 > ℹ️ For more example boilerplate repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
@@ -27,7 +23,6 @@ Even though `boilers/` is gitignored, each boilerplate project inside is a funct
 
 1. `cd` to your project
 2. `boiler update [boiler/my-boiler]`
-3. `boiler install [boiler/my-boiler]`
 
 ## Create new boilerplate
 
@@ -36,8 +31,8 @@ Even though `boilers/` is gitignored, each boilerplate project inside is a funct
 
 ## Modify and commit boilerplate
 
-1. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boilerts))
-2. `boiler install boiler/my-boiler`
+1. Modify `boiler/my-boiler/boiler.ts` (see [next section](#boilerts))
+2. `boiler generate boiler/my-boiler`
 3. `boiler commit boiler/my-boiler "First commit"`
 
 ## `boiler.ts`
@@ -46,64 +41,54 @@ Each boilerplate repo must have a `boiler.ts` or `boiler.js` file:
 
 ```ts
 import {
-  SetupBoiler,
-  PromptBoiler,
   InstallBoiler,
-  TeardownBoiler,
+  PromptBoiler,
+  GenerateBoiler,
+  UninstallBoiler,
 } from "boiler-dev"
 
-export const setupBoiler: SetupBoiler = async ({
-  destDir,
+export const install: InstallBoiler = async ({
   files,
+  rootDirPath,
 }) => {}
 
-export const promptBoiler: PromptBoiler = async ({
-  destDir,
+export const prompt: PromptBoiler = async ({
   files,
+  rootDirPath,
 }) => {
   const prompts = []
   return prompts
 }
 
-export const installBoiler: InstallBoiler = async ({
+export const generate: GenerateBoiler = async ({
   answers,
-  destDir,
   files,
+  rootDirPath,
 }) => {
   const actions = []
   return actions
 }
 
-export const teardownBoiler: TeardownBoiler = async ({
+export const uninstall: UninstallBoiler = async ({
   answers,
-  destDir,
   files,
+  rootDirPath,
 }) => {}
 ```
 
-### Prompts
+### Prompt
 
-The `promptBoiler` function returns an array of "prompts" that define user input to retrieve.
+The `prompt` function returns an array of "prompts" that define user input to retrieve.
 
 Prompts are just an array of [Inquirer.js Questions](https://github.com/SBoudrias/Inquirer.js/#objects).
 
-### Actions
+### Generate
 
-The `installBoiler` function returns an array of "actions" necessary to install the boilerplate.
+The `generate` function returns an array of "actions" necessary to install the boilerplate.
 
-Actions are merely a convenience; feel free to run your own async code within `installBoiler` and return nothing.
+Actions are a convenience; feel free to run your own async code within `installBoiler` and return nothing.
 
-#### Write file
-
-```ts
-actions.push({
-  action: "write",
-  path: "hi.txt",
-  source: "hi!",
-})
-```
-
-#### Write executable file
+#### Write file action
 
 ```ts
 actions.push({
@@ -114,9 +99,9 @@ actions.push({
 })
 ```
 
-> ℹ️ The `bin` option sets `chmod +x` on the file.
+> ℹ️ The `bin` option runs `chmod +x` on the file.
 
-#### Merge JSON
+#### Merge JSON action
 
 ```ts
 actions.push({
@@ -128,7 +113,7 @@ actions.push({
 
 > ℹ️ The merge functionality comes from [deepmerge](https://github.com/TehShrike/deepmerge).
 
-#### Install NPM packages
+#### NPM install action
 
 ```ts
 actions.push({
@@ -154,3 +139,5 @@ boiler init
 > - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
 > - [eslint-prettier-ts-boiler](https://github.com/boiler-dev/eslint-prettier-ts-boiler)
 > - [release-boiler](https://github.com/boiler-dev/release-boiler)
+> - [mocha-boiler](https://github.com/boiler-dev/mocha-boiler)
+> - [vscode-watch-boiler](https://github.com/boiler-dev/vscode-watch-boiler)
