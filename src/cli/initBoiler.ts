@@ -2,7 +2,6 @@ import { basename, join } from "path"
 import { pathExists, ensureDir, writeFile } from "fs-extra"
 
 import git from "../git"
-import npm from "../npm"
 import installBoiler from "./installBoiler"
 
 export class InitBoiler {
