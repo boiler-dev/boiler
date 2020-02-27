@@ -46,38 +46,38 @@ export class InitBoiler {
       join(path, "boiler.ts"),
       `
 import {
-  SetupBoiler,
-  PromptBoiler,
   InstallBoiler,
-  TeardownBoiler,
+  PromptBoiler,
+  GenerateBoiler,
+  UninstallBoiler,
 } from "boiler-dev"
 
-export const setupBoiler: SetupBoiler = async ({
-  destDir,
+export const install: InstallBoiler = async ({
   files,
+  rootDirPath,
 }) => {}
 
-export const promptBoiler: PromptBoiler = async ({
-  destDir,
+export const prompt: PromptBoiler = async ({
   files,
+  rootDirPath,
 }) => {
   const prompts = []
   return prompts
 }
 
-export const installBoiler: InstallBoiler = async ({
+export const generate: GenerateBoiler = async ({
   answers,
-  destDir,
   files,
+  rootDirPath,
 }) => {
   const actions = []
   return actions
 }
 
-export const teardownBoiler: TeardownBoiler = async ({
+export const uninstall: UninstallBoiler = async ({
   answers,
-  destDir,
   files,
+  rootDirPath,
 }) => {}
 `
     )
