@@ -1,4 +1,5 @@
 import { basename, join } from "path"
+import inquirer from "inquirer"
 import { pathExists, ensureDir, writeFile } from "fs-extra"
 
 import git from "../git"
@@ -42,10 +43,18 @@ export class InitBoiler {
   async initBoiler(path: string): Promise<void> {
     await ensureDir(path)
     await git.init(path)
+
+    const { repo } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "repo",
+        message: "git repository url",
+      },
+    ])
+
     await writeFile(
       join(path, "boiler.ts"),
-      `
-import {
+      `import {
   InstallBoiler,
   PromptBoiler,
   GenerateBoiler,
@@ -81,6 +90,10 @@ export const uninstall: UninstallBoiler = async ({
 }) => {}
 `
     )
+
+    await git.remote(path, repo)
+    await git.add(path)
+    await git.commit(path, "First commit")
   }
 
   async initProject(path: string): Promise<void> {

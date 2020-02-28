@@ -393,6 +393,12 @@ export class Boiler {
 
     return Promise.all(
       args.map(async arg => {
+        const boilerDir = join(
+          rootDirPath,
+          "boiler",
+          this.boilerName(arg)
+        )
+
         let index = repos.indexOf(arg)
 
         if (index === -1) {
@@ -414,6 +420,16 @@ export class Boiler {
           return this.records[rootDirPath][index]
         } else if (arg.match(/\.git$/)) {
           return { answers: {}, repo: arg }
+        } else if (await pathExists(boilerDir)) {
+          const { out } = await git.remote(
+            join(
+              rootDirPath,
+              "boiler",
+              this.boilerName(arg)
+            )
+          )
+
+          return { answers: {}, repo: out.trim() }
         } else {
           console.error(`Can't understand ${arg} 😔`)
           process.exit(1)

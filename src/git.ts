@@ -107,6 +107,23 @@ class Git {
     })
   }
 
+  async remote(
+    path: string,
+    repo?: string
+  ): Promise<SpawnTerminalOutput> {
+    if (repo) {
+      return await spawnTerminal("git", {
+        args: ["remote", "add", "origin", repo],
+        cwd: path,
+      })
+    } else {
+      return await spawnTerminal("git", {
+        args: ["config", "--get", "remote.origin.url"],
+        cwd: path,
+      })
+    }
+  }
+
   async status(path: string): Promise<SpawnTerminalOutput> {
     return await spawnTerminal("git", {
       args: ["status", "-s"],
