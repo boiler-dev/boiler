@@ -7,15 +7,15 @@ import generateBoiler from "./generateBoiler"
 
 export class InitBoiler {
   async run(
-    destDir: string,
+    rootDirPath: string,
     ...paths: string[]
   ): Promise<void> {
     if (!paths.length) {
-      paths = [destDir]
+      paths = [rootDirPath]
     }
 
     for (const relPath of paths) {
-      let path = join(destDir, relPath)
+      let path = join(rootDirPath, relPath)
       const parentDir = join(path, "../")
 
       const isBoiler =
