@@ -1,5 +1,6 @@
 import { basename, join } from "path"
 import {
+  ensureDir,
   readJson,
   pathExists,
   readFile,
@@ -167,8 +168,36 @@ export class Boiler {
 
   async install(
     rootDirPath: string,
-    boilerName: string
+    repo: string,
+    sha?: string
   ): Promise<void> {
+    const boilerName = this.boilerName(repo)
+    const boilerDirPath = join(rootDirPath, "boiler")
+
+    if (
+      !boilerName ||
+      !repo.match(/\.git$/) ||
+      (await pathExists(join(boilerDirPath, boilerName)))
+    ) {
+      return
+    }
+
+    await ensureDir(boilerDirPath)
+
+    const { code, out } = await git.clone(
+      boilerDirPath,
+      repo
+    )
+
+    if (code !== 0) {
+      console.error("⚠️  Git clone failed:\n\n", out)
+      process.exit(1)
+    }
+
+    if (sha) {
+      await git.checkout(rootDirPath, sha)
+    }
+
     const boiler = await this.loadInstance(
       rootDirPath,
       boilerName
@@ -349,20 +378,49 @@ export class Boiler {
     return this.paths[boilerName]
   }
 
-  async addRecord(
+  async findRecords(
     rootDirPath: string,
-    boilerName: string,
-    record: BoilerRecord
-  ): Promise<void> {
-    const { version } = record
+    ...args: string[]
+  ): Promise<BoilerRecord[]> {
+    const repos = this.records[rootDirPath].map(
+      ({ repo }) => repo
+    )
 
-    if (!version) {
-      const version = await git.commitHash(
-        join(rootDirPath, "boiler", boilerName)
-      )
+    const boilerNames = repos.map(this.boilerName)
 
-      this.records[rootDirPath].push({ ...record, version })
-    }
+    return Promise.all(
+      args.map(async arg => {
+        let index = repos.indexOf(arg)
+        let boilerDirPath: string
+
+        if (index < 0) {
+          index = boilerNames.indexOf(this.boilerName(arg))
+        }
+
+        if (index > -1) {
+          boilerDirPath = join(
+            rootDirPath,
+            "boiler",
+            boilerNames[index]
+          )
+        }
+
+        if (index > -1) {
+          return this.records[rootDirPath][index]
+        } else if (arg.match(/\.git$/)) {
+          return { answers: {}, repo: arg }
+        } else if (
+          boilerDirPath &&
+          (await pathExists(boilerDirPath))
+        ) {
+          const { out } = await git.remote(boilerDirPath)
+          return { answers: {}, repo: out.trim() }
+        } else {
+          console.error(`Can't understand ${arg} 😔`)
+          process.exit(1)
+        }
+      })
+    )
   }
 
   boilerName(repo: string): string {
@@ -380,64 +438,6 @@ export class Boiler {
     return name
   }
 
-  async argsToRecords(
-    rootDirPath: string,
-    args: string[],
-    regenerate?: boolean
-  ): Promise<BoilerRecord[]> {
-    const repos = this.records[rootDirPath].map(
-      ({ repo }) => repo
-    )
-
-    const boilerNames = repos.map(this.boilerName)
-
-    return Promise.all(
-      args.map(async arg => {
-        const boilerDir = join(
-          rootDirPath,
-          "boiler",
-          this.boilerName(arg)
-        )
-
-        let index = repos.indexOf(arg)
-
-        if (index === -1) {
-          index = boilerNames.indexOf(this.boilerName(arg))
-        }
-
-        if (index > -1 && regenerate) {
-          const instance = await this.loadInstance(
-            rootDirPath,
-            arg
-          )
-
-          if (instance && instance.regenerate) {
-            return { answers: {}, repo: repos[index] }
-          } else {
-            return this.records[rootDirPath][index]
-          }
-        } else if (index > -1) {
-          return this.records[rootDirPath][index]
-        } else if (arg.match(/\.git$/)) {
-          return { answers: {}, repo: arg }
-        } else if (await pathExists(boilerDir)) {
-          const { out } = await git.remote(
-            join(
-              rootDirPath,
-              "boiler",
-              this.boilerName(arg)
-            )
-          )
-
-          return { answers: {}, repo: out.trim() }
-        } else {
-          console.error(`Can't understand ${arg} 😔`)
-          process.exit(1)
-        }
-      })
-    )
-  }
-
   async npmInstall(rootDirPath: string): Promise<void> {
     if (this.npmModules[rootDirPath]) {
       await npm.install(
@@ -452,6 +452,21 @@ export class Boiler {
         rootDirPath,
         this.npmModules[rootDirPath].prod
       )
+    }
+  }
+
+  async updateVersion(
+    rootDirPath: string,
+    boilerName: string
+  ): Promise<void> {
+    for (const record of this.records[rootDirPath]) {
+      const { repo } = record
+
+      if (this.boilerName(repo) === boilerName) {
+        record.version = await git.commitHash(
+          join(rootDirPath, "boiler", boilerName)
+        )
+      }
     }
   }
 

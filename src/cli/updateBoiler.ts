@@ -6,18 +6,23 @@ import git from "../git"
 
 export class UpdateBoiler {
   async run(
-    destDir: string,
+    rootDirPath: string,
     ...repos: string[]
   ): Promise<void> {
     if (!repos.length) {
-      ;[repos] = await fs.ls(join(destDir, "boiler"))
+      ;[repos] = await fs.ls(join(rootDirPath, "boiler"))
     }
 
     for (const repo of repos) {
-      const name = boiler.boilerName(repo)
-      const boilerDir = join(destDir, "boiler", name)
+      const boilerName = boiler.boilerName(repo)
+      const boilerDir = join(
+        rootDirPath,
+        "boiler",
+        boilerName
+      )
 
       await git.pull(boilerDir)
+      await boiler.updateVersion(rootDirPath, boilerName)
     }
   }
 }

@@ -1,6 +1,7 @@
-import boiler, { BoilerRecord } from "../"
+import { join } from "path"
 
-import addBoiler from "./addBoiler"
+import boiler, { BoilerRecord } from "../"
+import git from "../git"
 
 export class GenerateBoiler {
   async run(
@@ -10,14 +11,34 @@ export class GenerateBoiler {
     const boilers = await boiler.load(rootDirPath)
 
     if (args.length) {
-      const boilerMatches = await boiler.argsToRecords(
+      const records = await boiler.findRecords(
         rootDirPath,
-        args,
-        true
+        ...args
+      )
+      const newRecords = []
+
+      await Promise.all(
+        records.map(async record => {
+          const { repo, version } = record
+
+          if (version) {
+            const instance = await boiler.loadInstance(
+              rootDirPath,
+              boiler.boilerName(repo)
+            )
+
+            if (instance && instance.regenerate) {
+              newRecords.push({ answers: {}, repo })
+            }
+          }
+        })
       )
 
-      if (boilerMatches.length) {
-        await this.generate(rootDirPath, boilerMatches)
+      if (records.length) {
+        await this.generate(
+          rootDirPath,
+          records.concat(newRecords)
+        )
       }
     } else {
       await this.generate(rootDirPath, boilers)
@@ -35,12 +56,12 @@ export class GenerateBoiler {
       const { repo, version } = record
       const boilerName = boiler.boilerName(repo)
 
-      await addBoiler.repo(rootDirPath, repo, version)
-      await boiler.addRecord(
-        rootDirPath,
-        boilerName,
-        record
-      )
+      await boiler.install(rootDirPath, repo, version)
+
+      if (!version) {
+        await boiler.updateVersion(rootDirPath, boilerName)
+        boiler.records[rootDirPath].push(record)
+      }
     }
 
     for (const record of boilers) {
