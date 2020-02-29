@@ -22,13 +22,14 @@ Boilerplate repos are cloned to a gitignored `boiler/` directory. Each boilerpla
 ## Update boilerplate from repo
 
 1. `cd` to your project
-2. `boiler update [boiler/my-boiler]`
+2. `boiler install [boiler/my-boiler]`
+3. `boiler generate [boiler/my-boiler]`
 
 ## Create new boilerplate
 
 1. `cd` to your project
 2. `boiler init boiler/my-boiler`
-3. Modify `boiler/my-boiler/boiler.ts` (see [next section](#boilerts) for details)
+3. Add code to `boiler/my-boiler/boiler.ts` (see [next section](#boilerts) for details)
 4. `boiler generate boiler/my-boiler`
 5. `boiler commit boiler/my-boiler "First commit"`
 
