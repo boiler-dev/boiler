@@ -33,7 +33,9 @@ export class Fs {
           await stat(join(path, name))
         ).isDirectory()
 
-        if (isDir) {
+        if (name[0] === ".") {
+          // do nothing
+        } else if (isDir) {
           dirs.push(name)
         } else {
           files.push(name)
