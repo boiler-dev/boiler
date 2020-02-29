@@ -178,6 +178,9 @@ export class Boiler {
     }
 
     boilerRecords.append(cwdPath, ...newRecords)
+
+    await this.npmInstall(cwdPath)
+    await boilerRecords.save(cwdPath)
   }
 
   async prompt(
