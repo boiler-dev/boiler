@@ -24,12 +24,12 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const message = args.pop()
-    const [records] = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const [
+      records,
+      newRecords,
+    ] = await boilerRecords.findUnique(cwdPath, ...args)
 
-    for (const { paths } of records) {
+    for (const { paths } of records.concat(newRecords)) {
       const { boilerDirPath } = paths
       const isRepo = await pathExists(
         join(boilerDirPath, ".git")
