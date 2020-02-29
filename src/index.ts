@@ -7,10 +7,9 @@ import boilerRecords from "./boilerRecords"
 import chmod from "./chmod"
 import fs from "./fs"
 import git from "./git"
+import { initBoilerTs, initRepos } from "./init"
 import npm from "./npm"
 import ts from "./ts"
-
-import { initBoilerTs, initRepos } from "./init"
 
 export interface BoilerNpmModules {
   dev: string[]
