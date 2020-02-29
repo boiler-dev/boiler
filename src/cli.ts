@@ -1,10 +1,13 @@
 import boiler from "./"
 import git from "./git"
 import ts from "./ts"
+import boilerRecords from "./boilerRecords"
 
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const cwdPath = process.cwd()
+
+    await boilerRecords.load(cwdPath)
 
     if (cmd === "generate") {
       await git.appendGitignore(cwdPath, "/boiler")
