@@ -128,6 +128,10 @@ export class BoilerRecords {
 
     this.records[cwdPath] = this.records[cwdPath] || []
 
+    if (!args.length) {
+      records = this.records[cwdPath]
+    }
+
     for (const arg of args) {
       const name = this.extractName(arg)
 
