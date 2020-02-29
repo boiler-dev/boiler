@@ -1,6 +1,6 @@
 {
   "name": "boiler-dev",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Boilerplate framework for the low code revolution 🥘",
   "main": "dist/index.js",
   "bin": {
