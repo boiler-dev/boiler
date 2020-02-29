@@ -19,7 +19,7 @@ export interface BoilerPathRecord {
 }
 
 export class BoilerPaths {
-  records: Record<string, BoilerPathRecord>
+  records: Record<string, BoilerPathRecord> = {}
 
   async load(
     cwdPath: string,

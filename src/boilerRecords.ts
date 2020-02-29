@@ -1,6 +1,8 @@
 import { join } from "path"
 import { pathExists, readJson, writeJson } from "fs-extra"
 
+import boilerAnswers from "./boilerAnswers"
+
 import boilerFiles, {
   BoilerFileRecord,
 } from "./boilerFiles"
@@ -12,6 +14,7 @@ import boilerPaths, {
 import boilerInstances, {
   BoilerInstance,
 } from "./boilerInstances"
+
 import git from "./git"
 
 export interface BoilerRecord {
@@ -34,7 +37,7 @@ export class BoilerRecords {
     if (await pathExists(jsonPath)) {
       const records = await readJson(jsonPath)
 
-      this.fillBasic(...records)
+      this.fillBasic(cwdPath, ...records)
       this.append(cwdPath, ...records)
     }
 
@@ -55,7 +58,7 @@ export class BoilerRecords {
     cwdPath: string,
     ...records: BoilerRecord[]
   ): Promise<BoilerRecord[]> {
-    this.fillBasic(...records)
+    this.fillBasic(cwdPath, ...records)
 
     return await Promise.all(
       records.map(async record => {
@@ -69,7 +72,7 @@ export class BoilerRecords {
         }
 
         if (!record.paths.boilerDirExists) {
-          return
+          return record
         }
 
         if (!files) {
@@ -97,12 +100,15 @@ export class BoilerRecords {
     )
   }
 
-  fillBasic(...records: BoilerRecord[]): BoilerRecord[] {
+  fillBasic(
+    cwdPath: string,
+    ...records: BoilerRecord[]
+  ): BoilerRecord[] {
     return records.map(record => {
       const { answers, name, repo } = record
 
       if (!answers) {
-        record.answers = {}
+        record.answers = boilerAnswers.load(cwdPath, name)
       }
 
       if (!name) {
@@ -118,6 +124,9 @@ export class BoilerRecords {
     ...args: string[]
   ): Promise<[BoilerRecord[], BoilerRecord[]]> {
     let records = []
+    let newRecords = []
+
+    this.records[cwdPath] = this.records[cwdPath] || []
 
     for (const arg of args) {
       const name = this.extractName(arg)
@@ -129,9 +138,23 @@ export class BoilerRecords {
       )
     }
 
-    const newRecords = this.records[cwdPath].filter(
-      record => !records[cwdPath].includes(record)
-    )
+    const names = records.map(({ name }) => name)
+
+    for (const arg of args) {
+      const name = this.extractName(arg)
+
+      if (names.includes(name)) {
+        continue
+      }
+
+      let repo: string
+
+      if (arg.match(/\.git$/)) {
+        repo = arg
+      }
+
+      newRecords = newRecords.concat({ name, repo })
+    }
 
     return [
       await this.fill(cwdPath, ...records),

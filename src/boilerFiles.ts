@@ -10,7 +10,7 @@ export interface BoilerFileRecord {
 }
 
 export class BoilerFiles {
-  records: Record<string, BoilerFileRecord[]>
+  records: Record<string, BoilerFileRecord[]> = {}
 
   async load(
     cwdPath: string,

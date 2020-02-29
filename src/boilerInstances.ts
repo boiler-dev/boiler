@@ -46,7 +46,7 @@ export interface BoilerInstance {
 }
 
 export class BoilerInstances {
-  records: Record<string, BoilerInstance>
+  records: Record<string, BoilerInstance> = {}
 
   async load(
     cwdPath: string,

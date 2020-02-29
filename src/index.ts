@@ -120,29 +120,21 @@ export class Boiler {
     }
 
     boilerRecords.reset(cwdPath, ...allRecords)
-    await boilerRecords.fill(cwdPath, ...allRecords)
   }
 
   async generate(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
+    await this.install(cwdPath, ...args)
+    await this.prompt(cwdPath, ...args)
+
     const [records, newRecords] = await boilerRecords.find(
       cwdPath,
       ...args
     )
 
     const allRecords = records.concat(newRecords)
-
-    await this.install(
-      cwdPath,
-      ...newRecords.map(({ name }) => name)
-    )
-
-    await this.prompt(
-      cwdPath,
-      ...allRecords.map(({ name }) => name)
-    )
 
     for (const record of allRecords) {
       const { instance } = record
@@ -269,4 +261,4 @@ export class Boiler {
 }
 
 export default new Boiler()
-export { actions, chmod, fs, git, npm, ts }
+export { actions, boilerRecords, chmod, fs, git, npm, ts }
