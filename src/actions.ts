@@ -8,7 +8,8 @@ import {
   writeJson,
 } from "fs-extra"
 
-import { BoilerAction, BoilerNpmModules } from "."
+import { BoilerNpmModules } from "."
+import { BoilerAction } from "./boilerInstances"
 import chmod from "./chmod"
 
 export class Actions {
