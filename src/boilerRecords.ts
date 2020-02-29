@@ -197,7 +197,15 @@ export class BoilerRecords {
   async save(cwdPath: string): Promise<void> {
     const jsonPath = join(cwdPath, ".boiler.json")
 
-    await writeJson(jsonPath, this.records[cwdPath], {
+    const records = this.records[cwdPath].map(
+      ({ answers, repo, version }) => ({
+        answers,
+        repo,
+        version,
+      })
+    )
+
+    await writeJson(jsonPath, records, {
       spaces: 2,
     })
   }
