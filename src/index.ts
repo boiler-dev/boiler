@@ -3,6 +3,7 @@ import { ensureDir, pathExists, writeFile } from "fs-extra"
 import inquirer from "inquirer"
 
 import actions from "./actions"
+import boilerPackages from "./boilerPackages"
 import boilerRecords from "./boilerRecords"
 import chmod from "./chmod"
 import fs from "./fs"
@@ -11,14 +12,7 @@ import { initBoilerTs, initRepos } from "./init"
 import npm from "./npm"
 import ts from "./ts"
 
-export interface BoilerNpmModules {
-  dev: string[]
-  prod: string[]
-}
-
 export class Boiler {
-  npmModules: Record<string, BoilerNpmModules> = {}
-
   async commit(
     cwdPath: string,
     ...args: string[]
@@ -168,18 +162,14 @@ export class Boiler {
         }
 
         if (action === "npmInstall") {
-          actions.npmInstall(
-            cwdPath,
-            this.npmModules,
-            record
-          )
+          actions.npmInstall(cwdPath, record)
         }
       }
     }
 
     boilerRecords.append(cwdPath, ...newRecords)
 
-    await this.npmInstall(cwdPath)
+    await boilerPackages.install(cwdPath)
     await boilerRecords.save(cwdPath)
   }
 
@@ -242,23 +232,6 @@ export class Boiler {
 
     if (dirty) {
       process.exit(1)
-    }
-  }
-
-  async npmInstall(cwdPath: string): Promise<void> {
-    if (this.npmModules[cwdPath]) {
-      await npm.install(
-        cwdPath,
-        this.npmModules[cwdPath].dev,
-        {
-          saveDev: true,
-        }
-      )
-
-      await npm.install(
-        cwdPath,
-        this.npmModules[cwdPath].prod
-      )
     }
   }
 }

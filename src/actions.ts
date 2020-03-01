@@ -8,9 +8,9 @@ import {
   writeJson,
 } from "fs-extra"
 
-import { BoilerNpmModules } from "."
 import { BoilerAction } from "./boilerInstances"
 import chmod from "./chmod"
+import boilerPackages from "./boilerPackages"
 
 export class Actions {
   async merge(action: BoilerAction): Promise<void> {
@@ -27,20 +27,13 @@ export class Actions {
   }
 
   npmInstall(
-    rootDirPath: string,
-    npmModules: Record<string, BoilerNpmModules>,
+    cwdPath: string,
     { dev, source }: BoilerAction
   ): void {
     const key = dev ? "dev" : "prod"
+    const packages = boilerPackages.load(cwdPath)
 
-    npmModules[rootDirPath] = npmModules[rootDirPath] || {
-      dev: [],
-      prod: [],
-    }
-
-    npmModules[rootDirPath][key] = npmModules[rootDirPath][
-      key
-    ].concat(source)
+    packages[key] = packages[key].concat(source)
   }
 
   async write(action: BoilerAction): Promise<void> {
