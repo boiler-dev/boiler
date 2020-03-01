@@ -38,7 +38,6 @@ export type GenerateBoiler = (
 ) => Promise<BoilerAction[]>
 
 export interface BoilerInstance {
-  regenerate: boolean
   install: InstallBoiler
   prompt: PromptBoiler
   generate: GenerateBoiler

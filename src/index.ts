@@ -243,6 +243,14 @@ export class Boiler {
 }
 
 export default new Boiler()
+
+export {
+  InstallBoiler,
+  PromptBoiler,
+  GenerateBoiler,
+  UninstallBoiler,
+} from "./boilerInstances"
+
 export {
   actions,
   boilerRecords,
