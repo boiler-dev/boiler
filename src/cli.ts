@@ -9,28 +9,39 @@ export class Cli {
 
     await boilerRecords.load(cwdPath)
 
-    if (cmd === "generate") {
+    if (cmd) {
+      cmd = cmd[0]
+    }
+
+    if (cmd === "g") {
       await git.appendGitignore(cwdPath, "/boiler")
     }
 
-    if (cmd === "commit") {
+    if (cmd === "c") {
       await boiler.commit(cwdPath, ...args)
-    } else if (cmd === "generate") {
+    } else if (cmd === "g") {
       await boiler.generate(cwdPath, ...args)
-    } else if (cmd === "init") {
-      await boiler.init(cwdPath, ...args)
-    } else if (cmd === "install") {
+    } else if (cmd === "n") {
+      await boiler.new(cwdPath, ...args)
+    } else if (cmd === "i") {
       await boiler.install(cwdPath, ...args)
-    } else if (cmd === "status") {
+    } else if (cmd === "s") {
       await boiler.status(cwdPath, ...args)
     } else {
       // eslint-disable-next-line no-console
       console.log(`
+boiler new       [path]...       New TypeScript or boilerplate project
+boiler install   [repo|path]...  Install or update boilerplate
+boiler generate  [repo|path]...  Generate from boilerplate
 boiler commit    [repo|path]...  Commit and push boilerplate
-boiler generate  repo|path...    Generate boilerplate
-boiler init      [path]...       Initialize new project or boiler
-boiler install   [repo|path]...  Install or update boilerplate repos
-boiler status    [repo|path]...  Git status of boilerplate
+boiler status    [repo|path]...  Status of boilerplate
+
+Quickstart (new project, new boilerplate):
+
+  boiler new my-project
+  cd my project
+  boiler new boiler/my-boiler
+  boiler generate boiler/my-boiler
 `)
     }
 

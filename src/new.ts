@@ -1,4 +1,4 @@
-export const initBoilerTs = `import {
+export const newBoilerTs = `import {
   InstallBoiler,
   PromptBoiler,
   GenerateBoiler,
@@ -34,7 +34,7 @@ export const uninstall: UninstallBoiler = async ({
 }) => {}
 `
 
-export const initRepos = [
+export const newProjectRepos = [
   "git@github.com:boiler-dev/package-json-boiler.git",
   "git@github.com:boiler-dev/ts-boiler.git",
   "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git",

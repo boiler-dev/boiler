@@ -8,7 +8,7 @@ import boilerRecords from "./boilerRecords"
 import chmod from "./chmod"
 import fs from "./fs"
 import git from "./git"
-import { initBoilerTs, initRepos } from "./init"
+import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
 import ts from "./ts"
 
@@ -40,7 +40,7 @@ export class Boiler {
     }
   }
 
-  async init(
+  async new(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
@@ -66,13 +66,13 @@ export class Boiler {
 
         await writeFile(
           join(path, "boiler.ts"),
-          initBoilerTs
+          newBoilerTs
         )
 
         await git.remote(path, repo)
         await this.commit(cwdPath, arg, "First commit")
       } else {
-        await this.generate(path, ...initRepos)
+        await this.generate(path, ...newProjectRepos)
       }
     }
   }
@@ -91,27 +91,29 @@ export class Boiler {
     const boilerDirPath = join(cwdPath, "boiler")
     await ensureDir(boilerDirPath)
 
-    for (const record of allRecords) {
-      const { paths, repo, version } = record
+    await Promise.all(
+      allRecords.map(async record => {
+        const { paths, repo, version } = record
 
-      if (await pathExists(paths.boilerDirPath)) {
-        await git.pull(paths.boilerDirPath)
-      } else {
-        const { code, out } = await git.clone(
-          boilerDirPath,
-          repo
-        )
+        if (await pathExists(paths.boilerDirPath)) {
+          await git.pull(paths.boilerDirPath)
+        } else {
+          const { code, out } = await git.clone(
+            boilerDirPath,
+            repo
+          )
 
-        if (code !== 0) {
-          console.error("⚠️  Git clone failed:\n\n", out)
-          process.exit(1)
+          if (code !== 0) {
+            console.error("⚠️  Git clone failed:\n\n", out)
+            process.exit(1)
+          }
+
+          if (version) {
+            await git.checkout(cwdPath, version)
+          }
         }
-
-        if (version) {
-          await git.checkout(cwdPath, version)
-        }
-      }
-    }
+      })
+    )
 
     boilerRecords.reset(cwdPath, ...allRecords)
   }
@@ -217,7 +219,7 @@ export class Boiler {
       ...args
     )
 
-    for (const { paths } of records) {
+    for (const { name, paths } of records) {
       const { out } = await git.status(paths.boilerDirPath)
 
       dirty = dirty || !!out

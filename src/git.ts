@@ -49,6 +49,8 @@ class Git {
     path: string,
     repo: string
   ): Promise<SpawnTerminalOutput> {
+    // eslint-disable-next-line no-console
+    console.log(`⚙️  git clone ${repo}`)
     return await spawnTerminal("git", {
       args: ["clone", repo],
       cwd: path,
@@ -94,6 +96,8 @@ class Git {
   }
 
   async pull(path: string): Promise<SpawnTerminalOutput> {
+    // eslint-disable-next-line no-console
+    console.log(`⚙️  git pull ${path}`)
     return await spawnTerminal("git", {
       args: ["pull"],
       cwd: path,
@@ -101,6 +105,8 @@ class Git {
   }
 
   async push(path: string): Promise<SpawnTerminalOutput> {
+    // eslint-disable-next-line no-console
+    console.log(`⚙️  git push ${path}`)
     return await spawnTerminal("git", {
       args: ["push", "origin", "HEAD"],
       cwd: path,

@@ -10,7 +10,7 @@ npm install -g boiler-dev
 - Quickly commit to boilerplate repos from any project it is installed on
 - Save user input to quickly regenerate boilerplate
 
-## Install boilerplate from repo
+## Install boilerplate
 
 1. `cd` to your project
 2. `boiler generate [git repo]`
@@ -19,16 +19,16 @@ Boilerplate repos are cloned to a gitignored `boiler/` directory. Each boilerpla
 
 > ℹ️ For more example boilerplate repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
-## Update boilerplate from repo
+## Update boilerplate
 
 1. `cd` to your project
 2. `boiler install [boiler/my-boiler]`
 3. `boiler generate [boiler/my-boiler]`
 
-## Create new boilerplate
+## New boilerplate
 
 1. `cd` to your project
-2. `boiler init boiler/my-boiler`
+2. `boiler new boiler/my-boiler`
 3. Add code to `boiler/my-boiler/boiler.ts` (see [next section](#boilerts) for details)
 4. `boiler generate boiler/my-boiler`
 5. `boiler commit boiler/my-boiler "First commit"`
@@ -121,14 +121,12 @@ actions.push({
 })
 ```
 
-## Start a fresh project
+## New project
 
-When not used within a `boiler/` directory, the `boiler init` command creates a new TypeScript project to kick things off:
+When not used within a `boiler/` directory, the `boiler new` command creates a new TypeScript project to kick things off:
 
 ```bash
-mkdir new-project
-cd new-project
-boiler init
+boiler new my-project
 ```
 
 > ℹ️ This is a shortcut for manually installing these boilerplate projects:
