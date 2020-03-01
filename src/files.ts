@@ -1,7 +1,7 @@
 import { join } from "path"
 import { readdir, stat } from "fs-extra"
 
-export class Fs {
+export class Files {
   async nestedFiles(
     dir: string,
     allFiles = []
@@ -47,4 +47,4 @@ export class Fs {
   }
 }
 
-export default new Fs()
+export default new Files()

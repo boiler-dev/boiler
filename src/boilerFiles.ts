@@ -1,7 +1,7 @@
 import { basename, join } from "path"
 import { readFile } from "fs-extra"
 
-import fs from "./fs"
+import files from "./files"
 
 export interface BoilerFileRecord {
   name: string
@@ -25,13 +25,15 @@ export class BoilerFiles {
     const boilerPath = join(cwdPath, "boiler", boilerName)
 
     this.records[id] = await Promise.all(
-      (await fs.nestedFiles(boilerPath)).map(async path => {
-        return {
-          name: basename(path),
-          path,
-          source: (await readFile(path)).toString(),
+      (await files.nestedFiles(boilerPath)).map(
+        async path => {
+          return {
+            name: basename(path),
+            path,
+            source: (await readFile(path)).toString(),
+          }
         }
-      })
+      )
     )
 
     return this.records[id]

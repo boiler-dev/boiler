@@ -1,12 +1,16 @@
 import { basename, join, resolve } from "path"
-import { ensureDir, pathExists, writeFile } from "fs-extra"
+import fs, {
+  ensureDir,
+  pathExists,
+  writeFile,
+} from "fs-extra"
 import inquirer from "inquirer"
 
 import actions from "./actions"
 import boilerPackages from "./boilerPackages"
 import boilerRecords from "./boilerRecords"
 import chmod from "./chmod"
-import fs from "./fs"
+import files from "./files"
 import git from "./git"
 import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
@@ -239,4 +243,13 @@ export class Boiler {
 }
 
 export default new Boiler()
-export { actions, boilerRecords, chmod, fs, git, npm, ts }
+export {
+  actions,
+  boilerRecords,
+  chmod,
+  files,
+  fs,
+  git,
+  npm,
+  ts,
+}
