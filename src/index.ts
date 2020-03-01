@@ -27,21 +27,23 @@ export class Boiler {
       newRecords,
     ] = await boilerRecords.findUnique(cwdPath, ...args)
 
-    for (const { paths } of records.concat(newRecords)) {
-      const { boilerDirPath } = paths
-      const isRepo = await pathExists(
-        join(boilerDirPath, ".git")
-      )
-      if (isRepo) {
-        await git.add(boilerDirPath)
-        await git.commit(boilerDirPath, message)
-        await git.push(boilerDirPath)
-      } else {
-        console.error(
-          `⚠️ Not a git repository: ${boilerDirPath}`
+    await Promise.all(
+      records.concat(newRecords).map(async ({ paths }) => {
+        const { boilerDirPath } = paths
+        const isRepo = await pathExists(
+          join(boilerDirPath, ".git")
         )
-      }
-    }
+        if (isRepo) {
+          await git.add(boilerDirPath)
+          await git.commit(boilerDirPath, message)
+          await git.push(boilerDirPath)
+        } else {
+          console.error(
+            `⚠️ Not a git repository: ${boilerDirPath}`
+          )
+        }
+      })
+    )
   }
 
   async new(
