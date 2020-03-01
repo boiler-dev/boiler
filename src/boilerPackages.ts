@@ -31,14 +31,14 @@ export class BoilerPackages {
 
       dev = dev.filter(
         pkgName =>
-          !pkgJson["devDependencies"] ||
-          !pkgJson["devDependencies"][pkgName]
+          pkgJson["devDependencies"] &&
+          pkgJson["devDependencies"][pkgName]
       )
 
       prod = prod.filter(
         pkgName =>
-          !pkgJson["dependencies"] ||
-          !pkgJson["dependencies"][pkgName]
+          pkgJson["dependencies"] &&
+          pkgJson["dependencies"][pkgName]
       )
 
       await npm.install(cwdPath, dev, {
