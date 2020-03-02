@@ -8,34 +8,26 @@ npm install -g boiler-dev
 
 ## Generator lifecycle
 
-### Start a project
+| Action                         | Command                                 |
+| ------------------------------ | --------------------------------------- |
+| Start a new TypeScript project | `boiler new [project-name]`             |
+| Change directory to project    | `cd [project-name]`                     |
+| Install and run generator      | `boiler generate [git url]`             |
+| Update generator               | `boiler update [name|path]`             |
+| Create new generator           | `boiler new [boiler/generator-name]`    |
+| Commit and push generator      | `boiler commit [boiler/generator-name]` |
+| Status of generator repos      | `boiler status [boiler/generator-name]` |
 
-- Start a TypeScript project [using generators](#new-project) — `boiler new`
+For successive `generate` calls, boiler will use the previous user input unless the `--new` flag is specified.
 
-### Generator package manager
+For `generate` calls without any arguments, all generators will re-run.
 
-- Install or update — `boiler install`
-  - The `boiler` directory is like `node_modules` for generators
-  - Unlike npm packages, boilers are live git repos
-- Uninstall — `boiler uninstall`
+### Important files
 
-### Run generator — `boiler generate`
-
-- Prompt and store user input — `.boiler.json`
-- Create and update files
-- Install npm dependencies
-
-### Update and re-run generator
-
-- Update generator — `boiler install`
-- Re-run generator — `boiler generate`
-- Generates without needing user input — `.boiler.json`
-
-### Develop generator
-
-- Create a new generator — `boiler new`
-- Commit and push code — `boiler commit`
-- Status of generator repos — `boiler status`
+| Path           | Description                                         |
+| -------------- | --------------------------------------------------- |
+| `.boiler.json` | Record of generator runs, versions, and user inputs |
+| `boiler/`      | Installed generator repos                           |
 
 ## Usage examples
 
