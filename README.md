@@ -32,7 +32,7 @@ The `generate` command automatically installs new generators.
 
 Generator repos are cloned to the `boiler` directory within your project. The `boiler` directory is like `node_modules` for your generators.
 
-> ℹ️ For more example generator repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
+> ℹ️ Explore example generators on [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
 ## Update and generate
 
