@@ -6,22 +6,33 @@ Boilerplate generator framework & low-code power tool 🛠️
 npm install -g boiler-dev
 ```
 
-## The generator lifecycle
+## Generator lifecycle
 
-- Generator package manager
-  - The `boiler` directory is like `node_modules` for generators
-  - Unlike npm packages, boilers are live git repos
-  - Install or update (`boiler install`)
-  - Uninstall (`boiler uninstall`)
-- Develop generators
-  - Create a new generator (`boiler new`)
-  - Commit and push code (`boiler commit`)
-  - Status of generator repos (`boiler status`)
-- Run boilerplate generator (`boiler generate`)
-  - Prompt for user input
-  - Store user input (`.boiler.json`)
-  - Create and update files
-  - Install npm dependencies
+### Generator package manager
+
+- The `boiler` directory is like `node_modules` for generators
+- Unlike npm packages, boilers are live git repos
+- Install or update — `boiler install`
+- Uninstall — `boiler uninstall`
+
+### Develop generators
+
+- Create a new generator — `boiler new`
+- Commit and push code — `boiler commit`
+- Status of generator repos — `boiler status`
+
+### Run generator — `boiler generate`
+
+- Prompt for user input
+- Store user input — `.boiler.json`
+- Create and update files
+- Install npm dependencies
+
+### Update and run generator again
+
+- Update generator — `boiler install`
+- Re-run generator — `boiler generate`
+- Generates without needing user input — `.boiler.json`
 
 ## Install and generate
 
