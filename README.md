@@ -37,8 +37,8 @@ Generator repos are cloned to the `boiler` directory within your project. The `b
 ## Update and generate
 
 1. `cd` to your project
-2. `boiler install [boiler/my-boiler]`
-3. `boiler generate [boiler/my-boiler]`
+2. `boiler install [boiler/my-generator]`
+3. `boiler generate [boiler/my-generator]`
 
 ## New generator
 
@@ -147,7 +147,7 @@ When not used within a `boiler/` directory, the `boiler new` command creates a n
 boiler new my-project
 ```
 
-> ℹ️ This is a shortcut for manually installing these boilerplate projects:
+> ℹ️ Shortcut for manually running the following generators:
 >
 > - [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
 > - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
