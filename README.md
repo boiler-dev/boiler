@@ -14,15 +14,14 @@ npm install -g boiler-dev
 
 ### Generator package manager
 
-- The `boiler` directory is like `node_modules` for generators
-- Unlike npm packages, boilers are live git repos
 - Install or update — `boiler install`
+  - The `boiler` directory is like `node_modules` for generators
+  - Unlike npm packages, boilers are live git repos
 - Uninstall — `boiler uninstall`
 
 ### Run generator — `boiler generate`
 
-- Prompt for user input
-- Store user input — `.boiler.json`
+- Prompt and store user input — `.boiler.json`
 - Create and update files
 - Install npm dependencies
 
