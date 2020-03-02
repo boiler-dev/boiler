@@ -13,6 +13,31 @@ import chmod from "./chmod"
 import boilerPackages from "./boilerPackages"
 
 export class Actions {
+  async run(
+    cwdPath: string,
+    actions: BoilerAction[]
+  ): Promise<void> {
+    for (const record of actions) {
+      if (!record) {
+        continue
+      }
+
+      const { action } = record
+
+      if (action === "write") {
+        await this.write(record)
+      }
+
+      if (action === "merge") {
+        await this.merge(record)
+      }
+
+      if (action === "npmInstall") {
+        this.npmInstall(cwdPath, record)
+      }
+    }
+  }
+
   async merge(action: BoilerAction): Promise<void> {
     const { path, source } = action
     let json = {}

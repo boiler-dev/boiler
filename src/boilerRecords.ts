@@ -28,6 +28,12 @@ export interface BoilerRecord {
   version?: string
 }
 
+export interface BoilerRecordResult {
+  allRecords: BoilerRecord[]
+  newRecords: BoilerRecord[]
+  records: BoilerRecord[]
+}
+
 export class BoilerRecords {
   records: Record<string, BoilerRecord[]> = {}
 
@@ -122,7 +128,7 @@ export class BoilerRecords {
   async find(
     cwdPath: string,
     ...args: string[]
-  ): Promise<[BoilerRecord[], BoilerRecord[]]> {
+  ): Promise<BoilerRecordResult> {
     let records = []
     let newRecords = []
 
@@ -160,27 +166,30 @@ export class BoilerRecords {
       newRecords = newRecords.concat({ name, repo })
     }
 
-    return [
-      await this.fill(cwdPath, ...records),
-      await this.fill(cwdPath, ...newRecords),
-    ]
+    const allRecords = records.concat(newRecords)
+    await this.fill(cwdPath, ...allRecords)
+
+    return { allRecords, newRecords, records }
   }
 
   async findUnique(
     cwdPath: string,
     ...args: string[]
-  ): Promise<[BoilerRecord[], BoilerRecord[]]> {
-    const [records, newRecords] = await this.find(
+  ): Promise<BoilerRecordResult> {
+    const { records, newRecords } = await this.find(
       cwdPath,
       ...args
     )
-    return [
-      this.uniqueRecords(records),
-      this.uniqueRecords(newRecords),
-    ]
+    return {
+      records: this.uniqueRecords(records),
+      newRecords: this.uniqueRecords(newRecords),
+      allRecords: this.uniqueRecords(
+        records.concat(newRecords)
+      ),
+    }
   }
 
-  reset(cwdPath, ...records: BoilerRecord[]): void {
+  reset(cwdPath: string, ...records: BoilerRecord[]): void {
     for (const record of records) {
       const { name } = record
       const id = `${cwdPath}:${name}`
