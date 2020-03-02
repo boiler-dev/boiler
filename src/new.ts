@@ -6,32 +6,38 @@ export const newBoilerTs = `import {
 } from "boiler-dev"
 
 export const install: InstallBoiler = async ({
+  cwdPath,
   files,
-  rootDirPath,
-}) => {}
+}) => {
+  const actions = []
+  return actions
+}
 
 export const prompt: PromptBoiler = async ({
+  cwdPath,
   files,
-  rootDirPath,
 }) => {
   const prompts = []
   return prompts
 }
 
 export const generate: GenerateBoiler = async ({
+  cwdPath,
   answers,
   files,
-  rootDirPath,
 }) => {
   const actions = []
   return actions
 }
 
 export const uninstall: UninstallBoiler = async ({
+  cwdPath,
   answers,
   files,
-  rootDirPath,
-}) => {}
+}) => {
+  const actions = []
+  return actions
+}
 `
 
 export const newProjectRepos = [
