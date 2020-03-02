@@ -179,6 +179,15 @@ export class BoilerRecords {
     }
   }
 
+  remove(
+    cwdPath: string,
+    ...records: BoilerRecord[]
+  ): void {
+    this.records[cwdPath] = this.records[cwdPath].filter(
+      record => !records.includes(record)
+    )
+  }
+
   reset(cwdPath: string, ...records: BoilerRecord[]): void {
     for (const record of records) {
       const { name } = record

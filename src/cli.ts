@@ -27,6 +27,8 @@ export class Cli {
       await boiler.install(cwdPath, ...args)
     } else if (cmd === "s") {
       await boiler.status(cwdPath, ...args)
+    } else if (cmd === "u") {
+      await boiler.uninstall(cwdPath, ...args)
     } else {
       // eslint-disable-next-line no-console
       console.log(`

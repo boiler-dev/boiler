@@ -3,6 +3,7 @@ import fs, {
   ensureDir,
   pathExists,
   writeFile,
+  remove,
 } from "fs-extra"
 import inquirer from "inquirer"
 
@@ -135,6 +136,36 @@ export class Boiler {
     )
 
     await boilerPackages.install(cwdPath)
+  }
+
+  async uninstall(
+    cwdPath: string,
+    ...args: string[]
+  ): Promise<void> {
+    const {
+      allRecords,
+      records,
+    } = await boilerRecords.findUnique(cwdPath, ...args)
+
+    const uninstallRecords = allRecords.filter(
+      ({ paths }) => paths.boilerDirExists
+    )
+
+    await Promise.all(
+      uninstallRecords.map(async record => {
+        const { paths } = record
+        await remove(paths.boilerDirPath)
+      })
+    )
+
+    await boilerInstances.actionCallback(
+      cwdPath,
+      "uninstall",
+      ...uninstallRecords
+    )
+
+    boilerRecords.remove(cwdPath, ...uninstallRecords)
+    await boilerRecords.save(cwdPath)
   }
 
   async update(
