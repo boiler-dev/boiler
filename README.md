@@ -8,18 +8,16 @@ npm install -g boiler-dev
 
 ## Generator lifecycle
 
+### Start a project
+
+- Start a TypeScript project [using generators](#new-project) — `boiler new`
+
 ### Generator package manager
 
 - The `boiler` directory is like `node_modules` for generators
 - Unlike npm packages, boilers are live git repos
 - Install or update — `boiler install`
 - Uninstall — `boiler uninstall`
-
-### Develop generators
-
-- Create a new generator — `boiler new`
-- Commit and push code — `boiler commit`
-- Status of generator repos — `boiler status`
 
 ### Run generator — `boiler generate`
 
@@ -28,11 +26,17 @@ npm install -g boiler-dev
 - Create and update files
 - Install npm dependencies
 
-### Update and run generator again
+### Update and re-run generator
 
 - Update generator — `boiler install`
 - Re-run generator — `boiler generate`
 - Generates without needing user input — `.boiler.json`
+
+### Develop generator
+
+- Create a new generator — `boiler new`
+- Commit and push code — `boiler commit`
+- Status of generator repos — `boiler status`
 
 ## Install and generate
 
