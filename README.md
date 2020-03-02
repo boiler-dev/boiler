@@ -161,7 +161,7 @@ When not used within a `boiler/` directory, the `boiler new` command creates a n
 boiler new my-project
 ```
 
-> ℹ️ Shortcut for manually running the following generators:
+> ℹ️ This is a shortcut for manually running the following generators:
 >
 > - [package-json-boiler](https://github.com/boiler-dev/package-json-boiler)
 > - [ts-boiler](https://github.com/boiler-dev/ts-boiler)
