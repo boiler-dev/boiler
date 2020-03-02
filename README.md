@@ -37,7 +37,9 @@ npm install -g boiler-dev
 - Commit and push code — `boiler commit`
 - Status of generator repos — `boiler status`
 
-## Install and generate
+## Usage examples
+
+### Install and generate
 
 1. `cd` to your project
 2. `boiler generate [git repo]`
@@ -48,18 +50,18 @@ Generator repos are cloned to the `boiler` directory within your project. The `b
 
 > ℹ️ Explore example generators on [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
-## Update and generate
+### Update and regenerate
 
 1. `cd` to your project
 2. `boiler install [boiler/my-generator]`
 3. `boiler generate [boiler/my-generator]`
 
-## New generator
+### New generator
 
 1. `cd` to your project
 2. `boiler new boiler/my-generator`
 
-## Develop generator
+### Develop generator
 
 1. Modify `boiler/my-generator/boiler.ts` (see [next section](#boilerts) for API details)
 2. `boiler generate boiler/my-generator`
