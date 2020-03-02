@@ -17,7 +17,7 @@ npm install -g boiler-dev
   - Create a new generator (`boiler new`)
   - Commit and push code (`boiler commit`)
   - Status of generator repos (`boiler status`)
-- Generate boilerplate (`boiler generate`)
+- Run boilerplate generator (`boiler generate`)
   - Prompt for user input
   - Store user input (`.boiler.json`)
   - Create and update files
