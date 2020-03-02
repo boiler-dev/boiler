@@ -6,7 +6,7 @@ Boilerplate generator framework & low code power tool 🛠️
 npm install -g boiler-dev
 ```
 
-Boiler gives you full control of the generator lifecycle:
+**Boiler provides full control of the generator lifecycle:**
 
 - Generator package manager
   - The `boiler` directory is like `node_modules` for generators
@@ -16,20 +16,21 @@ Boiler gives you full control of the generator lifecycle:
 - Develop generators
   - Create a new generator (`boiler new`)
   - Commit and push code (`boiler commit`)
-    — Status of generator repos (`boiler status`)
-  - Absorb changes from project (`boiler absorb`)
+  - Status of generator repos (`boiler status`)
 - Generate boilerplate (`boiler generate`)
   - Prompt for user input
   - Store user input (`.boiler.json`)
   - Create and update files
-  - Ensure npm dependencies
+  - Install npm dependencies
 
 ## Install and generate
 
 1. `cd` to your project
 2. `boiler generate [git repo]`
 
-Within your project, a gitignored `boiler/` directory holds cloned generator repos that you may modify and regenerate from.
+The `generate` command automatically installs new generators.
+
+Generator repos are cloned to the `boiler` directory within your project. The `boiler` directory is like `node_modules` for your generators.
 
 > ℹ️ For more example generator repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
@@ -39,17 +40,20 @@ Within your project, a gitignored `boiler/` directory holds cloned generator rep
 2. `boiler install [boiler/my-boiler]`
 3. `boiler generate [boiler/my-boiler]`
 
-## New boilerplate
+## New generator
 
 1. `cd` to your project
-2. `boiler new boiler/my-boiler`
-3. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boilerts) for details)
-4. `boiler generate boiler/my-boiler`
-5. `boiler commit boiler/my-boiler "First commit"`
+2. `boiler new boiler/my-generator`
 
-## `boiler.ts`
+## Develop generator
 
-Each boilerplate repo must have a `boiler.ts` or `boiler.js` file:
+1. Modify `boiler/my-generator/boiler.ts` (see [next section](#boilerts) for API details)
+2. `boiler generate boiler/my-generator`
+3. `boiler commit boiler/my-generator "First commit"`
+
+## Generator API (`boiler.ts`)
+
+Each generator repo must have a `boiler.ts` or `boiler.js` file:
 
 ```ts
 import {
