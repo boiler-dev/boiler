@@ -96,35 +96,39 @@ export class Boiler {
     const boilerDirPath = join(cwdPath, "boiler")
     await ensureDir(boilerDirPath)
 
+    const installRecords = allRecords.filter(
+      ({ paths }) => !paths.boilerDirExists
+    )
+
     await Promise.all(
-      allRecords.map(async record => {
-        const { paths, repo, version } = record
-        const installed = await pathExists(
-          paths.boilerDirPath
+      installRecords.map(async record => {
+        const { repo, version } = record
+
+        const { code, out } = await git.clone(
+          boilerDirPath,
+          repo
         )
 
-        if (!installed) {
-          const { code, out } = await git.clone(
-            boilerDirPath,
-            repo
-          )
+        if (code !== 0) {
+          console.error("⚠️  Git clone failed:\n\n", out)
+          process.exit(1)
+        }
 
-          if (code !== 0) {
-            console.error("⚠️  Git clone failed:\n\n", out)
-            process.exit(1)
-          }
-
-          if (version) {
-            await git.checkout(cwdPath, version)
-          }
+        if (version) {
+          await git.checkout(cwdPath, version)
         }
       })
+    )
+
+    await boilerInstances.promptCallback(
+      cwdPath,
+      ...installRecords
     )
 
     await boilerInstances.actionCallback(
       cwdPath,
       "install",
-      allRecords
+      ...installRecords
     )
 
     await boilerPackages.install(cwdPath)
@@ -141,23 +145,26 @@ export class Boiler {
       ...args
     )
 
-    await Promise.all(
-      allRecords.map(async record => {
-        const { paths } = record
-        const installed = await pathExists(
-          paths.boilerDirPath
-        )
+    const updateRecords = allRecords.filter(
+      ({ paths }) => paths.boilerDirExists
+    )
 
-        if (installed) {
-          await git.pull(paths.boilerDirPath)
-        }
+    await Promise.all(
+      updateRecords.map(async record => {
+        const { paths } = record
+        await git.pull(paths.boilerDirPath)
       })
+    )
+
+    await boilerInstances.promptCallback(
+      cwdPath,
+      ...updateRecords
     )
 
     await boilerInstances.actionCallback(
       cwdPath,
       "update",
-      allRecords
+      ...updateRecords
     )
 
     await boilerPackages.install(cwdPath)
@@ -170,7 +177,6 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     await this.install(cwdPath, ...args)
-    await this.prompt(cwdPath, ...args)
 
     const {
       newRecords,
@@ -180,28 +186,13 @@ export class Boiler {
     await boilerInstances.actionCallback(
       cwdPath,
       "generate",
-      allRecords
+      ...allRecords
     )
 
     await boilerPackages.install(cwdPath)
 
     boilerRecords.append(cwdPath, ...newRecords)
     await boilerRecords.save(cwdPath)
-  }
-
-  async prompt(
-    cwdPath: string,
-    ...args: string[]
-  ): Promise<void> {
-    const { allRecords } = await boilerRecords.find(
-      cwdPath,
-      ...args
-    )
-
-    await boilerInstances.promptCallback(
-      cwdPath,
-      allRecords
-    )
   }
 
   async status(
@@ -231,6 +222,21 @@ export class Boiler {
     if (dirty) {
       process.exit(1)
     }
+  }
+
+  extractOption(opt: string, args: string[]): boolean {
+    let found: boolean, index: number
+
+    do {
+      index = args.indexOf(opt)
+
+      if (index > -1) {
+        args.splice(index, 1)
+        found = true
+      }
+    } while (index > -1)
+
+    return found
   }
 }
 

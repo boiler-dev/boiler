@@ -90,7 +90,7 @@ export class BoilerInstances {
   async actionCallback(
     cwdPath: string,
     callback: string,
-    records: BoilerRecord[]
+    ...records: BoilerRecord[]
   ): Promise<void> {
     for (const record of records) {
       const instance = await this.load(cwdPath, record)
@@ -110,7 +110,7 @@ export class BoilerInstances {
 
   async promptCallback(
     cwdPath: string,
-    records: BoilerRecord[]
+    ...records: BoilerRecord[]
   ): Promise<void> {
     for (const record of records) {
       const { answers } = record
