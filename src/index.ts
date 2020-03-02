@@ -120,6 +120,9 @@ export class Boiler {
       })
     )
 
+    boilerRecords.reset(cwdPath, ...installRecords)
+    await boilerRecords.fill(cwdPath, ...installRecords)
+
     await boilerInstances.promptCallback(
       cwdPath,
       ...installRecords
@@ -132,8 +135,6 @@ export class Boiler {
     )
 
     await boilerPackages.install(cwdPath)
-
-    boilerRecords.reset(cwdPath, ...allRecords)
   }
 
   async update(
@@ -156,6 +157,9 @@ export class Boiler {
       })
     )
 
+    boilerRecords.reset(cwdPath, ...updateRecords)
+    await boilerRecords.fill(cwdPath, ...updateRecords)
+
     await boilerInstances.promptCallback(
       cwdPath,
       ...updateRecords
@@ -168,8 +172,6 @@ export class Boiler {
     )
 
     await boilerPackages.install(cwdPath)
-
-    boilerRecords.reset(cwdPath, ...allRecords)
   }
 
   async generate(
