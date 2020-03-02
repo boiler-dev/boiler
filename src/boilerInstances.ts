@@ -1,3 +1,6 @@
+import inquirer from "inquirer"
+
+import actions from "./actions"
 import { BoilerRecord } from "./boilerRecords"
 import ts from "./ts"
 
@@ -82,6 +85,55 @@ export class BoilerInstances {
     }
 
     return this.records[id]
+  }
+
+  async actionCallback(
+    cwdPath: string,
+    callback: string,
+    records: BoilerRecord[]
+  ): Promise<void> {
+    for (const record of records) {
+      const instance = await this.load(cwdPath, record)
+
+      if (!instance || !instance[callback]) {
+        continue
+      }
+
+      const boilerActions = await instance[callback]({
+        cwdPath,
+        ...record,
+      })
+
+      await actions.run(cwdPath, boilerActions)
+    }
+  }
+
+  async promptCallback(
+    cwdPath: string,
+    records: BoilerRecord[]
+  ): Promise<void> {
+    for (const record of records) {
+      const { answers } = record
+      const instance = await this.load(cwdPath, record)
+
+      if (!instance || !instance.prompt) {
+        continue
+      }
+
+      let prompts = await instance.prompt({
+        cwdPath,
+        ...record,
+      })
+
+      prompts = prompts.filter(
+        prompt =>
+          answers[prompt.name] === undefined ||
+          answers[prompt.name] === null
+      )
+
+      const newAnswers = await inquirer.prompt(prompts)
+      Object.assign(answers, newAnswers)
+    }
   }
 }
 

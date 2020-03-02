@@ -11,9 +11,7 @@ import boilerPaths, {
   BoilerPathRecord,
 } from "./boilerPaths"
 
-import boilerInstances, {
-  BoilerInstance,
-} from "./boilerInstances"
+import boilerInstances from "./boilerInstances"
 
 import git from "./git"
 
@@ -22,7 +20,6 @@ export interface BoilerRecord {
 
   answers?: Record<string, any>
   files?: BoilerFileRecord[]
-  instance?: BoilerInstance
   name?: string
   paths?: BoilerPathRecord
   version?: string
@@ -68,7 +65,7 @@ export class BoilerRecords {
 
     return await Promise.all(
       records.map(async record => {
-        const { files, instance, paths, version } = record
+        const { files, paths, version } = record
 
         if (!paths) {
           record.paths = await boilerPaths.load(
@@ -91,13 +88,6 @@ export class BoilerRecords {
         if (!version) {
           record.version = await git.commitHash(
             join(cwdPath, "boiler", record.name)
-          )
-        }
-
-        if (!instance) {
-          record.instance = await boilerInstances.load(
-            cwdPath,
-            record
           )
         }
 
@@ -195,7 +185,6 @@ export class BoilerRecords {
       const id = `${cwdPath}:${name}`
 
       delete boilerInstances.records[id]
-      delete record.instance
 
       delete boilerFiles.records[id]
       delete record.files

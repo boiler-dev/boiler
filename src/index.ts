@@ -8,15 +8,14 @@ import inquirer from "inquirer"
 
 import actions from "./actions"
 import boilerPackages from "./boilerPackages"
-import boilerRecords, {
-  BoilerRecord,
-} from "./boilerRecords"
+import boilerRecords from "./boilerRecords"
 import chmod from "./chmod"
 import files from "./files"
 import git from "./git"
 import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
 import ts from "./ts"
+import boilerInstances from "./boilerInstances"
 
 export class Boiler {
   async commit(
@@ -24,13 +23,13 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const message = args.pop()
-    const {
-      records,
-      newRecords,
-    } = await boilerRecords.findUnique(cwdPath, ...args)
+    const { allRecords } = await boilerRecords.findUnique(
+      cwdPath,
+      ...args
+    )
 
     await Promise.all(
-      records.concat(newRecords).map(async ({ paths }) => {
+      allRecords.map(async ({ paths }) => {
         const { boilerDirPath } = paths
         const isRepo = await pathExists(
           join(boilerDirPath, ".git")
@@ -122,7 +121,12 @@ export class Boiler {
       })
     )
 
-    await this.runCallback(cwdPath, "install", allRecords)
+    await boilerInstances.actionCallback(
+      cwdPath,
+      "install",
+      allRecords
+    )
+
     await boilerPackages.install(cwdPath)
 
     boilerRecords.reset(cwdPath, ...allRecords)
@@ -150,7 +154,12 @@ export class Boiler {
       })
     )
 
-    await this.runCallback(cwdPath, "update", allRecords)
+    await boilerInstances.actionCallback(
+      cwdPath,
+      "update",
+      allRecords
+    )
+
     await boilerPackages.install(cwdPath)
 
     boilerRecords.reset(cwdPath, ...allRecords)
@@ -168,7 +177,12 @@ export class Boiler {
       allRecords,
     } = await boilerRecords.find(cwdPath, ...args)
 
-    await this.runCallback(cwdPath, "generate", allRecords)
+    await boilerInstances.actionCallback(
+      cwdPath,
+      "generate",
+      allRecords
+    )
+
     await boilerPackages.install(cwdPath)
 
     boilerRecords.append(cwdPath, ...newRecords)
@@ -179,33 +193,15 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const {
-      records,
-      newRecords,
-    } = await boilerRecords.find(cwdPath, ...args)
+    const { allRecords } = await boilerRecords.find(
+      cwdPath,
+      ...args
+    )
 
-    for (const record of records.concat(newRecords)) {
-      const { answers, instance } = record
-
-      if (!instance.prompt) {
-        continue
-      }
-
-      let prompts = await instance.prompt({
-        cwdPath,
-        ...record,
-      })
-
-      prompts = prompts.filter(
-        prompt =>
-          answers[prompt.name] === undefined ||
-          answers[prompt.name] === null
-      )
-
-      const newAnswers = await inquirer.prompt(prompts)
-
-      Object.assign(answers, newAnswers)
-    }
+    await boilerInstances.promptCallback(
+      cwdPath,
+      allRecords
+    )
   }
 
   async status(
@@ -234,27 +230,6 @@ export class Boiler {
 
     if (dirty) {
       process.exit(1)
-    }
-  }
-
-  async runCallback(
-    cwdPath: string,
-    callback: string,
-    records: BoilerRecord[]
-  ): Promise<void> {
-    for (const record of records) {
-      const { instance } = record
-
-      if (!instance || !instance[callback]) {
-        continue
-      }
-
-      const boilerActions = await instance[callback]({
-        cwdPath,
-        ...record,
-      })
-
-      await actions.run(cwdPath, boilerActions)
     }
   }
 }
