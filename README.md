@@ -13,7 +13,7 @@ npm install -g boiler-dev
 | Start a new TypeScript project | `boiler new [project-name]`             |
 | Change directory to project    | `cd [project-name]`                     |
 | Install and run generator      | `boiler generate [git url]`             |
-| Update generator               | `boiler update [name|path]`             |
+| Update generator               | `boiler update [path]`                  |
 | Create new generator           | `boiler new [boiler/generator-name]`    |
 | Commit and push generator      | `boiler commit [boiler/generator-name]` |
 | Status of generator repos      | `boiler status [boiler/generator-name]` |
