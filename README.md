@@ -1,6 +1,6 @@
 # boiler
 
-Boilerplate generator framework & low code power tool 🛠️
+Boilerplate generator framework & low-code power tool 🛠️
 
 ```bash
 npm install -g boiler-dev
@@ -51,7 +51,7 @@ Generator repos are cloned to the `boiler` directory within your project. The `b
 2. `boiler generate boiler/my-generator`
 3. `boiler commit boiler/my-generator "First commit"`
 
-## Generator API (`boiler.ts`)
+## Generator API — `boiler.ts`
 
 Each generator repo must have a `boiler.ts` or `boiler.js` file:
 
