@@ -142,10 +142,10 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const {
-      allRecords,
-      records,
-    } = await boilerRecords.findUnique(cwdPath, ...args)
+    const { allRecords } = await boilerRecords.findUnique(
+      cwdPath,
+      ...args
+    )
 
     const uninstallRecords = allRecords.filter(
       ({ paths }) => paths.boilerDirExists
