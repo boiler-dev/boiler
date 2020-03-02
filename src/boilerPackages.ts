@@ -23,9 +23,11 @@ export class BoilerPackages {
       const pkgJsonPath = join(cwdPath, "package.json")
       let pkgJson = {}
 
-      if (await pathExists(pkgJsonPath)) {
-        pkgJson = await readJson(pkgJsonPath)
+      if (!(await pathExists(pkgJsonPath))) {
+        return
       }
+
+      pkgJson = await readJson(pkgJsonPath)
 
       let { dev, prod } = this.records[cwdPath]
 
