@@ -21,9 +21,7 @@ npm install -g boiler-dev
 
 When commands are run without arguments, it will run across all installed generators.
 
-For successive `generate` calls with arguments, boiler will regenerate with saved user input unless the `--new` flag is specified.
-
-For `generate` calls without any arguments, all generators will regenerate.
+For successive `generate` calls, boiler will regenerate with saved user input unless the `--new` flag is specified.
 
 ### Important files
 
