@@ -18,11 +18,11 @@ export interface BoilerInput extends BoilerRecord {
 
 export type InstallBoiler = (
   input: BoilerInput
-) => Promise<void>
+) => Promise<BoilerAction[]>
 
 export type UninstallBoiler = (
   input: BoilerInput
-) => Promise<void>
+) => Promise<BoilerAction[]>
 
 export type PromptBoiler = (
   input: BoilerInput
