@@ -9,41 +9,41 @@ export class Cli {
 
     await boilerRecords.load(cwdPath)
 
-    if (cmd) {
-      cmd = cmd[0]
-    }
-
-    if (cmd === "g") {
+    if (cmd[0] === "g") {
       await git.appendGitignore(cwdPath, "/boiler")
     }
 
-    if (cmd === "c") {
+    if (cmd[0] === "c") {
       await boiler.commit(cwdPath, ...args)
-    } else if (cmd === "g") {
+    } else if (cmd[0] === "g") {
       await boiler.generate(cwdPath, ...args)
-    } else if (cmd === "n") {
+    } else if (cmd[0] === "n") {
       await boiler.new(cwdPath, ...args)
-    } else if (cmd === "i") {
+    } else if (cmd[0] === "i") {
       await boiler.install(cwdPath, ...args)
-    } else if (cmd === "s") {
+    } else if (cmd[0] === "s") {
       await boiler.status(cwdPath, ...args)
-    } else if (cmd === "u") {
+    } else if (cmd.slice(0, 2) === "un") {
       await boiler.uninstall(cwdPath, ...args)
+    } else if (cmd.slice(0, 2) === "up") {
+      await boiler.update(cwdPath, ...args)
     } else {
       // eslint-disable-next-line no-console
       console.log(`
-boiler new       [path]...       New TypeScript or boilerplate project
-boiler install   [repo|path]...  Install or update boilerplate
-boiler generate  [repo|path]...  Generate from boilerplate
-boiler commit    [repo|path]...  Commit and push boilerplate
-boiler status    [repo|path]...  Status of boilerplate
+boiler new       [path]...       New TypeScript or generator project
+boiler generate  [repo|path]...  Run generator
+boiler install   [repo|path]...  Install generator
+boiler update    [repo|path]...  Update generator
+boiler commit    [repo|path]...  Commit and push generator
+boiler status    [repo|path]...  Status of generator repo
+boiler uninstall [repo|path]...  Uninstall generator repo
 
-Quickstart (new project, new boilerplate):
+Quickstart (new project + new boilerplate):
 
   boiler new my-project
   cd my project
-  boiler new boiler/my-boiler
-  boiler generate boiler/my-boiler
+  boiler new boiler/my-generator
+  boiler generate boiler/my-generator
 `)
     }
 
