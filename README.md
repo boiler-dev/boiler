@@ -1,25 +1,39 @@
 # boiler
 
-Boilerplate framework for the low code revolution 🥘
+Boilerplate generator framework & low code power tool 🛠️
 
 ```bash
 npm install -g boiler-dev
 ```
 
-- Boilerplate generators live in their own repos (see an [example boilerplate repo](https://github.com/boiler-dev/package-json-boiler))
-- Quickly commit to boilerplate repos from any project it is installed on
-- Save user input to quickly regenerate boilerplate
+Boiler gives you full control of the generator lifecycle:
 
-## Install boilerplate
+- Generator package manager
+  - The `boiler` directory is like `node_modules` for generators
+  - Unlike npm packages, boilers are live git repos
+  - Install or update (`boiler install`)
+  - Uninstall (`boiler uninstall`)
+- Develop generators
+  - Create a new generator (`boiler new`)
+  - Commit and push code (`boiler commit`)
+    — Status of generator repos (`boiler status`)
+  - Absorb changes from project (`boiler absorb`)
+- Generate boilerplate (`boiler generate`)
+  - Prompt for user input
+  - Store user input (`.boiler.json`)
+  - Create and update files
+  - Ensure npm dependencies
+
+## Install and generate
 
 1. `cd` to your project
 2. `boiler generate [git repo]`
 
-Boilerplate repos are cloned to a gitignored `boiler/` directory. Each boilerplate project inside `boiler/` is a functioning git repo that you may commit to.
+Within your project, a gitignored `boiler/` directory holds cloned generator repos that you may modify and regenerate from.
 
-> ℹ️ For more example boilerplate repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
+> ℹ️ For more example generator repos, take a look at [the boiler-dev GitHub org](https://github.com/boiler-dev).
 
-## Update boilerplate
+## Update and generate
 
 1. `cd` to your project
 2. `boiler install [boiler/my-boiler]`
@@ -29,7 +43,7 @@ Boilerplate repos are cloned to a gitignored `boiler/` directory. Each boilerpla
 
 1. `cd` to your project
 2. `boiler new boiler/my-boiler`
-3. Add code to `boiler/my-boiler/boiler.ts` (see [next section](#boilerts) for details)
+3. Hack on `boiler/my-boiler/boiler.ts` (see [next section](#boilerts) for details)
 4. `boiler generate boiler/my-boiler`
 5. `boiler commit boiler/my-boiler "First commit"`
 
@@ -78,7 +92,7 @@ export const uninstall: UninstallBoiler = async ({
 
 The `prompt` function returns an array of "prompts" that define user input to retrieve.
 
-Prompts are just an array of [Inquirer.js Questions](https://github.com/SBoudrias/Inquirer.js/#objects).
+Prompts are essentially an array of [Inquirer.js Questions](https://github.com/SBoudrias/Inquirer.js/#objects).
 
 ### Generate
 
