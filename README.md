@@ -39,7 +39,13 @@ npm install -g boiler-dev
 
 ## Usage examples
 
-### Install and generate
+### Install boiler
+
+```bash
+npm install -g boiler-dev
+```
+
+### Run generator
 
 1. `cd` to your project
 2. `boiler generate [git repo]`
