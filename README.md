@@ -8,15 +8,18 @@ npm install -g boiler-dev
 
 ## Generator lifecycle
 
-| Action                         | Command                                 |
-| ------------------------------ | --------------------------------------- |
-| Start a new TypeScript project | `boiler new [project-name]`             |
-| Change directory to project    | `cd [project-name]`                     |
-| Install and run generator      | `boiler generate [git url]`             |
-| Update generator               | `boiler update [boiler/generator-name]` |
-| Create new generator           | `boiler new [boiler/generator-name]`    |
-| Commit and push generator      | `boiler commit [boiler/generator-name]` |
-| Status of generator repos      | `boiler status [boiler/generator-name]` |
+| Action                         | Command                                   |
+| ------------------------------ | ----------------------------------------- |
+| Start a new TypeScript project | `boiler new [project-name]`               |
+| Change directory to project    | `cd [project-name]`                       |
+| Install and run generator      | `boiler generate [git url]`               |
+| Update generator               | `boiler update [boiler/generator-name]`   |
+| Regenerate installed generator | `boiler generate [boiler/generator-name]` |
+| Create new generator           | `boiler new [boiler/generator-name]`      |
+| Commit and push generator      | `boiler commit [boiler/generator-name]`   |
+| Status of generator repos      | `boiler status [boiler/generator-name]`   |
+
+When commands are run without arguments, it will run across all installed generators.
 
 For successive `generate` calls with arguments, boiler will regenerate with saved user input unless the `--new` flag is specified.
 
