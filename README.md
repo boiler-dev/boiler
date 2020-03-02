@@ -13,21 +13,21 @@ npm install -g boiler-dev
 | Start a new TypeScript project | `boiler new [project-name]`             |
 | Change directory to project    | `cd [project-name]`                     |
 | Install and run generator      | `boiler generate [git url]`             |
-| Update generator               | `boiler update [path]`                  |
+| Update generator               | `boiler update [boiler/generator-name]` |
 | Create new generator           | `boiler new [boiler/generator-name]`    |
 | Commit and push generator      | `boiler commit [boiler/generator-name]` |
 | Status of generator repos      | `boiler status [boiler/generator-name]` |
 
-For successive `generate` calls, boiler will use the previous user input unless the `--new` flag is specified.
+For successive `generate` calls with arguments, boiler will regenerate with saved user input unless the `--new` flag is specified.
 
-For `generate` calls without any arguments, all generators will re-run.
+For `generate` calls without any arguments, all generators will regenerate.
 
 ### Important files
 
-| Path           | Description                                         |
-| -------------- | --------------------------------------------------- |
-| `.boiler.json` | Record of generator runs, versions, and user inputs |
-| `boiler/`      | Installed generator repos                           |
+| Path           | Description                                                |
+| -------------- | ---------------------------------------------------------- |
+| `.boiler.json` | Record of generator runs, with version and user input data |
+| `boiler/`      | Installed generator repos                                  |
 
 ## Usage examples
 
