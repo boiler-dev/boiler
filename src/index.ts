@@ -151,17 +151,17 @@ export class Boiler {
       ({ paths }) => paths.boilerDirExists
     )
 
+    await boilerInstances.actionCallback(
+      cwdPath,
+      "uninstall",
+      ...uninstallRecords
+    )
+
     await Promise.all(
       uninstallRecords.map(async record => {
         const { paths } = record
         await remove(paths.boilerDirPath)
       })
-    )
-
-    await boilerInstances.actionCallback(
-      cwdPath,
-      "uninstall",
-      ...uninstallRecords
     )
 
     boilerRecords.remove(cwdPath, ...uninstallRecords)
