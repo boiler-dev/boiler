@@ -6,7 +6,7 @@ Boilerplate generator framework & low code power tool 🛠️
 npm install -g boiler-dev
 ```
 
-**Boiler provides full control of the generator lifecycle:**
+## Control the generator lifecycle
 
 - Generator package manager
   - The `boiler` directory is like `node_modules` for generators

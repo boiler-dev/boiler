@@ -141,11 +141,7 @@ export class Boiler {
     for (const record of allRecords) {
       const { instance } = record
 
-      if (!instance) {
-        continue
-      }
-
-      if (!instance.generate) {
+      if (!instance || !instance.generate) {
         continue
       }
 
