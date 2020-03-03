@@ -45,6 +45,7 @@ export const newProjectRepos = [
   "git@github.com:boiler-dev/ts-boiler.git",
   "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git",
   "git@github.com:boiler-dev/release-boiler.git",
+  "git@github.com:boiler-dev/source-boiler.git",
   "git@github.com:boiler-dev/mocha-boiler.git",
   "git@github.com:boiler-dev/vscode-watch-boiler.git",
 ]
