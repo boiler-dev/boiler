@@ -89,6 +89,11 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
+    const promptAll = this.extractOption(
+      "--prompt-all",
+      args
+    )
+
     const { allRecords } = await boilerRecords.findUnique(
       cwdPath,
       ...args
@@ -126,7 +131,7 @@ export class Boiler {
 
     await boilerInstances.promptCallback(
       cwdPath,
-      ...installRecords
+      ...(promptAll ? allRecords : installRecords)
     )
 
     await boilerInstances.actionCallback(
@@ -209,7 +214,7 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    await this.install(cwdPath, ...args)
+    await this.install(cwdPath, "--prompt-all", ...args)
 
     const {
       newRecords,

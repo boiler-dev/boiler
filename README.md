@@ -52,7 +52,7 @@ Generator repos are cloned to the `boiler` directory within your project. The `b
 ### Update and regenerate
 
 1. `cd` to your project
-2. `boiler install [boiler/my-generator]`
+2. `boiler update [boiler/my-generator]`
 3. `boiler generate [boiler/my-generator]`
 
 ### New generator
