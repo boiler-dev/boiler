@@ -281,6 +281,7 @@ export class Boiler {
 export default new Boiler()
 
 export {
+  BoilerAction,
   InstallBoiler,
   PromptBoiler,
   GenerateBoiler,
