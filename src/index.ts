@@ -136,6 +136,7 @@ export class Boiler {
 
     await boilerInstances.actionCallback(
       cwdPath,
+      this,
       "install",
       ...installRecords
     )
@@ -158,6 +159,7 @@ export class Boiler {
 
     await boilerInstances.actionCallback(
       cwdPath,
+      this,
       "uninstall",
       ...uninstallRecords
     )
@@ -203,6 +205,7 @@ export class Boiler {
 
     await boilerInstances.actionCallback(
       cwdPath,
+      this,
       "update",
       ...updateRecords
     )
@@ -223,6 +226,7 @@ export class Boiler {
 
     await boilerInstances.actionCallback(
       cwdPath,
+      this,
       "generate",
       ...allRecords
     )

@@ -1,5 +1,6 @@
 import inquirer from "inquirer"
 
+import { Boiler } from "."
 import actions from "./actions"
 import { BoilerRecord } from "./boilerRecords"
 import ts from "./ts"
@@ -89,6 +90,7 @@ export class BoilerInstances {
 
   async actionCallback(
     cwdPath: string,
+    boiler: Boiler,
     callback: string,
     ...records: BoilerRecord[]
   ): Promise<void> {
@@ -104,7 +106,7 @@ export class BoilerInstances {
         ...record,
       })
 
-      await actions.run(cwdPath, boilerActions)
+      await actions.run(cwdPath, boiler, boilerActions)
     }
   }
 
