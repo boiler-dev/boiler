@@ -8,6 +8,7 @@ import {
   writeJson,
 } from "fs-extra"
 
+import { Boiler } from "."
 import { BoilerAction } from "./boilerInstances"
 import chmod from "./chmod"
 import boilerPackages from "./boilerPackages"
@@ -15,6 +16,7 @@ import boilerPackages from "./boilerPackages"
 export class Actions {
   async run(
     cwdPath: string,
+    boiler: Boiler,
     actions: BoilerAction[]
   ): Promise<void> {
     for (const record of actions) {
@@ -23,6 +25,10 @@ export class Actions {
       }
 
       const { action } = record
+
+      if (action === "generate") {
+        await this.generate(cwdPath, boiler, record)
+      }
 
       if (action === "write") {
         await this.write(record)
@@ -36,6 +42,14 @@ export class Actions {
         this.npmInstall(cwdPath, record)
       }
     }
+  }
+
+  async generate(
+    cwdPath: string,
+    boiler: Boiler,
+    action: BoilerAction
+  ): Promise<void> {
+    await boiler.generate(cwdPath, ...action.source)
   }
 
   async merge(action: BoilerAction): Promise<void> {
