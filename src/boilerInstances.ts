@@ -9,7 +9,7 @@ export interface BoilerAction {
   action: string
   bin?: boolean
   dev?: boolean
-  path: string
+  path?: string
   source: any
 }
 
