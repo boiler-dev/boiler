@@ -20,7 +20,7 @@ export class Npm {
       } npm modules:\n  ` + pkgNames.sort().join("\n  ")
     )
 
-    const extra = saveDev ? ["--save-dev"] : []
+    const extra = saveDev ? ["--save-dev"] : ["--save-prod"]
     const response = await spawnTerminal("npm", {
       args: [
         "install",
