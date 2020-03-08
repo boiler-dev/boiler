@@ -17,6 +17,8 @@ import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
 import ts from "./ts"
 import boilerInstances from "./boilerInstances"
+import boilerPrompts from "./boilerPrompts"
+import boilerActions from "./boilerActions"
 
 export class Boiler {
   async commit(
@@ -129,12 +131,12 @@ export class Boiler {
     boilerRecords.reset(cwdPath, ...installRecords)
     await boilerRecords.fill(cwdPath, ...installRecords)
 
-    await boilerInstances.promptCallback(
+    await boilerPrompts.load(
       cwdPath,
       ...(promptAll ? allRecords : installRecords)
     )
 
-    await boilerInstances.actionCallback(
+    await boilerActions.load(
       cwdPath,
       this,
       "install",
@@ -157,7 +159,7 @@ export class Boiler {
       ({ paths }) => paths.boilerDirExists
     )
 
-    await boilerInstances.actionCallback(
+    await boilerActions.load(
       cwdPath,
       this,
       "uninstall",
@@ -196,14 +198,11 @@ export class Boiler {
     )
 
     boilerRecords.reset(cwdPath, ...updateRecords)
+
     await boilerRecords.fill(cwdPath, ...updateRecords)
+    await boilerPrompts.load(cwdPath, ...updateRecords)
 
-    await boilerInstances.promptCallback(
-      cwdPath,
-      ...updateRecords
-    )
-
-    await boilerInstances.actionCallback(
+    await boilerActions.load(
       cwdPath,
       this,
       "update",
@@ -224,7 +223,7 @@ export class Boiler {
       allRecords,
     } = await boilerRecords.find(cwdPath, ...args)
 
-    await boilerInstances.actionCallback(
+    await boilerActions.load(
       cwdPath,
       this,
       "generate",
@@ -284,8 +283,9 @@ export class Boiler {
 
 export default new Boiler()
 
+export { BoilerAction } from "./boilerActions"
+
 export {
-  BoilerAction,
   InstallBoiler,
   PromptBoiler,
   GenerateBoiler,

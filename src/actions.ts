@@ -9,7 +9,7 @@ import {
 } from "fs-extra"
 
 import { Boiler } from "."
-import { BoilerAction } from "./boilerInstances"
+import { BoilerAction } from "./boilerActions"
 import chmod from "./chmod"
 import boilerPackages from "./boilerPackages"
 
