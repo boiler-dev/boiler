@@ -2,6 +2,7 @@ import inquirer from "inquirer"
 
 import { Boiler } from "."
 import actions from "./actions"
+import boilerAnswers from "./boilerAnswers"
 import { BoilerRecord } from "./boilerRecords"
 import ts from "./ts"
 
@@ -15,6 +16,7 @@ export interface BoilerAction {
 
 export interface BoilerInput extends BoilerRecord {
   cwdPath: string
+  allAnswers: Record<string, any>
 }
 
 export type InstallBoiler = (
@@ -103,6 +105,7 @@ export class BoilerInstances {
 
       const boilerActions = await instance[callback]({
         cwdPath,
+        allAnswers: boilerAnswers.allAnswers(cwdPath),
         ...record,
       })
 
@@ -124,6 +127,7 @@ export class BoilerInstances {
 
       let prompts = await instance.prompt({
         cwdPath,
+        allAnswers: boilerAnswers.allAnswers(cwdPath),
         ...record,
       })
 
