@@ -103,9 +103,11 @@ export class BoilerRecords {
     return records.map(record => {
       const { answers, name, repo } = record
 
-      if (!answers) {
-        record.answers = boilerAnswers.load(cwdPath, name)
-      }
+      record.answers = boilerAnswers.load(
+        cwdPath,
+        name,
+        answers
+      )
 
       if (!name) {
         record.name = this.extractName(repo)

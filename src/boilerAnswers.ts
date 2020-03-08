@@ -3,15 +3,19 @@ export class BoilerAnswers {
 
   load(
     cwdPath: string,
-    boilerName: string
+    boilerName: string,
+    answers: Record<string, any>
   ): Record<string, any> {
     const id = `${cwdPath}:${boilerName}`
 
-    if (this.records[id]) {
-      return this.records[id]
+    if (!this.records[id]) {
+      this.records[id] = {}
     }
 
-    this.records[id] = {}
+    if (answers) {
+      Object.assign(this.records[id], answers)
+    }
+
     return this.records[id]
   }
 
