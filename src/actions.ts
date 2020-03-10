@@ -38,7 +38,7 @@ export class Actions {
       }
 
       if (action === "merge") {
-        await this.merge(record)
+        await this.merge(cwdPath, record)
       }
 
       if (action === "npmInstall") {
@@ -55,9 +55,15 @@ export class Actions {
     await boiler.generate(cwdPath, ...action.source)
   }
 
-  async merge(action: BoilerAction): Promise<void> {
-    const { path, source } = action
+  async merge(
+    cwdPath: string,
+    action: BoilerAction
+  ): Promise<void> {
+    const { source } = action
+    let { path } = action
     let json = {}
+
+    path = join(cwdPath, path)
 
     if (await pathExists(path)) {
       json = await readJson(path)
