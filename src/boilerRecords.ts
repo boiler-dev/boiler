@@ -42,7 +42,7 @@ export class BoilerRecords {
     if (await pathExists(jsonPath)) {
       const records = await readJson(jsonPath)
 
-      this.fillBasic(cwdPath, ...records)
+      await this.fillBasic(cwdPath, ...records)
       this.append(cwdPath, ...records)
     }
 
@@ -63,7 +63,7 @@ export class BoilerRecords {
     cwdPath: string,
     ...records: BoilerRecord[]
   ): Promise<BoilerRecord[]> {
-    this.fillBasic(cwdPath, ...records)
+    await this.fillBasic(cwdPath, ...records)
 
     return await Promise.all(
       records.map(async record => {
@@ -98,25 +98,34 @@ export class BoilerRecords {
     )
   }
 
-  fillBasic(
+  async fillBasic(
     cwdPath: string,
     ...records: BoilerRecord[]
-  ): BoilerRecord[] {
-    return records.map(record => {
-      const { answers, name, repo } = record
+  ): Promise<BoilerRecord[]> {
+    return Promise.all(
+      records.map(async record => {
+        const { answers, name, repo } = record
 
-      if (!name) {
-        record.name = this.extractName(repo)
-      }
+        if (!repo) {
+          const { out } = await git.remote(
+            join(cwdPath, "boiler", name)
+          )
+          record.repo = out.trim()
+        }
 
-      record.answers = boilerAnswers.load(
-        cwdPath,
-        record.name,
-        answers
-      )
+        if (!name) {
+          record.name = this.extractName(record.repo)
+        }
 
-      return record
-    })
+        record.answers = boilerAnswers.load(
+          cwdPath,
+          record.name,
+          answers
+        )
+
+        return record
+      })
+    )
   }
 
   async find(
