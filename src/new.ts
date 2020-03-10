@@ -1,11 +1,9 @@
 export const newBoilerTs = `import {
-  InstallBoiler,
+  ActionBoiler,
   PromptBoiler,
-  GenerateBoiler,
-  UninstallBoiler,
 } from "boiler-dev"
 
-export const install: InstallBoiler = async ({
+export const install: ActionBoiler = async ({
   cwdPath,
   files,
 }) => {
@@ -21,7 +19,7 @@ export const prompt: PromptBoiler = async ({
   return prompts
 }
 
-export const generate: GenerateBoiler = async ({
+export const generate: ActionBoiler = async ({
   cwdPath,
   answers,
   files,
@@ -30,7 +28,7 @@ export const generate: GenerateBoiler = async ({
   return actions
 }
 
-export const uninstall: UninstallBoiler = async ({
+export const uninstall: ActionBoiler = async ({
   cwdPath,
   answers,
   files,

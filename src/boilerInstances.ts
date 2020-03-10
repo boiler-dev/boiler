@@ -1,41 +1,26 @@
 import { BoilerAction } from "./boilerActions"
 import { BoilerRecord } from "./boilerRecords"
 import ts from "./ts"
+import { BoilerPrompt } from "./boilerPrompts"
 
 export interface BoilerInput extends BoilerRecord {
   cwdPath: string
   allAnswers: Record<string, any>
 }
 
-export type InstallBoiler = (
-  input: BoilerInput
-) => Promise<BoilerAction[]>
-
-export type UninstallBoiler = (
+export type ActionBoiler = (
   input: BoilerInput
 ) => Promise<BoilerAction[]>
 
 export type PromptBoiler = (
   input: BoilerInput
-) => Promise<
-  {
-    type: string
-    name: string
-    message: string
-    default?: any
-    choices?: Record<string, any>[]
-  }[]
->
-
-export type GenerateBoiler = (
-  input: BoilerInput
-) => Promise<BoilerAction[]>
+) => Promise<BoilerPrompt[]>
 
 export interface BoilerInstance {
-  install: InstallBoiler
+  install: ActionBoiler
   prompt: PromptBoiler
-  generate: GenerateBoiler
-  uninstall: UninstallBoiler
+  generate: ActionBoiler
+  uninstall: ActionBoiler
 }
 
 export class BoilerInstances {

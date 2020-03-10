@@ -4,9 +4,9 @@ import { readFile } from "fs-extra"
 import files from "./files"
 
 export interface BoilerFileRecord {
-  name: string
   path: string
-  source: string
+  name?: string
+  source?: string
 }
 
 export class BoilerFiles {

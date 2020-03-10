@@ -1,3 +1,5 @@
+import { relative } from "path"
+
 import { Boiler } from "."
 import actions from "./actions"
 import boilerAnswers from "./boilerAnswers"
@@ -41,6 +43,24 @@ export class BoilerActions {
       })
 
       await actions.run(cwdPath, boiler, this.records[id])
+    }
+  }
+
+  writes(cwdPath: string, name: string): string[] {
+    const writes = []
+
+    for (const id in this.records) {
+      if (id === `${cwdPath}:${name}`) {
+        for (const { action, path } of this.records[id]) {
+          if (action === "write") {
+            writes.push(relative(cwdPath, path))
+          }
+        }
+      }
+    }
+
+    if (writes.length) {
+      return writes
     }
   }
 }

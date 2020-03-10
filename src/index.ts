@@ -286,10 +286,8 @@ export default new Boiler()
 export { BoilerAction } from "./boilerActions"
 
 export {
-  InstallBoiler,
+  ActionBoiler,
   PromptBoiler,
-  GenerateBoiler,
-  UninstallBoiler,
 } from "./boilerInstances"
 
 export {

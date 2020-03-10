@@ -3,16 +3,16 @@ import boilerInstances from "./boilerInstances"
 import { BoilerRecord } from "./boilerRecords"
 import inquirer = require("inquirer")
 
-export interface BoilerAction {
-  action: string
-  bin?: boolean
-  dev?: boolean
-  path?: string
-  source: any
+export interface BoilerPrompt {
+  type: string
+  name: string
+  message: string
+  default?: any
+  choices?: Record<string, any>[]
 }
 
-export class BoilerActions {
-  records: Record<string, BoilerAction[]> = {}
+export class BoilerPrompts {
+  records: Record<string, BoilerPrompt[]> = {}
 
   async load(
     cwdPath: string,
@@ -31,26 +31,22 @@ export class BoilerActions {
         continue
       }
 
-      let prompts = await instance.prompt({
+      const prompts = await instance.prompt({
         cwdPath,
         allAnswers: boilerAnswers.allAnswers(cwdPath),
         ...record,
       })
 
-      prompts = prompts.filter(
+      records[id] = prompts.filter(
         prompt =>
           answers[prompt.name] === undefined ||
           answers[prompt.name] === null
       )
 
-      const newAnswers = await inquirer.prompt(prompts)
-
-      records[id] = Object.assign(
-        records[id] || {},
-        newAnswers
-      )
+      const newAnswers = await inquirer.prompt(records[id])
+      Object.assign(answers, newAnswers)
     }
   }
 }
 
-export default new BoilerActions()
+export default new BoilerPrompts()

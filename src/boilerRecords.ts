@@ -14,6 +14,7 @@ import boilerPaths, {
 import boilerInstances from "./boilerInstances"
 
 import git from "./git"
+import boilerActions from "./boilerActions"
 
 export interface BoilerRecord {
   repo: string
@@ -22,6 +23,7 @@ export interface BoilerRecord {
   files?: BoilerFileRecord[]
   name?: string
   paths?: BoilerPathRecord
+  writes?: BoilerFileRecord[]
   version?: string
 }
 
@@ -103,15 +105,15 @@ export class BoilerRecords {
     return records.map(record => {
       const { answers, name, repo } = record
 
-      record.answers = boilerAnswers.load(
-        cwdPath,
-        name,
-        answers
-      )
-
       if (!name) {
         record.name = this.extractName(repo)
       }
+
+      record.answers = boilerAnswers.load(
+        cwdPath,
+        record.name,
+        answers
+      )
 
       return record
     })
@@ -211,9 +213,11 @@ export class BoilerRecords {
     const jsonPath = join(cwdPath, ".boiler.json")
 
     const records = this.records[cwdPath].map(
-      ({ answers, repo, version }) => ({
+      ({ answers, name, repo, version, writes }) => ({
         answers,
         repo,
+        writes:
+          boilerActions.writes(cwdPath, name) || writes,
         version,
       })
     )
