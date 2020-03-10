@@ -8,10 +8,12 @@ import { BoilerRecord } from "./boilerRecords"
 
 export interface BoilerAction {
   action: string
+  source: any
+
   bin?: boolean
   dev?: boolean
   path?: string
-  source: any
+  modify?: Function
 }
 
 export class BoilerActions {
@@ -42,7 +44,12 @@ export class BoilerActions {
         ...record,
       })
 
-      await actions.run(cwdPath, boiler, this.records[id])
+      await actions.run(
+        cwdPath,
+        boiler,
+        record,
+        this.records[id]
+      )
     }
   }
 

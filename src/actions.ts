@@ -1,8 +1,9 @@
-import { extname } from "path"
+import { join } from "path"
 import deepmerge from "deepmerge"
 import {
   ensureFile,
   pathExists,
+  readFile,
   readJson,
   writeFile,
   writeJson,
@@ -10,13 +11,15 @@ import {
 
 import { Boiler } from "."
 import { BoilerAction } from "./boilerActions"
-import chmod from "./chmod"
 import boilerPackages from "./boilerPackages"
+import { BoilerRecord } from "./boilerRecords"
+import chmod from "./chmod"
 
 export class Actions {
   async run(
     cwdPath: string,
     boiler: Boiler,
+    boilerRecord: BoilerRecord,
     actions: BoilerAction[]
   ): Promise<void> {
     for (const record of actions) {
@@ -31,7 +34,7 @@ export class Actions {
       }
 
       if (action === "write") {
-        await this.write(record)
+        await this.write(cwdPath, boilerRecord, record)
       }
 
       if (action === "merge") {
@@ -75,20 +78,30 @@ export class Actions {
     packages[key] = packages[key].concat(source)
   }
 
-  async write(action: BoilerAction): Promise<void> {
-    const { bin, path } = action
-    let { source } = action
+  async write(
+    cwdPath: string,
+    boilerRecord: BoilerRecord,
+    action: BoilerAction
+  ): Promise<void> {
+    const { name } = boilerRecord
+    const { bin, modify } = action
+    let { path, source } = action
 
+    source = join(cwdPath, "boiler", name, source)
+    path = join(cwdPath, path)
+
+    let src = (await readFile(source)).toString()
     await ensureFile(path)
 
-    if (
-      extname(path) === ".json" &&
-      typeof source !== "string"
-    ) {
-      source = JSON.stringify(source, null, 2)
+    if (modify) {
+      src = await modify(src)
     }
 
-    await writeFile(path, source)
+    if (typeof src !== "string") {
+      src = JSON.stringify(src, null, 2)
+    }
+
+    await writeFile(path, src)
 
     if (bin) {
       await chmod.makeExecutable(path)
