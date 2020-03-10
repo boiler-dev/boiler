@@ -16,7 +16,6 @@ import git from "./git"
 import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
 import ts from "./ts"
-import boilerInstances from "./boilerInstances"
 import boilerPrompts from "./boilerPrompts"
 import boilerActions from "./boilerActions"
 
