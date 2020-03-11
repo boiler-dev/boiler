@@ -33,7 +33,11 @@ export class BoilerFiles {
       )
     )
 
-    return this.records[id]
+    return this.records[id].filter(
+      ({ sourcePath }) =>
+        sourcePath !== "boiler.ts" &&
+        sourcePath !== "boiler.js"
+    )
   }
 }
 
