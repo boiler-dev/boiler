@@ -1,5 +1,3 @@
-import { relative } from "path"
-
 import { Boiler } from "."
 import actions from "./actions"
 import boilerAnswers from "./boilerAnswers"
@@ -62,10 +60,7 @@ export class BoilerActions {
         for (const { action, path, sourcePath } of this
           .records[id]) {
           if (action === "write" && sourcePath) {
-            writes.push({
-              path: relative(cwdPath, path),
-              sourcePath: relative(cwdPath, sourcePath),
-            })
+            writes.push({ path, sourcePath })
           }
         }
       }
