@@ -59,13 +59,12 @@ export class BoilerActions {
 
     for (const id in this.records) {
       if (id === `${cwdPath}:${name}`) {
-        for (const { action, path, source } of this.records[
-          id
-        ]) {
-          if (action === "write") {
+        for (const { action, path, sourcePath } of this
+          .records[id]) {
+          if (action === "write" && sourcePath) {
             writes.push({
               path: relative(cwdPath, path),
-              source: relative(cwdPath, source),
+              sourcePath: relative(cwdPath, sourcePath),
             })
           }
         }

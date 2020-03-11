@@ -95,7 +95,7 @@ export class Actions {
 
     if (!source) {
       sourcePath = join(cwdPath, "boiler", name, sourcePath)
-      source = (await readFile(source)).toString()
+      source = (await readFile(sourcePath)).toString()
     }
 
     path = join(cwdPath, path)
