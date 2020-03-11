@@ -13,6 +13,7 @@ export interface BoilerAction {
   bin?: boolean
   dev?: boolean
   path?: string
+  sourcePath?: string
   modify?: Function
 }
 

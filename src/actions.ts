@@ -91,23 +91,26 @@ export class Actions {
   ): Promise<void> {
     const { name } = boilerRecord
     const { bin, modify } = action
-    let { path, source } = action
+    let { path, source, sourcePath } = action
 
-    source = join(cwdPath, "boiler", name, source)
+    if (!source) {
+      sourcePath = join(cwdPath, "boiler", name, sourcePath)
+      source = (await readFile(source)).toString()
+    }
+
     path = join(cwdPath, path)
 
-    let src = (await readFile(source)).toString()
     await ensureFile(path)
 
     if (modify) {
-      src = await modify(src)
+      source = await modify(source)
     }
 
-    if (typeof src !== "string") {
-      src = JSON.stringify(src, null, 2)
+    if (typeof source !== "string") {
+      source = JSON.stringify(source, null, 2)
     }
 
-    await writeFile(path, src)
+    await writeFile(path, source)
 
     if (bin) {
       await chmod.makeExecutable(path)
