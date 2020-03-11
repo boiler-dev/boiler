@@ -1,12 +1,10 @@
 import { basename, join, relative } from "path"
-import { readFile } from "fs-extra"
 
 import files from "./files"
 
 export interface BoilerFileRecord {
-  path: string
+  sourcePath: string
   name?: string
-  source?: string
 }
 
 export class BoilerFiles {
@@ -29,8 +27,7 @@ export class BoilerFiles {
         async path => {
           return {
             name: basename(path),
-            path: relative(cwdPath, path),
-            source: (await readFile(path)).toString(),
+            sourcePath: relative(boilerPath, path),
           }
         }
       )
