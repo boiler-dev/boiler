@@ -1,6 +1,5 @@
 import { basename, join, resolve } from "path"
 import fs, {
-  copy,
   ensureDir,
   pathExists,
   writeFile,
