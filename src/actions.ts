@@ -91,10 +91,23 @@ export class Actions {
   ): Promise<void> {
     const { name } = boilerRecord
     const { bin, modify } = action
+
     let { path, source, sourcePath } = action
 
     if (!source) {
-      sourcePath = join(cwdPath, "boiler", name, sourcePath)
+      const tmpSourcePath = join(
+        cwdPath,
+        "boiler",
+        name,
+        sourcePath
+      )
+
+      if (await pathExists(tmpSourcePath)) {
+        sourcePath = tmpSourcePath
+      } else {
+        sourcePath = join(cwdPath, sourcePath)
+      }
+
       source = (await readFile(sourcePath)).toString()
     }
 

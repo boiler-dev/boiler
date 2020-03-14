@@ -1,6 +1,10 @@
 import { join } from "path"
 import { pathExists, readJson, writeJson } from "fs-extra"
 
+import boilerActions, {
+  BoilerActionWrite,
+} from "./boilerActions"
+
 import boilerAnswers from "./boilerAnswers"
 
 import boilerFiles, {
@@ -14,7 +18,6 @@ import boilerPaths, {
 import boilerInstances from "./boilerInstances"
 
 import git from "./git"
-import boilerActions from "./boilerActions"
 
 export interface BoilerRecord {
   repo: string
@@ -23,7 +26,7 @@ export interface BoilerRecord {
   files?: BoilerFileRecord[]
   name?: string
   paths?: BoilerPathRecord
-  writes?: BoilerFileRecord[]
+  writes?: BoilerActionWrite[]
   version?: string
 }
 

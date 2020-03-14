@@ -13,14 +13,16 @@ export class Cli {
       await git.appendGitignore(cwdPath, "/boiler")
     }
 
-    if (cmd[0] === "c") {
+    if (cmd[0] === "a") {
+      await boiler.absorb(cwdPath, ...args)
+    } else if (cmd[0] === "c") {
       await boiler.commit(cwdPath, ...args)
     } else if (cmd[0] === "g") {
       await boiler.generate(cwdPath, ...args)
-    } else if (cmd[0] === "n") {
-      await boiler.new(cwdPath, ...args)
     } else if (cmd[0] === "i") {
       await boiler.install(cwdPath, ...args)
+    } else if (cmd[0] === "n") {
+      await boiler.new(cwdPath, ...args)
     } else if (cmd[0] === "s") {
       await boiler.status(cwdPath, ...args)
     } else if (cmd.slice(0, 2) === "un") {

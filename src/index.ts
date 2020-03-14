@@ -1,5 +1,6 @@
 import { basename, join, resolve } from "path"
 import fs, {
+  copy,
   ensureDir,
   pathExists,
   writeFile,
@@ -8,7 +9,9 @@ import fs, {
 import inquirer from "inquirer"
 
 import actions from "./actions"
+import boilerActions from "./boilerActions"
 import boilerPackages from "./boilerPackages"
+import boilerPrompts from "./boilerPrompts"
 import boilerRecords from "./boilerRecords"
 import chmod from "./chmod"
 import files from "./files"
@@ -16,10 +19,25 @@ import git from "./git"
 import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
 import ts from "./ts"
-import boilerPrompts from "./boilerPrompts"
-import boilerActions from "./boilerActions"
 
 export class Boiler {
+  async absorb(
+    cwdPath: string,
+    ...args: string[]
+  ): Promise<void> {
+    const { allRecords } = await boilerRecords.findUnique(
+      cwdPath,
+      ...args
+    )
+
+    await boilerActions.load(
+      cwdPath,
+      this,
+      "absorb",
+      ...allRecords
+    )
+  }
+
   async commit(
     cwdPath: string,
     ...args: string[]
