@@ -59,7 +59,7 @@ export const absorb: ActionBoiler = async ({ writes }) => {
     action: "write",
     sourcePath: path,
     path: sourcePath,
-    modify: (src: string): string => src,
+    // modify: (src: string): string => src,
   }))
 }
 `
