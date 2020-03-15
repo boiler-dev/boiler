@@ -300,6 +300,7 @@ export class Boiler {
 export default new Boiler()
 
 export { BoilerAction } from "./boilerActions"
+export { BoilerPrompt } from "./boilerPrompts"
 
 export {
   ActionBoiler,

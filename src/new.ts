@@ -1,39 +1,69 @@
 export const newBoilerTs = `import {
   ActionBoiler,
   PromptBoiler,
+  BoilerAction,
+  BoilerPrompt,
 } from "boiler-dev"
 
-export const install: ActionBoiler = async ({
-  cwdPath,
-  files,
-}) => {
-  const actions = []
+export const install: ActionBoiler = async () => {
+  const actions: BoilerAction[] = []
+
+  // actions.push({
+  //   action: "npmInstall",
+  //   dev: true,
+  //   source: ["some-package"],
+  // })
+
   return actions
 }
 
-export const prompt: PromptBoiler = async ({
-  cwdPath,
-  files,
-}) => {
-  const prompts = []
+export const prompt: PromptBoiler = async () => {
+  const prompts: BoilerPrompt[] = []
+
+  // prompts.push({
+  //   type: "input",
+  //   name: "someValue",
+  //   message: "some message",
+  //   default: "some default",
+  // })
+
   return prompts
 }
 
-export const generate: ActionBoiler = async ({
-  cwdPath,
-  answers,
-  files,
-}) => {
-  const actions = []
+export const generate: ActionBoiler = async () => {
+  const actions: BoilerAction[] = []
+
+  // actions.push({
+  //   action: "write",
+  //   path: "src/someName.ts",
+  //   sourcePath: "tsignore/someName.ts",
+  // })
+
   return actions
 }
 
-export const uninstall: ActionBoiler = async ({
-  cwdPath,
-  answers,
-  files,
-}) => {
-  const actions = []
+// export const absorb: ActionBoiler = async ({ writes }) => {
+//   const actions = []
+
+//   return writes.map(({ path, sourcePath }) => ({
+//     action: "write",
+//     sourcePath: path,
+//     path: sourcePath,
+//     modify: (src: string): string => str
+//   }))
+
+//   return actions
+// }
+
+export const uninstall: ActionBoiler = async () => {
+  const actions: BoilerAction[] = []
+
+  // actions.push({
+  //   action: "npmUninstall",
+  //   dev: true,
+  //   source: ["some-package"],
+  // })
+
   return actions
 }
 `
