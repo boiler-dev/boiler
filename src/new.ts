@@ -34,9 +34,9 @@ export const uninstall: ActionBoiler = async () => {
   const actions: BoilerAction[] = []
 
   // actions.push({
-  //   action: "npmUninstall",
-  //   dev: true,
+  //   action: "npmInstall",
   //   source: ["some-package"],
+  //   uninstall: true,
   // })
 
   return actions
