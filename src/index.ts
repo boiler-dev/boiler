@@ -66,6 +66,32 @@ export class Boiler {
     )
   }
 
+  async push(
+    cwdPath: string,
+    ...args: string[]
+  ): Promise<void> {
+    const { allRecords } = await boilerRecords.findUnique(
+      cwdPath,
+      ...args
+    )
+
+    await Promise.all(
+      allRecords.map(async ({ paths }) => {
+        const { boilerDirPath } = paths
+        const isRepo = await pathExists(
+          join(boilerDirPath, ".git")
+        )
+        if (isRepo) {
+          await git.push(boilerDirPath)
+        } else {
+          console.error(
+            `⚠️ Not a git repository: ${boilerDirPath}`
+          )
+        }
+      })
+    )
+  }
+
   async new(
     cwdPath: string,
     ...args: string[]
