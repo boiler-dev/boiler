@@ -56,7 +56,13 @@ export class Actions {
     boiler: Boiler,
     action: BoilerAction
   ): Promise<void> {
-    await boiler.generate(cwdPath, ...action.source)
+    const { uninstall } = action
+
+    if (uninstall) {
+      await boiler.uninstall(cwdPath, ...action.source)
+    } else {
+      await boiler.generate(cwdPath, ...action.source)
+    }
   }
 
   async merge(
