@@ -43,8 +43,6 @@ export const generate: ActionBoiler = async () => {
 }
 
 // export const absorb: ActionBoiler = async ({ writes }) => {
-//   const actions: BoilerAction[] = []
-
 //   return writes.map(({ path, sourcePath }) => ({
 //     action: "write",
 //     sourcePath: path,
