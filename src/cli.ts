@@ -23,6 +23,8 @@ export class Cli {
       await boiler.install(cwdPath, ...args)
     } else if (cmd[0] === "n") {
       await boiler.new(cwdPath, ...args)
+    } else if (cmd[0] === "p") {
+      await boiler.push(cwdPath, ...args)
     } else if (cmd[0] === "s") {
       await boiler.status(cwdPath, ...args)
     } else if (cmd.slice(0, 2) === "un") {
