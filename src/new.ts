@@ -42,14 +42,14 @@ export const generate: ActionBoiler = async () => {
   return actions
 }
 
-// export const absorb: ActionBoiler = async ({ writes }) => {
-//   return writes.map(({ path, sourcePath }) => ({
-//     action: "write",
-//     sourcePath: path,
-//     path: sourcePath,
-//     modify: (src: string): string => src,
-//   }))
-// }
+export const absorb: ActionBoiler = async ({ writes }) => {
+  return writes.map(({ path, sourcePath }) => ({
+    action: "write",
+    sourcePath: path,
+    path: sourcePath,
+    modify: (src: string): string => src,
+  }))
+}
 
 export const uninstall: ActionBoiler = async () => {
   const actions: BoilerAction[] = []

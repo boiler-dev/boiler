@@ -22,6 +22,10 @@ export class Actions {
     boilerRecord: BoilerRecord,
     actions: BoilerAction[]
   ): Promise<void> {
+    if (!actions) {
+      return
+    }
+
     for (const record of actions) {
       if (!record) {
         continue

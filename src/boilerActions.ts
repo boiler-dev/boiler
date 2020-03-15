@@ -59,6 +59,7 @@ export class BoilerActions {
       this.records[id] = await callbackFn({
         cwdPath,
         allAnswers: boilerAnswers.allAnswers(cwdPath),
+        writes: [],
         ...record,
       })
 
@@ -74,15 +75,11 @@ export class BoilerActions {
   async defaultAbsorbCallback({
     writes,
   }: BoilerInput): Promise<BoilerAction[]> {
-    if (writes) {
-      return writes.map(({ path, sourcePath }) => ({
-        action: "write",
-        sourcePath: path,
-        path: sourcePath,
-      }))
-    } else {
-      return []
-    }
+    return writes.map(({ path, sourcePath }) => ({
+      action: "write",
+      sourcePath: path,
+      path: sourcePath,
+    }))
   }
 
   writes(
