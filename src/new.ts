@@ -51,8 +51,6 @@ export const generate: ActionBoiler = async () => {
 //     path: sourcePath,
 //     modify: (src: string): string => str
 //   }))
-
-//   return actions
 // }
 
 export const uninstall: ActionBoiler = async () => {
