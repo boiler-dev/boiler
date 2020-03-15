@@ -50,6 +50,21 @@ export class BoilerPackages {
       await npm.install(cwdPath, prod)
     }
   }
+
+  async uninstall(cwdPath: string): Promise<void> {
+    if (this.records[cwdPath]) {
+      const pkgJsonPath = join(cwdPath, "package.json")
+
+      if (!(await pathExists(pkgJsonPath))) {
+        return
+      }
+
+      const { dev, prod } = this.records[cwdPath]
+
+      await npm.uninstall(cwdPath, dev)
+      await npm.uninstall(cwdPath, prod)
+    }
+  }
 }
 
 export default new BoilerPackages()

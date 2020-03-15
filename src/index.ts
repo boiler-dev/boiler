@@ -191,6 +191,8 @@ export class Boiler {
 
     boilerRecords.remove(cwdPath, ...uninstallRecords)
     await boilerRecords.save(cwdPath)
+
+    await boilerPackages.uninstall(cwdPath)
   }
 
   async update(

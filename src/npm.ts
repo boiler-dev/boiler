@@ -46,6 +46,41 @@ export class Npm {
 
     return response
   }
+
+  async uninstall(
+    destDir: string,
+    pkgNames: string[]
+  ): Promise<SpawnTerminalOutput> {
+    if (!pkgNames.length) {
+      return
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(
+      "⚙️  Uninstalling npm modules:\n  " +
+        pkgNames.sort().join("\n  ")
+    )
+
+    const response = await spawnTerminal("npm", {
+      args: ["uninstall", ...pkgNames],
+      cwd: destDir,
+    })
+
+    const { code, out } = response
+
+    if (code === 0) {
+      // eslint-disable-next-line no-console
+      console.log("✅ Npm modules uninstalled.")
+    } else {
+      console.error(
+        "🚨 Failed to uninstall npm modules:",
+        pkgNames
+      )
+      console.error(out)
+    }
+
+    return response
+  }
 }
 
 export default new Npm()

@@ -45,7 +45,7 @@ export class Actions {
         await this.merge(cwdPath, record)
       }
 
-      if (action === "npmInstall") {
+      if (["npmInstall", "npmUninstall"].includes(action)) {
         this.npmInstall(cwdPath, record)
       }
     }
