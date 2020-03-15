@@ -5,6 +5,19 @@ export const newBoilerTs = `import {
   BoilerPrompt,
 } from "boiler-dev"
 
+export const prompt: PromptBoiler = async () => {
+  const prompts: BoilerPrompt[] = []
+
+  // prompts.push({
+  //   type: "input",
+  //   name: "someValue",
+  //   message: "some message",
+  //   default: "some default",
+  // })
+
+  return prompts
+}
+
 export const install: ActionBoiler = async () => {
   const actions: BoilerAction[] = []
 
@@ -17,17 +30,16 @@ export const install: ActionBoiler = async () => {
   return actions
 }
 
-export const prompt: PromptBoiler = async () => {
-  const prompts: BoilerPrompt[] = []
+export const uninstall: ActionBoiler = async () => {
+  const actions: BoilerAction[] = []
 
-  // prompts.push({
-  //   type: "input",
-  //   name: "someValue",
-  //   message: "some message",
-  //   default: "some default",
+  // actions.push({
+  //   action: "npmUninstall",
+  //   dev: true,
+  //   source: ["some-package"],
   // })
 
-  return prompts
+  return actions
 }
 
 export const generate: ActionBoiler = async () => {
@@ -49,18 +61,6 @@ export const absorb: ActionBoiler = async ({ writes }) => {
     path: sourcePath,
     modify: (src: string): string => src,
   }))
-}
-
-export const uninstall: ActionBoiler = async () => {
-  const actions: BoilerAction[] = []
-
-  // actions.push({
-  //   action: "npmUninstall",
-  //   dev: true,
-  //   source: ["some-package"],
-  // })
-
-  return actions
 }
 `
 
