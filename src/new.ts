@@ -49,7 +49,7 @@ export const generate: ActionBoiler = async () => {
 //     action: "write",
 //     sourcePath: path,
 //     path: sourcePath,
-//     modify: (src: string): string => str
+//     modify: (src: string): string => src,
 //   }))
 // }
 
