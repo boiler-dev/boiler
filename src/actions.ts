@@ -45,7 +45,7 @@ export class Actions {
         await this.merge(cwdPath, record)
       }
 
-      if (["npmInstall", "npmUninstall"].includes(action)) {
+      if (action === "npmInstall") {
         this.npmInstall(cwdPath, record)
       }
     }
@@ -80,9 +80,10 @@ export class Actions {
 
   npmInstall(
     cwdPath: string,
-    { dev, source }: BoilerAction
+    { dev, source, uninstall }: BoilerAction
   ): void {
-    const key = dev ? "dev" : "prod"
+    const stage = dev ? "dev" : "prod"
+    const key = uninstall ? "uninstall" : stage
     const packages = boilerPackages.load(cwdPath)
 
     packages[key] = packages[key].concat(source)

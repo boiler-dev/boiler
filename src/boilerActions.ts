@@ -19,6 +19,7 @@ export interface BoilerAction {
   path?: string
   source?: any
   sourcePath?: string
+  uninstall?: boolean
 }
 
 export interface BoilerActionWrite

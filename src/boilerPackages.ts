@@ -6,6 +6,7 @@ import npm from "./npm"
 export interface BoilerPackageRecord {
   dev: string[]
   prod: string[]
+  uninstall: string[]
 }
 
 export class BoilerPackages {
@@ -13,7 +14,11 @@ export class BoilerPackages {
 
   load(cwdPath: string): BoilerPackageRecord {
     if (!this.records[cwdPath]) {
-      this.records[cwdPath] = { dev: [], prod: [] }
+      this.records[cwdPath] = {
+        dev: [],
+        prod: [],
+        uninstall: [],
+      }
     }
     return this.records[cwdPath]
   }
@@ -59,10 +64,9 @@ export class BoilerPackages {
         return
       }
 
-      const { dev, prod } = this.records[cwdPath]
+      const { uninstall } = this.records[cwdPath]
 
-      await npm.uninstall(cwdPath, dev)
-      await npm.uninstall(cwdPath, prod)
+      await npm.uninstall(cwdPath, uninstall)
     }
   }
 }
