@@ -24,6 +24,7 @@ export interface BoilerRecord {
 
   answers?: Record<string, any>
   files?: BoilerFileRecord[]
+  id?: number
   name?: string
   paths?: BoilerPathRecord
   writes?: BoilerActionWrite[]
@@ -49,7 +50,14 @@ export class BoilerRecords {
       this.append(cwdPath, ...records)
     }
 
+    this.index(cwdPath)
     return this.records[cwdPath]
+  }
+
+  index(cwdPath: string): void {
+    this.records[cwdPath].forEach(
+      (record, index) => (record.id = index)
+    )
   }
 
   append(
@@ -86,7 +94,7 @@ export class BoilerRecords {
         if (!files) {
           record.files = await boilerFiles.load(
             cwdPath,
-            record.name
+            record
           )
         }
 
@@ -107,7 +115,7 @@ export class BoilerRecords {
   ): Promise<BoilerRecord[]> {
     return Promise.all(
       records.map(async record => {
-        const { answers, name, repo } = record
+        const { answers, id, name, repo } = record
 
         if (!repo) {
           const { out } = await git.remote(
@@ -122,7 +130,7 @@ export class BoilerRecords {
 
         record.answers = boilerAnswers.load(
           cwdPath,
-          record.name,
+          id,
           answers
         )
 
@@ -154,14 +162,31 @@ export class BoilerRecords {
       )
     }
 
+    await this.fill(cwdPath, ...records)
+
     const names = records.map(({ name }) => name)
 
-    for (const arg of args) {
-      const name = this.extractName(arg)
+    newRecords = await this.newRecords(
+      cwdPath,
+      ...args.filter(
+        arg => !names.includes(this.extractName(arg))
+      )
+    )
 
-      if (names.includes(name)) {
-        continue
-      }
+    const allRecords = records.concat(newRecords)
+
+    return { allRecords, newRecords, records }
+  }
+
+  async newRecords(
+    cwdPath: string,
+    ...args: string[]
+  ): Promise<BoilerRecord[]> {
+    const newRecords = []
+    const length = this.records[cwdPath].length
+
+    args.forEach((arg, index) => {
+      const name = this.extractName(arg)
 
       let repo: string
 
@@ -169,13 +194,12 @@ export class BoilerRecords {
         repo = arg
       }
 
-      newRecords = newRecords.concat({ name, repo })
-    }
+      newRecords.push({ name, index: index + length, repo })
+    })
 
-    const allRecords = records.concat(newRecords)
-    await this.fill(cwdPath, ...allRecords)
+    await this.fill(cwdPath, ...newRecords)
 
-    return { allRecords, newRecords, records }
+    return newRecords
   }
 
   async findUnique(
@@ -224,15 +248,16 @@ export class BoilerRecords {
   async save(cwdPath: string): Promise<void> {
     const jsonPath = join(cwdPath, ".boiler.json")
 
-    const records = this.records[cwdPath].map(
-      ({ answers, name, repo, version, writes }) => ({
+    const records = this.records[cwdPath].map(record => {
+      const { answers, repo, version, writes } = record
+      return {
         answers,
         repo,
         writes:
-          boilerActions.writes(cwdPath, name) || writes,
+          boilerActions.writes(cwdPath, record) || writes,
         version,
-      })
-    )
+      }
+    })
 
     await writeJson(jsonPath, records, {
       spaces: 2,

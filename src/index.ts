@@ -1,4 +1,5 @@
 import { basename, join, resolve } from "path"
+
 import fs, {
   ensureDir,
   pathExists,
@@ -9,14 +10,18 @@ import inquirer from "inquirer"
 
 import actions from "./actions"
 import boilerActions from "./boilerActions"
+import boilerAnswers from "./boilerAnswers"
+import boilerFiles from "./boilerFiles"
 import boilerPackages from "./boilerPackages"
+import boilerPaths from "./boilerPaths"
 import boilerPrompts from "./boilerPrompts"
-import boilerRecords from "./boilerRecords"
+import { BoilerRecord } from "./boilerRecords"
 import chmod from "./chmod"
 import files from "./files"
 import git from "./git"
 import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
+import packages from "./packages"
 import ts from "./ts"
 
 export class Boiler {
@@ -24,16 +29,16 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const { allRecords } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
     await boilerActions.load(
       cwdPath,
       this,
       "absorb",
-      ...allRecords
+      ...records
     )
   }
 
@@ -42,13 +47,13 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const message = args.pop()
-    const { allRecords } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
     await Promise.all(
-      allRecords.map(async ({ paths }) => {
+      records.map(async ({ paths }) => {
         const { boilerDirPath } = paths
         const isRepo = await pathExists(
           join(boilerDirPath, ".git")
@@ -66,17 +71,83 @@ export class Boiler {
     )
   }
 
+  extractName(nameOrPathOrRepo: string): string {
+    const nameMatch = nameOrPathOrRepo.match(
+      /([^\/.]+)\.*[git/]*$/
+    )
+
+    if (!nameMatch) {
+      console.error(
+        "Argument `${repo}` should be a name, path, or repository."
+      )
+      process.exit(1)
+    }
+
+    return nameMatch[1]
+  }
+
+  async modifyFind(
+    cwdPath: string,
+    record: BoilerRecord
+  ): Promise<BoilerRecord> {
+    const { answers, id, name } = record
+
+    const { out } = await git.remote(
+      join(cwdPath, "boiler", name)
+    )
+
+    record.repo = out.trim()
+    record.name = this.extractName(record.repo)
+
+    record.answers = boilerAnswers.load(
+      cwdPath,
+      id,
+      answers
+    )
+
+    record.paths = await boilerPaths.load(
+      cwdPath,
+      record.name
+    )
+
+    if (!record.paths.boilerDirExists) {
+      return record
+    }
+
+    record.files = await boilerFiles.load(cwdPath, record)
+
+    record.version = await git.commitHash(
+      join(cwdPath, "boiler", record.name)
+    )
+
+    return record
+  }
+
+  async modifySave(
+    cwdPath: string,
+    record: BoilerRecord
+  ): Promise<BoilerRecord> {
+    const { answers, repo, version, writes } = record
+    return {
+      answers,
+      repo,
+      writes:
+        boilerActions.writes(cwdPath, record) || writes,
+      version,
+    }
+  }
+
   async push(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const { allRecords } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
     await Promise.all(
-      allRecords.map(async ({ paths }) => {
+      records.map(async ({ paths }) => {
         const { boilerDirPath } = paths
         const isRepo = await pathExists(
           join(boilerDirPath, ".git")
@@ -138,15 +209,15 @@ export class Boiler {
       args
     )
 
-    const { allRecords } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
     const boilerDirPath = join(cwdPath, "boiler")
     await ensureDir(boilerDirPath)
 
-    const installRecords = allRecords.filter(
+    const installRecords = records.filter(
       ({ paths }) => !paths.boilerDirExists
     )
 
@@ -170,12 +241,9 @@ export class Boiler {
       })
     )
 
-    boilerRecords.reset(cwdPath, ...installRecords)
-    await boilerRecords.fill(cwdPath, ...installRecords)
-
     await boilerPrompts.load(
       cwdPath,
-      ...(promptAll ? allRecords : installRecords)
+      ...(promptAll ? records : installRecords)
     )
 
     await boilerActions.load(
@@ -188,16 +256,24 @@ export class Boiler {
     await boilerPackages.install(cwdPath)
   }
 
+  async save(cwdPath: string): Promise<void> {
+    await packages.save(
+      cwdPath,
+      join(cwdPath, ".boiler.json"),
+      { modify: this.modifySave }
+    )
+  }
+
   async uninstall(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const { allRecords } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
-    const uninstallRecords = allRecords.filter(
+    const uninstallRecords = records.filter(
       ({ paths }) => paths.boilerDirExists
     )
 
@@ -215,9 +291,9 @@ export class Boiler {
       })
     )
 
-    boilerRecords.remove(cwdPath, ...uninstallRecords)
+    packages.remove(cwdPath, ...uninstallRecords)
 
-    await boilerRecords.save(cwdPath)
+    await this.save(cwdPath)
     await boilerPackages.uninstall(cwdPath)
   }
 
@@ -225,12 +301,12 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const { allRecords } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
-    const updateRecords = allRecords.filter(
+    const updateRecords = records.filter(
       ({ paths }) => paths.boilerDirExists
     )
 
@@ -241,9 +317,6 @@ export class Boiler {
       })
     )
 
-    boilerRecords.reset(cwdPath, ...updateRecords)
-
-    await boilerRecords.fill(cwdPath, ...updateRecords)
     await boilerPrompts.load(cwdPath, ...updateRecords)
 
     await boilerActions.load(
@@ -260,24 +333,28 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
+    const newRecord =
+      this.extractOption("--new", args) ||
+      this.extractOption("-n", args)
+
     await this.install(cwdPath, "--prompt-all", ...args)
 
-    const {
-      newRecords,
-      allRecords,
-    } = await boilerRecords.find(cwdPath, ...args)
+    const records = (await packages.find(cwdPath, args, {
+      forceNew: newRecord,
+      modify: this.modifyFind,
+    })) as BoilerRecord[]
 
     await boilerActions.load(
       cwdPath,
       this,
       "generate",
-      ...allRecords
+      ...records
     )
 
     await boilerPackages.install(cwdPath)
 
-    boilerRecords.append(cwdPath, ...newRecords)
-    await boilerRecords.save(cwdPath)
+    packages.append(cwdPath, records)
+    await this.save(cwdPath)
   }
 
   async status(
@@ -286,10 +363,10 @@ export class Boiler {
   ): Promise<void> {
     let dirty: boolean
 
-    const { records } = await boilerRecords.findUnique(
-      cwdPath,
-      ...args
-    )
+    const records = (await packages.find(cwdPath, args, {
+      modify: this.modifyFind,
+      unique: true,
+    })) as BoilerRecord[]
 
     for (const { name, paths } of records) {
       const { out } = await git.status(paths.boilerDirPath)
@@ -335,13 +412,4 @@ export {
   PromptBoiler,
 } from "./boilerInstances"
 
-export {
-  actions,
-  boilerRecords,
-  chmod,
-  files,
-  fs,
-  git,
-  npm,
-  ts,
-}
+export { actions, chmod, files, fs, git, npm, ts }

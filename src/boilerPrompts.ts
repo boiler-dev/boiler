@@ -19,8 +19,8 @@ export class BoilerPrompts {
     ...records: BoilerRecord[]
   ): Promise<void> {
     for (const record of records) {
-      const { answers, name } = record
-      const id = `${cwdPath}:${name}`
+      const { answers } = record
+      const id = `${cwdPath}:${record.id}`
 
       const instance = await boilerInstances.load(
         cwdPath,

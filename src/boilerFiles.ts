@@ -1,6 +1,7 @@
 import { basename, join, relative } from "path"
 
 import files from "./files"
+import { BoilerRecord } from "./boilerRecords"
 
 export interface BoilerFileRecord {
   sourcePath: string
@@ -12,15 +13,12 @@ export class BoilerFiles {
 
   async load(
     cwdPath: string,
-    boilerName: string
+    record: BoilerRecord
   ): Promise<BoilerFileRecord[]> {
-    const id = `${cwdPath}:${boilerName}`
+    const { name } = record
+    const id = `${cwdPath}:${name}`
 
-    if (this.records[id]) {
-      return this.records[id]
-    }
-
-    const boilerPath = join(cwdPath, "boiler", boilerName)
+    const boilerPath = join(cwdPath, "boiler", name)
 
     this.records[id] = await Promise.all(
       (await files.nestedFiles(boilerPath)).map(

@@ -3,12 +3,12 @@ import { join } from "path"
 import { Boiler } from "."
 import actions from "./actions"
 import boilerAnswers from "./boilerAnswers"
+import { BoilerFileRecord } from "./boilerFiles"
 import boilerInstances, {
   ActionBoiler,
   BoilerInput,
 } from "./boilerInstances"
 import { BoilerRecord } from "./boilerRecords"
-import { BoilerFileRecord } from "./boilerFiles"
 
 export interface BoilerAction {
   action: string
@@ -37,8 +37,7 @@ export class BoilerActions {
     ...records: BoilerRecord[]
   ): Promise<void> {
     for (const record of records) {
-      const { name } = record
-      const id = `${cwdPath}:${name}`
+      const id = `${cwdPath}:${record.id}`
 
       const instance = await boilerInstances.load(
         cwdPath,
@@ -85,18 +84,22 @@ export class BoilerActions {
 
   writes(
     cwdPath: string,
-    name: string
+    record: BoilerRecord
   ): BoilerActionWrite[] {
     const writes: BoilerActionWrite[] = []
 
     for (const id in this.records) {
-      if (id === `${cwdPath}:${name}`) {
+      if (id === `${cwdPath}:${record.id}`) {
         for (const { action, path, sourcePath } of this
           .records[id]) {
           if (action === "write" && sourcePath) {
             writes.push({
               path,
-              sourcePath: join("boiler", name, sourcePath),
+              sourcePath: join(
+                "boiler",
+                record.name,
+                sourcePath
+              ),
             })
           }
         }
