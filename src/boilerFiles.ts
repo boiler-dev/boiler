@@ -1,7 +1,7 @@
 import { basename, join, relative } from "path"
 
+import { BoilerRecord } from "."
 import files from "./files"
-import { BoilerRecord } from "./boilerRecords"
 
 export interface BoilerFileRecord {
   sourcePath: string

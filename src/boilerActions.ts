@@ -1,6 +1,6 @@
 import { join } from "path"
 
-import { Boiler } from "."
+import { Boiler, BoilerRecord } from "."
 import actions from "./actions"
 import boilerAnswers from "./boilerAnswers"
 import { BoilerFileRecord } from "./boilerFiles"
@@ -8,7 +8,6 @@ import boilerInstances, {
   ActionBoiler,
   BoilerInput,
 } from "./boilerInstances"
-import { BoilerRecord } from "./boilerRecords"
 
 export interface BoilerAction {
   action: string

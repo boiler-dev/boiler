@@ -6,7 +6,7 @@ describe("packages", () => {
   const cwdPath = join(__dirname, "fixtures")
   const jsonPath = join(cwdPath, "packages.json")
   const pkgsPath = join(cwdPath, "packages")
-  const matcher = (arg, { name }) => arg === name
+  const matcher = (arg, { name }): boolean => arg === name
 
   beforeEach(() => packages.reset())
 

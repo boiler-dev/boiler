@@ -1,5 +1,5 @@
+import { BoilerRecord } from "."
 import { BoilerAction } from "./boilerActions"
-import { BoilerRecord } from "./boilerRecords"
 import ts from "./ts"
 import { BoilerPrompt } from "./boilerPrompts"
 

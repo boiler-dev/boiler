@@ -1,6 +1,6 @@
+import { BoilerRecord } from "."
 import boilerAnswers from "./boilerAnswers"
 import boilerInstances from "./boilerInstances"
-import { BoilerRecord } from "./boilerRecords"
 import inquirer = require("inquirer")
 
 export interface BoilerPrompt {

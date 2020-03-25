@@ -9,10 +9,9 @@ import {
   writeJson,
 } from "fs-extra"
 
-import { Boiler } from "."
+import { Boiler, BoilerRecord } from "."
 import { BoilerAction } from "./boilerActions"
 import boilerPackages from "./boilerPackages"
-import { BoilerRecord } from "./boilerRecords"
 import chmod from "./chmod"
 
 export class Actions {
