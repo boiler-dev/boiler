@@ -1,12 +1,13 @@
 import { join } from "path"
 import expect from "./expect"
-import packages from "../src/packages"
+import packages, { RecordMatcher } from "../src/packages"
 
 describe("packages", () => {
   const cwdPath = join(__dirname, "fixtures")
   const jsonPath = join(cwdPath, "packages.json")
   const pkgsPath = join(cwdPath, "packages")
-  const matcher = (arg, { name }): boolean => arg === name
+  const matcher: RecordMatcher = (arg, { name }) =>
+    arg === name
 
   beforeEach(() => packages.reset())
 
