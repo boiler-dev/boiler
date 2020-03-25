@@ -9,13 +9,18 @@ import fs, {
 import inquirer from "inquirer"
 
 import actions from "./actions"
-import boilerActions from "./boilerActions"
+import boilerActions, {
+  BoilerActionWrite,
+} from "./boilerActions"
 import boilerAnswers from "./boilerAnswers"
-import boilerFiles from "./boilerFiles"
+import boilerFiles, {
+  BoilerFileRecord,
+} from "./boilerFiles"
 import boilerPackages from "./boilerPackages"
-import boilerPaths from "./boilerPaths"
+import boilerPaths, {
+  BoilerPathRecord,
+} from "./boilerPaths"
 import boilerPrompts from "./boilerPrompts"
-import { BoilerRecord } from "./boilerRecords"
 import chmod from "./chmod"
 import files from "./files"
 import git from "./git"
@@ -23,6 +28,18 @@ import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
 import packages from "./packages"
 import ts from "./ts"
+
+export interface BoilerRecord {
+  repo: string
+
+  answers?: Record<string, any>
+  files?: BoilerFileRecord[]
+  id?: number
+  name?: string
+  paths?: BoilerPathRecord
+  writes?: BoilerActionWrite[]
+  version?: string
+}
 
 export class Boiler {
   async absorb(
