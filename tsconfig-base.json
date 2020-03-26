@@ -9,5 +9,6 @@
     "jsxFactory": "self.render.createElement",
     "moduleResolution": "node",
     "sourceMap": true
-  }
+  },
+  "exclude": ["**/tsignore/**/*.ts", "**/tsignore/**/*.tsx"]
 }
