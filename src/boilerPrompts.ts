@@ -44,7 +44,8 @@ export class BoilerPrompts {
       )
 
       const newAnswers = await inquirer.prompt(records[id])
-      Object.assign(answers, newAnswers)
+
+      boilerAnswers.load(cwdPath, record.id, newAnswers)
     }
   }
 }

@@ -34,7 +34,7 @@ export interface BoilerRecord extends PackageRecord {
 
   answers?: Record<string, any>
   files?: BoilerFileRecord[]
-  id?: number
+  id?: string
   name?: string
   paths?: BoilerPathRecord
   writes?: BoilerActionWrite[]
@@ -47,6 +47,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
@@ -65,6 +66,7 @@ export class Boiler {
   ): Promise<void> {
     const message = args.pop()
     const records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
@@ -103,7 +105,11 @@ export class Boiler {
     return nameMatch[1]
   }
 
-  async modifyFind(
+  matcher(arg: string, record: PackageRecord): boolean {
+    return this.extractName(arg) === record.name
+  }
+
+  async modifyLoad(
     cwdPath: string,
     record: BoilerRecord
   ): Promise<BoilerRecord> {
@@ -124,6 +130,23 @@ export class Boiler {
       record.name = name || this.extractName(repo)
     }
 
+    record.answers = boilerAnswers.load(
+      cwdPath,
+      id,
+      answers
+    )
+
+    return record
+  }
+
+  async modifyFind(
+    cwdPath: string,
+    record: BoilerRecord
+  ): Promise<BoilerRecord> {
+    record = await this.modifyLoad(cwdPath, record)
+
+    const { name } = record
+
     if (!record.repo) {
       const { out } = await git.remote(
         join(cwdPath, "boiler", name)
@@ -132,12 +155,6 @@ export class Boiler {
       record.repo = out.trim()
       record.name = this.extractName(record.repo)
     }
-
-    record.answers = boilerAnswers.load(
-      cwdPath,
-      id,
-      answers
-    )
 
     record.paths = await boilerPaths.load(
       cwdPath,
@@ -161,7 +178,13 @@ export class Boiler {
     cwdPath: string,
     record: BoilerRecord
   ): Promise<BoilerRecord> {
-    const { answers, repo, version, writes } = record
+    const {
+      answers,
+      repo,
+      version,
+      writes,
+    } = await this.modifyFind(cwdPath, record)
+
     return {
       answers,
       repo,
@@ -176,6 +199,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
@@ -245,6 +269,7 @@ export class Boiler {
     )
 
     let records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify,
       unique: true,
     })) as BoilerRecord[]
@@ -307,7 +332,7 @@ export class Boiler {
     await packages.save(
       cwdPath,
       join(cwdPath, ".boiler.json"),
-      { modify: this.modifySave }
+      { modify: this.modifySave.bind(this) }
     )
   }
 
@@ -316,6 +341,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
@@ -349,6 +375,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
@@ -384,12 +411,14 @@ export class Boiler {
       this.extractOption("--new", args) ||
       this.extractOption("-n", args)
 
-    await this.install(cwdPath, "--prompt-all", ...args)
-
     const records = (await packages.find(cwdPath, args, {
+      appendNew: true,
       forceNew: newRecord,
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
     })) as BoilerRecord[]
+
+    await this.install(cwdPath, "--prompt-all", ...args)
 
     await boilerActions.load(
       cwdPath,
@@ -399,11 +428,6 @@ export class Boiler {
     )
 
     await boilerPackages.install(cwdPath)
-
-    if (newRecord) {
-      packages.append(cwdPath, records)
-    }
-
     await this.save(cwdPath)
   }
 
@@ -414,6 +438,7 @@ export class Boiler {
     let dirty: boolean
 
     const records = (await packages.find(cwdPath, args, {
+      matcher: this.matcher.bind(this),
       modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]

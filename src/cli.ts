@@ -9,12 +9,15 @@ export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const cwdPath = process.cwd()
 
-    await packages.load({
-      cwdPath,
-      dirsOnly: true,
-      jsonPath: join(cwdPath, ".boiler.json"),
-      pkgsPath: join(cwdPath, "boiler"),
-    })
+    if (cmd[0] !== "n") {
+      await packages.load({
+        cwdPath,
+        dirsOnly: true,
+        jsonPath: join(cwdPath, ".boiler.json"),
+        pkgsPath: join(cwdPath, "boiler"),
+        modify: boiler.modifyLoad.bind(boiler),
+      })
+    }
 
     if (cmd[0] === "g") {
       await git.appendGitignore(cwdPath, "/boiler")
