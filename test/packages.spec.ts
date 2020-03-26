@@ -80,7 +80,7 @@ describe("packages", () => {
     ])
 
     expect(results).toEqual([
-      { arg: "file1.ts", newRecord: true },
+      { arg: "file1.ts", id: 0, newRecord: true },
     ])
   })
 

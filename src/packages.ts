@@ -82,12 +82,12 @@ export class Packages {
       records = existingRecords
     }
 
-    if (records.length) {
-      this.updateIds(
-        newRecords,
-        records[records.length - 1].id + 1
-      )
-    }
+    this.updateIds(
+      newRecords,
+      records.length
+        ? records[records.length - 1].id + 1
+        : 0
+    )
 
     records = records.concat(newRecords)
     records = await this.reload(
