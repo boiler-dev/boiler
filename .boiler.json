@@ -1,0 +1,17 @@
+[
+  {
+    "answers": {},
+    "repo": "git@github.com:boiler-dev/packages-boiler.git",
+    "writes": [
+      {
+        "path": "src/packages.ts",
+        "sourcePath": "boiler/packages-boiler/tsignore/packages.ts"
+      },
+      {
+        "path": "test/packages.spec.ts",
+        "sourcePath": "boiler/packages-boiler/tsignore/packages.spec.ts"
+      }
+    ],
+    "version": "d3a1616"
+  }
+]
