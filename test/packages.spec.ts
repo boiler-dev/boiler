@@ -101,7 +101,7 @@ describe("packages", () => {
     expect(results).toEqual([
       { name: "file1.ts", id: 2 },
       { name: "file1.ts", id: 4 },
-      { arg: "newFile.ts", newRecord: true },
+      { arg: "newFile.ts", id: 5, newRecord: true },
     ])
   })
 
@@ -128,6 +128,7 @@ describe("packages", () => {
       { name: "file1", id: 4 },
       {
         arg: "newFile.ts",
+        id: 5,
         name: "newFile",
         newRecord: true,
       },

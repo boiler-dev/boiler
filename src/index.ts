@@ -107,17 +107,13 @@ export class Boiler {
     cwdPath: string,
     record: BoilerRecord
   ): Promise<BoilerRecord> {
-    const { answers, arg, id, name, newRecord } = record
+    const { answers, arg, id, newRecord, repo } = record
 
     if (newRecord) {
       record.repo = arg
       record.name = this.extractName(arg)
     } else {
-      const { out } = await git.remote(
-        join(cwdPath, "boiler", name)
-      )
-
-      record.repo = out.trim()
+      record.repo = repo
       record.name = this.extractName(record.repo)
     }
 

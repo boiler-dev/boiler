@@ -50,7 +50,7 @@ export class Packages {
       this.records[cwdPath] || []
     ).concat(records)
 
-    this.updateIds(cwdPath)
+    this.updateIds(this.records[cwdPath])
   }
 
   async find(
@@ -80,6 +80,13 @@ export class Packages {
       }
     } else {
       records = existingRecords
+    }
+
+    if (records.length) {
+      this.updateIds(
+        newRecords,
+        records[records.length - 1].id + 1
+      )
     }
 
     records = records.concat(newRecords)
@@ -179,9 +186,9 @@ export class Packages {
     })
   }
 
-  updateIds(cwdPath: string): void {
-    this.records[cwdPath].forEach(
-      (record, index) => (record.id = index)
+  updateIds(records: PackageRecord[], start = 0): void {
+    records.forEach(
+      (record, index) => (record.id = start + index)
     )
   }
 }

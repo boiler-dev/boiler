@@ -11,7 +11,8 @@ export class Cli {
 
     await packages.load({
       cwdPath,
-      jsonPath: join(cwdPath, "boiler.json"),
+      dirsOnly: true,
+      jsonPath: join(cwdPath, ".boiler.json"),
       pkgsPath: join(cwdPath, "boiler"),
     })
 
