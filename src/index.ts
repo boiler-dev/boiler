@@ -26,10 +26,10 @@ import files from "./files"
 import git from "./git"
 import { newBoilerTs, newProjectRepos } from "./new"
 import npm from "./npm"
-import packages from "./packages"
+import packages, { PackageRecord } from "./packages"
 import ts from "./ts"
 
-export interface BoilerRecord {
+export interface BoilerRecord extends PackageRecord {
   repo: string
 
   answers?: Record<string, any>
@@ -47,7 +47,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
 
@@ -65,7 +65,7 @@ export class Boiler {
   ): Promise<void> {
     const message = args.pop()
     const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
 
@@ -107,14 +107,19 @@ export class Boiler {
     cwdPath: string,
     record: BoilerRecord
   ): Promise<BoilerRecord> {
-    const { answers, id, name } = record
+    const { answers, arg, id, name, newRecord } = record
 
-    const { out } = await git.remote(
-      join(cwdPath, "boiler", name)
-    )
+    if (newRecord) {
+      record.repo = arg
+      record.name = this.extractName(arg)
+    } else {
+      const { out } = await git.remote(
+        join(cwdPath, "boiler", name)
+      )
 
-    record.repo = out.trim()
-    record.name = this.extractName(record.repo)
+      record.repo = out.trim()
+      record.name = this.extractName(record.repo)
+    }
 
     record.answers = boilerAnswers.load(
       cwdPath,
@@ -159,7 +164,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
 
@@ -221,22 +226,23 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
+    const modify = this.modifyFind.bind(this)
     const promptAll = this.extractOption(
       "--prompt-all",
       args
     )
 
-    const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+    let records = (await packages.find(cwdPath, args, {
+      modify,
       unique: true,
     })) as BoilerRecord[]
 
-    const boilerDirPath = join(cwdPath, "boiler")
-    await ensureDir(boilerDirPath)
-
-    const installRecords = records.filter(
+    let installRecords = records.filter(
       ({ paths }) => !paths.boilerDirExists
     )
+
+    const boilerDirPath = join(cwdPath, "boiler")
+    await ensureDir(boilerDirPath)
 
     await Promise.all(
       installRecords.map(async record => {
@@ -257,6 +263,18 @@ export class Boiler {
         }
       })
     )
+
+    records = (await packages.reload(
+      cwdPath,
+      records,
+      modify
+    )) as BoilerRecord[]
+
+    installRecords = (await packages.reload(
+      cwdPath,
+      installRecords,
+      modify
+    )) as BoilerRecord[]
 
     await boilerPrompts.load(
       cwdPath,
@@ -286,7 +304,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
 
@@ -319,7 +337,7 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
 
@@ -358,7 +376,7 @@ export class Boiler {
 
     const records = (await packages.find(cwdPath, args, {
       forceNew: newRecord,
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
     })) as BoilerRecord[]
 
     await boilerActions.load(
@@ -381,7 +399,7 @@ export class Boiler {
     let dirty: boolean
 
     const records = (await packages.find(cwdPath, args, {
-      modify: this.modifyFind,
+      modify: this.modifyFind.bind(this),
       unique: true,
     })) as BoilerRecord[]
 

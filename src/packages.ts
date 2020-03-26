@@ -2,7 +2,12 @@ import { pathExists, readJson, writeJson } from "fs-extra"
 
 import files from "./files"
 
-export type PackageRecord = Record<string, any>
+export interface PackageRecord {
+  arg?: string
+  id?: number
+  name?: string
+  newRecord?: boolean
+}
 
 export type RecordModifier = (
   cwdPath: string,
@@ -78,15 +83,11 @@ export class Packages {
     }
 
     records = records.concat(newRecords)
-
-    if (options.modify) {
-      const modify = (
-        record: PackageRecord
-      ): Promise<PackageRecord> =>
-        options.modify(cwdPath, record)
-
-      records = await Promise.all(records.map(modify))
-    }
+    records = await this.reload(
+      cwdPath,
+      records,
+      options.modify
+    )
 
     if (options.unique) {
       const found = {}
@@ -129,6 +130,22 @@ export class Packages {
     return this.records[cwdPath]
   }
 
+  async reload(
+    cwdPath: string,
+    records: PackageRecord[],
+    modifier: RecordModifier
+  ): Promise<PackageRecord[]> {
+    if (!modifier) {
+      return records
+    }
+
+    const modify = (
+      record: PackageRecord
+    ): Promise<PackageRecord> => modifier(cwdPath, record)
+
+    return await Promise.all(records.map(modify))
+  }
+
   remove(
     cwdPath: string,
     ...records: PackageRecord[]
@@ -147,14 +164,11 @@ export class Packages {
     jsonPath: string,
     options: SaveOptions = {}
   ): Promise<void> {
-    const modify = (
-      record: PackageRecord
-    ): Promise<PackageRecord> =>
-      options.modify(cwdPath, record)
-
-    const records = modify
-      ? await Promise.all(this.records[cwdPath].map(modify))
-      : this.records[cwdPath]
+    const records = await this.reload(
+      cwdPath,
+      this.records[cwdPath],
+      options.modify
+    )
 
     for (const record of records) {
       delete record.id

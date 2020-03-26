@@ -27,10 +27,6 @@ export class BoilerPaths {
   ): Promise<BoilerPathRecord> {
     const id = `${cwdPath}:${boilerName}`
 
-    if (this.records[id]) {
-      return this.records[id]
-    }
-
     const [boilerDirPath, distDirPath] = [
       join(cwdPath, "boiler", boilerName),
       join(cwdPath, "dist/boiler", boilerName),
