@@ -122,11 +122,11 @@ export class Packages {
     dirsOnly?: boolean
     filesOnly?: boolean
   }): Promise<PackageRecord[]> {
-    let records: PackageRecord[]
+    let records: PackageRecord[] = []
 
     if (await pathExists(jsonPath)) {
       records = await readJson(jsonPath)
-    } else {
+    } else if (await pathExists(pkgsPath)) {
       const [dirs, paths] = await files.ls(pkgsPath)
       const all = dirs.concat(paths)
       const pkgs = dirsOnly ? dirs : filesOnly ? paths : all
