@@ -65,6 +65,7 @@ export const absorb: ActionBoiler = async ({ writes }) => {
 `
 
 export const newProjectRepos = [
+  "git@github.com:boiler-dev/gitignore-boiler.git",
   "git@github.com:boiler-dev/package-json-boiler.git",
   "git@github.com:boiler-dev/ts-boiler.git",
   "git@github.com:boiler-dev/eslint-prettier-ts-boiler.git",
