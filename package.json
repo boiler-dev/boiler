@@ -1,6 +1,6 @@
 {
   "name": "boiler-dev",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "Boilerplate generator framework & low-code power tool 🛠️",
   "main": "dist/index.js",
   "bin": {
