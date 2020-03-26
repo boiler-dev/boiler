@@ -12,6 +12,21 @@
         "sourcePath": "boiler/packages-boiler/tsignore/packages.spec.ts"
       }
     ],
-    "version": "d3a1616"
+    "version": "bd66464"
+  },
+  {
+    "answers": {},
+    "repo": "git@github.com:boiler-dev/tiny-id-boiler.git",
+    "writes": [
+      {
+        "path": "src/tinyId.ts",
+        "sourcePath": "boiler/tiny-id-boiler/tsignore/tinyId.ts"
+      },
+      {
+        "path": "test/tinyId.spec.ts",
+        "sourcePath": "boiler/tiny-id-boiler/tsignore/tinyId.spec.ts"
+      }
+    ],
+    "version": "fc26e76"
   }
 ]
