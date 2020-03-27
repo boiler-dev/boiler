@@ -12,14 +12,10 @@ import actions from "./actions"
 import boilerActions, {
   BoilerActionWrite,
 } from "./boilerActions"
-import boilerAnswers from "./boilerAnswers"
-import boilerFiles, {
-  BoilerFileRecord,
-} from "./boilerFiles"
+import { BoilerFileRecord } from "./boilerFiles"
 import boilerNpm from "./boilerNpm"
-import boilerPaths, {
-  BoilerPathRecord,
-} from "./boilerPaths"
+import boilerPackages from "./boilerPackages"
+import { BoilerPathRecord } from "./boilerPaths"
 import boilerPrompts from "./boilerPrompts"
 import chmod from "./chmod"
 import files from "./files"
@@ -46,11 +42,11 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-      unique: true,
-    })) as BoilerRecord[]
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      { unique: true }
+    )
 
     await boilerActions.load(
       cwdPath,
@@ -65,11 +61,11 @@ export class Boiler {
     ...args: string[]
   ): Promise<void> {
     const message = args.pop()
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-      unique: true,
-    })) as BoilerRecord[]
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      { unique: true }
+    )
 
     await Promise.all(
       records.map(async ({ paths }) => {
@@ -90,128 +86,93 @@ export class Boiler {
     )
   }
 
-  extractName(nameOrPathOrRepo: string): string {
-    const nameMatch = nameOrPathOrRepo.match(
-      /([^\/.]+)\.*[git/]*$/
-    )
-
-    if (!nameMatch) {
-      console.error(
-        "Argument `${repo}` should be a name, path, or repository."
-      )
-      process.exit(1)
-    }
-
-    return nameMatch[1]
-  }
-
-  matcher(arg: string, record: PackageRecord): boolean {
-    return this.extractName(arg) === record.name
-  }
-
-  async modifyLoad(
-    cwdPath: string,
-    record: BoilerRecord
-  ): Promise<BoilerRecord> {
-    const {
-      answers,
-      arg,
-      id,
-      name,
-      newRecord,
-      repo,
-    } = record
-
-    if (newRecord) {
-      record.repo = arg
-      record.name = this.extractName(arg)
-    } else {
-      record.repo = repo
-      record.name = name || this.extractName(repo)
-    }
-
-    record.answers = boilerAnswers.load(
-      cwdPath,
-      id,
-      answers
-    )
-
-    return record
-  }
-
-  async modifyFind(
-    cwdPath: string,
-    record: BoilerRecord
-  ): Promise<BoilerRecord> {
-    record = await this.modifyLoad(cwdPath, record)
-
-    const { name, repo } = record
-
-    if (!repo) {
-      const { out } = await git.remote(
-        join(cwdPath, "boiler", name)
-      )
-
-      record.repo = out.trim()
-      record.name = this.extractName(record.repo)
-    }
-
-    record.paths = await boilerPaths.load(
-      cwdPath,
-      record.name
-    )
-
-    if (!record.paths.boilerDirExists) {
-      return record
-    }
-
-    record.files = await boilerFiles.load(cwdPath, record)
-
-    return record
-  }
-
-  async modifySave(
-    cwdPath: string,
-    record: BoilerRecord
-  ): Promise<BoilerRecord> {
-    const { id, name, repo, writes } = record
-
-    return {
-      answers: boilerAnswers.load(cwdPath, id),
-      repo,
-      writes:
-        boilerActions.writes(cwdPath, record) || writes,
-      version: await git.commitHash(
-        join(cwdPath, "boiler", name)
-      ),
-    }
-  }
-
-  async push(
+  async generate(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-      unique: true,
-    })) as BoilerRecord[]
+    const newRecord =
+      this.extractOption("--new", args) ||
+      this.extractOption("-n", args)
+
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      {
+        appendNew: true,
+        forceNew: newRecord,
+      }
+    )
+
+    await this.install(cwdPath, "--prompt-all", ...args)
+
+    await boilerActions.load(
+      cwdPath,
+      this,
+      "generate",
+      ...records
+    )
+
+    await boilerNpm.install(cwdPath)
+    await boilerPackages.save(cwdPath)
+  }
+
+  async install(
+    cwdPath: string,
+    ...args: string[]
+  ): Promise<void> {
+    const promptAll = this.extractOption(
+      "--prompt-all",
+      args
+    )
+
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      { unique: true }
+    )
+
+    let installRecords = records.filter(
+      ({ paths }) => !paths.boilerDirExists
+    )
+
+    const boilerDirPath = join(cwdPath, "boiler")
+    await ensureDir(boilerDirPath)
 
     await Promise.all(
-      records.map(async ({ paths }) => {
-        const { boilerDirPath } = paths
-        const isRepo = await pathExists(
-          join(boilerDirPath, ".git")
+      installRecords.map(async record => {
+        const { repo, version } = record
+
+        const { code, out } = await git.clone(
+          boilerDirPath,
+          repo
         )
-        if (isRepo) {
-          await git.push(boilerDirPath)
-        } else {
-          console.error(
-            `⚠️ Not a git repository: ${boilerDirPath}`
-          )
+
+        if (code !== 0) {
+          console.error("⚠️  Git clone failed:\n\n", out)
+          process.exit(1)
+        }
+
+        if (version) {
+          await git.checkout(cwdPath, version)
         }
       })
     )
+
+    installRecords = await boilerPackages.reload(
+      cwdPath,
+      promptAll ? records : installRecords
+    )
+
+    await boilerPrompts.load(cwdPath, ...installRecords)
+
+    await boilerActions.load(
+      cwdPath,
+      this,
+      "install",
+      ...installRecords
+    )
+
+    await boilerNpm.install(cwdPath)
   }
 
   async new(
@@ -251,84 +212,72 @@ export class Boiler {
     }
   }
 
-  async install(
+  async push(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const modify = this.modifyFind.bind(this)
-    const promptAll = this.extractOption(
-      "--prompt-all",
-      args
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      { unique: true }
     )
-
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify,
-      unique: true,
-    })) as BoilerRecord[]
-
-    let installRecords = records.filter(
-      ({ paths }) => !paths.boilerDirExists
-    )
-
-    const boilerDirPath = join(cwdPath, "boiler")
-    await ensureDir(boilerDirPath)
 
     await Promise.all(
-      installRecords.map(async record => {
-        const { repo, version } = record
-
-        const { code, out } = await git.clone(
-          boilerDirPath,
-          repo
+      records.map(async ({ paths }) => {
+        const { boilerDirPath } = paths
+        const isRepo = await pathExists(
+          join(boilerDirPath, ".git")
         )
-
-        if (code !== 0) {
-          console.error("⚠️  Git clone failed:\n\n", out)
-          process.exit(1)
-        }
-
-        if (version) {
-          await git.checkout(cwdPath, version)
+        if (isRepo) {
+          await git.push(boilerDirPath)
+        } else {
+          console.error(
+            `⚠️ Not a git repository: ${boilerDirPath}`
+          )
         }
       })
     )
-
-    installRecords = (await packages.reload(
-      cwdPath,
-      promptAll ? records : installRecords,
-      modify
-    )) as BoilerRecord[]
-
-    await boilerPrompts.load(cwdPath, ...installRecords)
-
-    await boilerActions.load(
-      cwdPath,
-      this,
-      "install",
-      ...installRecords
-    )
-
-    await boilerNpm.install(cwdPath)
   }
 
-  async save(cwdPath: string): Promise<void> {
-    await packages.save(
+  async status(
+    cwdPath: string,
+    ...args: string[]
+  ): Promise<void> {
+    let dirty: boolean
+
+    const records = await boilerPackages.find(
       cwdPath,
-      join(cwdPath, ".boiler.json"),
-      { modify: this.modifySave.bind(this) }
+      args,
+      { unique: true }
     )
+
+    for (const { name, paths } of records) {
+      const { out } = await git.status(paths.boilerDirPath)
+
+      dirty = dirty || !!out
+
+      // eslint-disable-next-line no-console
+      console.log(
+        (out ? "🚨 dirty\t" : "✨ clean\t") +
+          ` ${name}` +
+          (out ? `\n${out}` : "")
+      )
+    }
+
+    if (dirty) {
+      process.exit(1)
+    }
   }
 
   async uninstall(
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-      unique: true,
-    })) as BoilerRecord[]
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      { unique: true }
+    )
 
     const uninstallRecords = records.filter(
       ({ paths }) => paths.boilerDirExists
@@ -350,7 +299,7 @@ export class Boiler {
 
     packages.remove(cwdPath, ...uninstallRecords)
 
-    await this.save(cwdPath)
+    await boilerPackages.save(cwdPath)
     await boilerNpm.uninstall(cwdPath)
   }
 
@@ -358,11 +307,11 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-      unique: true,
-    })) as BoilerRecord[]
+    const records = await boilerPackages.find(
+      cwdPath,
+      args,
+      { unique: true }
+    )
 
     const updateRecords = records.filter(
       ({ paths }) => paths.boilerDirExists
@@ -385,64 +334,6 @@ export class Boiler {
     )
 
     await boilerNpm.install(cwdPath)
-  }
-
-  async generate(
-    cwdPath: string,
-    ...args: string[]
-  ): Promise<void> {
-    const newRecord =
-      this.extractOption("--new", args) ||
-      this.extractOption("-n", args)
-
-    const records = (await packages.find(cwdPath, args, {
-      appendNew: true,
-      forceNew: newRecord,
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-    })) as BoilerRecord[]
-
-    await this.install(cwdPath, "--prompt-all", ...args)
-
-    await boilerActions.load(
-      cwdPath,
-      this,
-      "generate",
-      ...records
-    )
-
-    await boilerNpm.install(cwdPath)
-    await this.save(cwdPath)
-  }
-
-  async status(
-    cwdPath: string,
-    ...args: string[]
-  ): Promise<void> {
-    let dirty: boolean
-
-    const records = (await packages.find(cwdPath, args, {
-      matcher: this.matcher.bind(this),
-      modify: this.modifyFind.bind(this),
-      unique: true,
-    })) as BoilerRecord[]
-
-    for (const { name, paths } of records) {
-      const { out } = await git.status(paths.boilerDirPath)
-
-      dirty = dirty || !!out
-
-      // eslint-disable-next-line no-console
-      console.log(
-        (out ? "🚨 dirty\t" : "✨ clean\t") +
-          ` ${name}` +
-          (out ? `\n${out}` : "")
-      )
-    }
-
-    if (dirty) {
-      process.exit(1)
-    }
   }
 
   extractOption(opt: string, args: string[]): boolean {

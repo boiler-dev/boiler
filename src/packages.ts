@@ -38,6 +38,10 @@ export interface LoadOptions {
   modify?: RecordModifier
 }
 
+export interface ReloadOptions {
+  modify?: RecordModifier
+}
+
 export interface SaveOptions {
   modify?: RecordModifier
 }
@@ -93,11 +97,7 @@ export class Packages {
     this.updateIds(newRecords)
 
     records = records.concat(newRecords)
-    records = await this.reload(
-      cwdPath,
-      records,
-      options.modify
-    )
+    records = await this.reload(cwdPath, records, options)
 
     if (options.appendNew) {
       this.append(cwdPath, records, {
@@ -139,7 +139,7 @@ export class Packages {
 
     this.append(
       cwdPath,
-      await this.reload(cwdPath, records, modify)
+      await this.reload(cwdPath, records, { modify })
     )
 
     return this.records[cwdPath]
@@ -148,17 +148,18 @@ export class Packages {
   async reload(
     cwdPath: string,
     records: PackageRecord[],
-    modifier: RecordModifier
+    { modify }: ReloadOptions = {}
   ): Promise<PackageRecord[]> {
-    if (!modifier) {
+    if (!modify) {
       return records
     }
 
-    const modify = (
-      record: PackageRecord
-    ): Promise<PackageRecord> => modifier(cwdPath, record)
-
-    return await Promise.all(records.map(modify))
+    return await Promise.all(
+      records.map(
+        (record: PackageRecord): Promise<PackageRecord> =>
+          modify(cwdPath, record)
+      )
+    )
   }
 
   remove(
@@ -182,7 +183,7 @@ export class Packages {
     const records = await this.reload(
       cwdPath,
       this.records[cwdPath],
-      options.modify
+      options
     )
 
     for (const record of records) {

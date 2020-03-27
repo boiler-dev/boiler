@@ -1,24 +1,14 @@
-import { join } from "path"
-
 import boiler from "./"
+import boilerPackages from "./boilerPackages"
 import git from "./git"
 import ts from "./ts"
-import packages from "./packages"
 
 export class Cli {
   async run([cmd, ...args]: string[]): Promise<void> {
     const cwdPath = process.cwd()
 
     if (cmd[0] !== "n") {
-      await packages.load(
-        cwdPath,
-        join(cwdPath, ".boiler.json"),
-        join(cwdPath, "boiler"),
-        {
-          dirsOnly: true,
-          modify: boiler.modifyLoad.bind(boiler),
-        }
-      )
+      await boilerPackages.load(cwdPath)
     }
 
     if (cmd[0] === "g") {
