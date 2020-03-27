@@ -41,6 +41,7 @@ boiler generate  [repo|path]...  Run generator
 boiler install   [repo|path]...  Install generator
 boiler update    [repo|path]...  Update generator
 boiler commit    [repo|path]...  Commit and push generator
+boiler push      [repo|path]...  Push generator
 boiler status    [repo|path]...  Status of generator repo
 boiler uninstall [repo|path]...  Uninstall generator repo
 
