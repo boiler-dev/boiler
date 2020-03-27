@@ -10,13 +10,15 @@ export class Cli {
     const cwdPath = process.cwd()
 
     if (cmd[0] !== "n") {
-      await packages.load({
+      await packages.load(
         cwdPath,
-        dirsOnly: true,
-        jsonPath: join(cwdPath, ".boiler.json"),
-        pkgsPath: join(cwdPath, "boiler"),
-        modify: boiler.modifyLoad.bind(boiler),
-      })
+        join(cwdPath, ".boiler.json"),
+        join(cwdPath, "boiler"),
+        {
+          dirsOnly: true,
+          modify: boiler.modifyLoad.bind(boiler),
+        }
+      )
     }
 
     if (cmd[0] === "g") {

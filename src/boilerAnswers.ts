@@ -4,7 +4,7 @@ export class BoilerAnswers {
   load(
     cwdPath: string,
     recordId: string,
-    answers: Record<string, any>
+    answers?: Record<string, any>
   ): Record<string, any> {
     const id = `${cwdPath}:${recordId}`
 

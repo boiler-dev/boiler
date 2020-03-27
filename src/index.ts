@@ -16,7 +16,7 @@ import boilerAnswers from "./boilerAnswers"
 import boilerFiles, {
   BoilerFileRecord,
 } from "./boilerFiles"
-import boilerPackages from "./boilerPackages"
+import boilerNpm from "./boilerNpm"
 import boilerPaths, {
   BoilerPathRecord,
 } from "./boilerPaths"
@@ -145,9 +145,9 @@ export class Boiler {
   ): Promise<BoilerRecord> {
     record = await this.modifyLoad(cwdPath, record)
 
-    const { name } = record
+    const { name, repo } = record
 
-    if (!record.repo) {
+    if (!repo) {
       const { out } = await git.remote(
         join(cwdPath, "boiler", name)
       )
@@ -167,10 +167,6 @@ export class Boiler {
 
     record.files = await boilerFiles.load(cwdPath, record)
 
-    record.version = await git.commitHash(
-      join(cwdPath, "boiler", record.name)
-    )
-
     return record
   }
 
@@ -178,19 +174,16 @@ export class Boiler {
     cwdPath: string,
     record: BoilerRecord
   ): Promise<BoilerRecord> {
-    const {
-      answers,
-      repo,
-      version,
-      writes,
-    } = await this.modifyFind(cwdPath, record)
+    const { id, name, repo, writes } = record
 
     return {
-      answers,
+      answers: boilerAnswers.load(cwdPath, id),
       repo,
       writes:
         boilerActions.writes(cwdPath, record) || writes,
-      version,
+      version: await git.commitHash(
+        join(cwdPath, "boiler", name)
+      ),
     }
   }
 
@@ -268,7 +261,7 @@ export class Boiler {
       args
     )
 
-    let records = (await packages.find(cwdPath, args, {
+    const records = (await packages.find(cwdPath, args, {
       matcher: this.matcher.bind(this),
       modify,
       unique: true,
@@ -301,22 +294,13 @@ export class Boiler {
       })
     )
 
-    records = (await packages.reload(
-      cwdPath,
-      records,
-      modify
-    )) as BoilerRecord[]
-
     installRecords = (await packages.reload(
       cwdPath,
-      installRecords,
+      promptAll ? records : installRecords,
       modify
     )) as BoilerRecord[]
 
-    await boilerPrompts.load(
-      cwdPath,
-      ...(promptAll ? records : installRecords)
-    )
+    await boilerPrompts.load(cwdPath, ...installRecords)
 
     await boilerActions.load(
       cwdPath,
@@ -325,7 +309,7 @@ export class Boiler {
       ...installRecords
     )
 
-    await boilerPackages.install(cwdPath)
+    await boilerNpm.install(cwdPath)
   }
 
   async save(cwdPath: string): Promise<void> {
@@ -367,7 +351,7 @@ export class Boiler {
     packages.remove(cwdPath, ...uninstallRecords)
 
     await this.save(cwdPath)
-    await boilerPackages.uninstall(cwdPath)
+    await boilerNpm.uninstall(cwdPath)
   }
 
   async update(
@@ -400,7 +384,7 @@ export class Boiler {
       ...updateRecords
     )
 
-    await boilerPackages.install(cwdPath)
+    await boilerNpm.install(cwdPath)
   }
 
   async generate(
@@ -427,7 +411,7 @@ export class Boiler {
       ...records
     )
 
-    await boilerPackages.install(cwdPath)
+    await boilerNpm.install(cwdPath)
     await this.save(cwdPath)
   }
 

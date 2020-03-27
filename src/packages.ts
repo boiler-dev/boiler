@@ -33,9 +33,6 @@ export interface FindOptions {
 }
 
 export interface LoadOptions {
-  cwdPath: string
-  jsonPath: string
-  pkgsPath: string
   dirsOnly?: boolean
   filesOnly?: boolean
   modify?: RecordModifier
@@ -121,14 +118,12 @@ export class Packages {
     return records
   }
 
-  async load({
-    cwdPath,
-    jsonPath,
-    pkgsPath,
-    dirsOnly,
-    filesOnly,
-    modify,
-  }: LoadOptions): Promise<PackageRecord[]> {
+  async load(
+    cwdPath: string,
+    jsonPath: string,
+    pkgsPath: string,
+    { dirsOnly, filesOnly, modify }: LoadOptions = {}
+  ): Promise<PackageRecord[]> {
     let records: PackageRecord[] = []
 
     if (await pathExists(jsonPath)) {

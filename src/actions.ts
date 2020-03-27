@@ -11,7 +11,7 @@ import {
 
 import { Boiler, BoilerRecord } from "."
 import { BoilerAction } from "./boilerActions"
-import boilerPackages from "./boilerPackages"
+import boilerNpm from "./boilerNpm"
 import chmod from "./chmod"
 
 export class Actions {
@@ -89,7 +89,7 @@ export class Actions {
   ): void {
     const stage = dev ? "dev" : "prod"
     const key = uninstall ? "uninstall" : stage
-    const packages = boilerPackages.load(cwdPath)
+    const packages = boilerNpm.load(cwdPath)
 
     packages[key] = packages[key].concat(source)
   }

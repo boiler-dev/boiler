@@ -9,7 +9,7 @@ export interface BoilerPackageRecord {
   uninstall: string[]
 }
 
-export class BoilerPackages {
+export class BoilerNpm {
   records: Record<string, BoilerPackageRecord> = {}
 
   load(cwdPath: string): BoilerPackageRecord {
@@ -71,4 +71,4 @@ export class BoilerPackages {
   }
 }
 
-export default new BoilerPackages()
+export default new BoilerNpm()
