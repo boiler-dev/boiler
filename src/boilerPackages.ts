@@ -59,21 +59,18 @@ export class BoilerPackages {
     cwdPath: string,
     record: BoilerRecord
   ): Promise<BoilerRecord> {
-    const {
-      answers,
-      arg,
-      id,
-      name,
-      newRecord,
-      repo,
-    } = record
+    const { answers, arg, id, newRecord } = record
 
-    if (newRecord) {
-      record.repo = arg
+    if (newRecord && arg) {
+      if (arg.match(/\.git$/)) {
+        record.repo = arg
+      }
+
       record.name = this.extractName(arg)
-    } else {
-      record.repo = repo
-      record.name = name || this.extractName(repo)
+    }
+
+    if (record.repo) {
+      record.name = this.extractName(record.repo)
     }
 
     record.answers = boilerAnswers.load(

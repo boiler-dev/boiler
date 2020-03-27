@@ -103,7 +103,7 @@ export class Boiler {
       }
     )
 
-    await this.install(cwdPath, "--prompt-all", ...args)
+    await this.install(cwdPath, ...args)
 
     await boilerActions.load(
       cwdPath,
@@ -120,15 +120,15 @@ export class Boiler {
     cwdPath: string,
     ...args: string[]
   ): Promise<void> {
-    const promptAll = this.extractOption(
-      "--prompt-all",
-      args
-    )
-
     const records = await boilerPackages.find(
       cwdPath,
       args,
       { unique: true }
+    )
+
+    let promptRecords = records.filter(
+      ({ newRecord, paths }) =>
+        newRecord || !paths.boilerDirExists
     )
 
     let installRecords = records.filter(
@@ -160,10 +160,15 @@ export class Boiler {
 
     installRecords = await boilerPackages.reload(
       cwdPath,
-      promptAll ? records : installRecords
+      installRecords
     )
 
-    await boilerPrompts.load(cwdPath, ...installRecords)
+    promptRecords = await boilerPackages.reload(
+      cwdPath,
+      promptRecords
+    )
+
+    await boilerPrompts.load(cwdPath, ...promptRecords)
 
     await boilerActions.load(
       cwdPath,
