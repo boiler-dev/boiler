@@ -140,6 +140,8 @@ export class Packages {
       records = pkgs.sort().map(name => ({ name }))
     }
 
+    this.updateIds(records)
+
     this.append(
       cwdPath,
       await this.reload(cwdPath, records, modify)
