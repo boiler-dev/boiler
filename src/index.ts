@@ -341,6 +341,7 @@ export class Boiler {
       ...updateRecords
     )
 
+    await boilerPackages.save(cwdPath)
     await boilerNpm.install(cwdPath)
   }
 
