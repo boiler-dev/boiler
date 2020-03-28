@@ -298,7 +298,10 @@ export class Boiler {
     await Promise.all(
       uninstallRecords.map(async record => {
         const { paths } = record
-        await remove(paths.boilerDirPath)
+        await Promise.all([
+          remove(paths.boilerDirPath),
+          remove(paths.distJsPath),
+        ])
       })
     )
 

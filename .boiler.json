@@ -12,7 +12,7 @@
         "sourcePath": "boiler/packages-boiler/tsignore/packages.spec.ts"
       }
     ],
-    "version": "bd66464"
+    "version": "efecf8c"
   },
   {
     "answers": {},
@@ -27,6 +27,6 @@
         "sourcePath": "boiler/tiny-id-boiler/tsignore/tinyId.spec.ts"
       }
     ],
-    "version": "fc26e76"
+    "version": "3a99912"
   }
 ]
