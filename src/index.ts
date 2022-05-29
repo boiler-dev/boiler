@@ -136,7 +136,10 @@ export class Boiler {
     )
 
     const boilerDirPath = join(cwdPath, "boiler")
-    await ensureDir(boilerDirPath)
+    await /* TODO: JSFIX could not patch the breaking change:
+    Creating a directory with fs-extra no longer returns the path 
+    Suggested fix: The returned promise no longer includes the path of the new directory */
+    ensureDir(boilerDirPath)
 
     await Promise.all(
       installRecords.map(async record => {
@@ -193,7 +196,10 @@ export class Boiler {
       const parentDir = join(path, "../")
 
       if (basename(parentDir) === "boiler") {
-        await ensureDir(path)
+        await /* TODO: JSFIX could not patch the breaking change:
+        Creating a directory with fs-extra no longer returns the path 
+        Suggested fix: The returned promise no longer includes the path of the new directory */
+        ensureDir(path)
         await git.init(path)
 
         const { repo } = await inquirer.prompt([
